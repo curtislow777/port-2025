@@ -1,60 +1,52 @@
 // Import Three.js and OrbitControls
+import './style.css'
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
-// Create the scene
+// Create scene
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xE0E0E0); // Grey color
 
-// Set up the camera
-const camera = new THREE.PerspectiveCamera(
-  75, // Field of view
-  window.innerWidth / window.innerHeight, // Aspect ratio
-  0.1, // Near plane
-  1000 // Far plane
-);
-camera.position.set(0, 2, 5); // Position the camera
+// Create camera
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 2, 10); // Better positioning
 
-// Set up the renderer
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
+// Create renderer
+const canvas = document.querySelector("#bg") || document.createElement("canvas");
+if (!document.querySelector("#bg")) document.body.appendChild(canvas);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
-document.body.appendChild(renderer.domElement);
+renderer.setSize(window.innerWidth, window.innerHeight);
 
-// Add lights to the scene
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.8); // Soft light
-scene.add(ambientLight);
-
-const ambientLight1 = new THREE.AmbientLight(0xffffff, 0.5); // Adjust intensity
-scene.add(ambientLight1);
-
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-directionalLight.position.set(5, 5, 5); // Position to front of the walls
-directionalLight.intensity = 1.5; // Increase intensity
-
-scene.add(directionalLight);
 
 // Add OrbitControls
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; // Smooth camera movement
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.minDistance = 2.5;
+controls.maxDistance = 50;
 
-// Load the GLTF model (wall.glb)
+// Load GLTF model
 const loader = new GLTFLoader();
-loader.load('./wall.glb', (gltf) => {
-  const wall = gltf.scene;
-  wall.traverse((node) => {
-    if (node.isMesh) {
-      console.log(node.material); // Check the material type
-    }
-  });
-  wall.position.set(0, 0, 0);
-  scene.add(wall);
+loader.load('./isometric-room.glb', (gltf) => {
+  const room = gltf.scene;
+  room.position.set(0, 0, 0);
+  scene.add(room);
+  console.log("Model loaded:", room);
 });
 
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(10, 10, 10); // Adjust position
+scene.add(light);
 
-// Handle window resizing
-window.addEventListener('resize', () => {
+// Add a helper to visualize the light direction
+const lightHelper = new THREE.DirectionalLightHelper(light, 5);
+scene.add(lightHelper);
+
+// Handle window resize
+window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -63,7 +55,8 @@ window.addEventListener('resize', () => {
 // Animation loop
 function animate() {
   requestAnimationFrame(animate);
-  controls.update(); // Update OrbitControls
+  controls.update(); // Smooth movement
   renderer.render(scene, camera);
 }
+
 animate();
