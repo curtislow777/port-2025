@@ -30,7 +30,7 @@ controls.maxDistance = 50;
 
 // Load GLTF model
 const loader = new GLTFLoader();
-loader.load('./isometric-room.glb', (gltf) => {
+loader.load('./smaller-room.glb', (gltf) => {
   const room = gltf.scene;
   room.position.set(0, 0, 0);
   scene.add(room);
