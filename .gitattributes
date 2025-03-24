@@ -2,3 +2,5 @@
 * text=auto
 day-baked.blend filter=lfs diff=lfs merge=lfs -text
 baking-night.blend filter=lfs diff=lfs merge=lfs -text
+combining-checking-day-mats.blend filter=lfs diff=lfs merge=lfs -text
+
