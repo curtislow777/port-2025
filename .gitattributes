@@ -2,3 +2,4 @@
 * text=auto
 day-baked.blend filter=lfs diff=lfs merge=lfs -text
 baking-night.blend filter=lfs diff=lfs merge=lfs -text
+checking-textures.blend filter=lfs diff=lfs merge=lfs -text
