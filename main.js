@@ -90,7 +90,6 @@ Object.entries(textureMap).forEach(([key, paths]) => {
   dayTexture.generateMipmaps = true;
   dayTexture.minFilter = THREE.LinearMipmapLinearFilter;
   dayTexture.magFilter = THREE.LinearFilter;
-  dayTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
   loadedTextures.day[key] = dayTexture;
 
