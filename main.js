@@ -20,6 +20,13 @@ const loader = new GLTFLoader();
 
 loader.setDRACOLoader( dracoLoader );
 dracoLoader.setDecoderPath( '/draco/' );
+const renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});  
+renderer.setSize(sizes.width, sizes.height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace; // NEW: color space
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+
 
 const textureMap = {
   one:{
@@ -34,18 +41,28 @@ const textureMap = {
     day:"/textures/AGX-Texture3.webp",
     night: "/textures/AGX-Texture3_night.webp",
   },
-  four:{
+  fourA:{
     day:"/textures/AGX-Texture4.webp",
     night: "/textures/AGX-Texture4_night.webp",
   },
+  fourB:{
+    day:"/textures/AGX-Texture4.5.webp",
+    night: "/textures/AGX-Texture4.5_night.webp",
+  }
+  ,
   five:{
     day:"/textures/AGX-Texture5.webp",
     night: "/textures/AGX-Texture5_night.webp",
   },
-  six:{
+  sixA:{
     day:"/textures/AGX-Texture6.webp",
     night: "/textures/AGX-Texture6_night.webp",
   },
+  sixB:{
+    day:"/textures/AGX-Texture6.5.webp",
+    night: "/textures/AGX-Texture6.5_night.webp",
+  },
+
   seven:{
     day:"/textures/AGX-Texture7.webp",
     night: "/textures/AGX-Texture7_night.webp",
@@ -68,27 +85,68 @@ const loadedTextures = {
 
 Object.entries(textureMap).forEach(([key, paths]) => {
   const dayTexture = textureLoader.load(paths.day);
+  dayTexture.flipY = false;
+  dayTexture.colorSpace = THREE.SRGBColorSpace;
+  dayTexture.generateMipmaps = true;
+  dayTexture.minFilter = THREE.LinearMipmapLinearFilter;
+  dayTexture.magFilter = THREE.LinearFilter;
+  dayTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
   loadedTextures.day[key] = dayTexture;
 
   const nightTexture = textureLoader.load(paths.night);
+  nightTexture.flipY = true;
+  nightTexture.colorSpace = THREE.SRGBColorSpace; 
   loadedTextures.night[key] = nightTexture;
 });
 
+// Helper function to extract the texture key from the mesh name
+function getTextureKeyFromName(meshName) {
+  if (meshName.includes('-one'))   return 'one';
+  if (meshName.includes('-two'))   return 'two';
+  if (meshName.includes('-three')) return 'three';
+  if (meshName.includes('-fourA'))  return 'fourA';
+  if (meshName.includes('-fourB'))  return 'fourB';
+  if (meshName.includes('-five'))  return 'five';
+  if (meshName.includes('-sixA'))   return 'sixA';
+  if (meshName.includes('-sixB'))   return 'sixB';
+  if (meshName.includes('-seven')) return 'seven';
+  if (meshName.includes('-eight')) return 'eight';
+  if (meshName.includes('-nine'))  return 'nine';
+  return null;
+}
+
 loader.load("/models/room-port-v1.glb", (glb) => {
-  glb.scene.traverse(child => {
+  glb.scene.traverse((child) => {
     if (child.isMesh) {
-      Object.keys(textureMap).forEach(key => {
-        child.material.map = loadedTextures.day[key];
-      });
+      const textureKey = getTextureKeyFromName(child.name);
+      if (textureKey) {
+
+        const material = new THREE.MeshBasicMaterial({
+          map: loadedTextures.day[textureKey], // Assign new texture
+        });
+
+
+        
+        // Clone the material so it’s independent and assign MeshBasicMaterial:
+        child.material = material;
+        if(child.material.map){
+          child.material.map.minFilter = THREE.LinearFilter;
+          
+        }
+
+        // Debug: log the assigned texture URL
+       // console.log(`${child.name} now using texture:`, child.material.map.image ? child.material.map.image.src : "not loaded");
+      }
+
     }
   });
   scene.add(glb.scene);
 });
 
-const renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});  
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, sizes.width / sizes.height, 0.1, 1000 );
+const camera = new THREE.PerspectiveCamera( 35, sizes.width / sizes.height, 0.1, 1000 );
 const controls = new OrbitControls( camera, renderer.domElement );
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
@@ -98,10 +156,7 @@ controls.update();
 renderer.setSize( sizes.width, sizes.height );
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-const cube = new THREE.Mesh( geometry, material );
-scene.add( cube );
+
 
 
 camera.position.z = 5;
@@ -126,6 +181,10 @@ window.addEventListener('resize', () => {
 
 
 
+scene.background = new THREE.Color(0xA0D8F1); // Light blue
+
+
+
 function animate() {
 
 
@@ -135,12 +194,10 @@ const render = () => {
 
   controls.update();
 
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
-
   renderer.render( scene, camera );
 
   window.requestAnimationFrame(render);
 };
 
 render();
+console.log("hallo")
