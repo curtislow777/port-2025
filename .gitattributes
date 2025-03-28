@@ -4,3 +4,4 @@ day-baked.blend filter=lfs diff=lfs merge=lfs -text
 baking-night.blend filter=lfs diff=lfs merge=lfs -text
 checking-textures.blend filter=lfs diff=lfs merge=lfs -text
 3D-Related/Fixing[[:space:]]UV[[:space:]]spacing/combining-stuff.blend filter=lfs diff=lfs merge=lfs -text
+3D-Related/room-port-w-mats.glb filter=lfs diff=lfs merge=lfs -text
