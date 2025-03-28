@@ -151,9 +151,7 @@ loader.load("/models/room-port-v1.glb", (glb) => {
        // console.log(`${child.name} now using texture:`, child.material.map.image ? child.material.map.image.src : "not loaded");
       }
     }
-
-    if(child.name.includes("glass")){
-     child.material =  new THREE.MeshPhysicalMaterial({
+    const glassMaterial = new THREE.MeshPhysicalMaterial({
       transmission: 1,
       opacity: 1,
       metalness: 0,
@@ -166,6 +164,9 @@ loader.load("/models/room-port-v1.glb", (glb) => {
       lightIntensity: 1,
       exposure: 1,
      });
+
+    if(child.name.includes("glass")){
+     child.material =  glassMaterial;
     }
   });
   scene.add(glb.scene);
