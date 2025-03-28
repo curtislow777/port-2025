@@ -27,6 +27,19 @@ renderer.outputColorSpace = THREE.SRGBColorSpace; // NEW: color space
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.0;
 
+const environmentMap = new THREE.CubeTextureLoader()
+  .setPath('textures/skybox/')
+  .load([
+    'px.webp',  // Positive X
+    'nx.webp',  // Negative X
+    'py.webp',  // Positive Y
+    'ny.webp',  // Negative Y
+    'pz.webp',  // Positive Z
+    'nz.webp'   // Negative Z
+  ]);
+
+
+
 
 const textureMap = {
   one:{
@@ -137,7 +150,22 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         // Debug: log the assigned texture URL
        // console.log(`${child.name} now using texture:`, child.material.map.image ? child.material.map.image.src : "not loaded");
       }
+    }
 
+    if(child.name.includes("glass")){
+     child.material =  new THREE.MeshPhysicalMaterial({
+      transmission: 1,
+      opacity: 1,
+      metalness: 0,
+      roughness: 0,
+      ior: 1.5,
+      thickness: 0.01,
+      specularIntensity: 1,
+      envMap: environmentMap,
+      envMapIntensity: 1,
+      lightIntensity: 1,
+      exposure: 1,
+     });
     }
   });
   scene.add(glb.scene);
