@@ -11,7 +11,16 @@ const sizes ={
   height: window.innerHeight
 }
 
-// Loaders
+const xAxisFans = [];
+const yAxisFans = [];
+const zAxisFans = [];
+
+const raycasterObjects = [];
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+
+// Loaders  
 const textureLoader = new THREE.TextureLoader();
 const dracoLoader = new DRACOLoader();
 // Specify path to a folder containing WASM/JS decoding libraries.
@@ -128,6 +137,15 @@ function getTextureKeyFromName(meshName) {
   return null;
 }
 
+window.addEventListener("mousemove", (event)=>{
+
+	pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+})
+
+
+
+
 loader.load("/models/room-port-v1.glb", (glb) => {
   glb.scene.traverse((child) => {
     if (child.isMesh) {
@@ -142,15 +160,35 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         
         // Clone the material so it’s independent and assign MeshBasicMaterial:
         child.material = material;
+        // front and back 3,4,7 X
+
+        // gpu 0,1,2 Y
+        // upper 5,6 Z
+        if (child.name.includes("fan")) {
+          if (child.name.includes("003") || child.name.includes("004") || child.name.includes("007")) {
+            xAxisFans.push(child);
+          } 
+          else if (child.name.includes("005") || child.name.includes("006")) {
+            yAxisFans.push(child);
+          } 
+          else {
+            zAxisFans.push(child);
+          }
+        }
+        
+
+        }
+
         if(child.material.map){
           child.material.map.minFilter = THREE.LinearFilter;
           
         }
+        
 
         // Debug: log the assigned texture URL
        // console.log(`${child.name} now using texture:`, child.material.map.image ? child.material.map.image.src : "not loaded");
       }
-    }
+    
     const glassMaterial = new THREE.MeshPhysicalMaterial({
       transmission: 1,
       opacity: 1,
@@ -226,10 +264,46 @@ const render = () => {
   // console.log("xxxxxxx");
   // console.log(controls.target);
  
+  // animate fans
+  xAxisFans.forEach((fan)=>{
+    fan.rotation.x +=0.01;
+  });
+
+  // animate fans
+  yAxisFans.forEach((fan)=>{
+    fan.rotation.y +=0.01;
+  });
+
+  // animate fans
+  zAxisFans.forEach((fan)=>{
+    fan.rotation.z +=0.01;
+  });
+
+	// update the picking ray with the camera and pointer position
+	raycaster.setFromCamera( pointer, camera );
+
+	// calculate objects intersecting the picking ray
+	const intersects = raycaster.intersectObjects(raycasterObjects);
+
+	for ( let i = 0; i < intersects.length; i ++ ) {
+
+		intersects[ i ].object.material.color.set( 0xff0000 );
+
+	}
+  if(intersects.length>0){
+    document.body.style.cursor = "pointer"
+  }
+  else
+  {
+    document.body.style.cursor = "default"
+  }
+
+
   renderer.render( scene, camera );
 
   window.requestAnimationFrame(render);
 };
+
 
 render();
 console.log("hallo")
