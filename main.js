@@ -174,22 +174,22 @@ loader.load("/models/room-port-v1.glb", (glb) => {
 
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 35, sizes.width / sizes.height, 0.1, 1000 );
-const controls = new OrbitControls( camera, renderer.domElement );
+const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.1, 1000);
+
+// Set camera position BEFORE initializing controls
+camera.position.set(15.533069627498524, 11.13682887752479, 20.73329508529724);
+
+const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
+controls.target.set(-0.351325034240001, 2.996378043400515, 0.6428843280589502);
 controls.update();
 
-
-renderer.setSize( sizes.width, sizes.height );
+renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 
 
-
-camera.position.z = 5;
-//controls.update() must be called after any manual changes to the camera's transform
-camera.position.set( 0, 20, 100 );
 
 
 // Event Listeners
@@ -222,6 +222,10 @@ const render = () => {
 
   controls.update();
 
+   console.log(camera.position);
+  // console.log("xxxxxxx");
+  // console.log(controls.target);
+ 
   renderer.render( scene, camera );
 
   window.requestAnimationFrame(render);
