@@ -15,10 +15,16 @@ const xAxisFans = [];
 const yAxisFans = [];
 const zAxisFans = [];
 
-const raycasterObjects = [];
+const socialLinks ={
+  "Github": "https://github.com/"
 
-const raycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2();
+}
+
+
+const raycasterObjects = []; 
+let currentIntersects = []; 
+const raycaster = new THREE.Raycaster(); 
+const pointer = new THREE.Vector2(); 
 
 // Loaders  
 const textureLoader = new THREE.TextureLoader();
@@ -145,6 +151,22 @@ window.addEventListener("mousemove", (event)=>{
 
 
 
+function handleRaycasterInteraction(){
+  if(currentIntersects.length > 0) {
+    const object = currentIntersects[0].object;
+
+    Object.entries(socialLinks).forEach(([key, url]) => {
+      if (object.name.includes(key)) {
+        const newWindow = window.open(url, "_blank", "noopener,noreferrer");
+      }
+    });
+  }
+
+}
+
+window.addEventListener("click", handleRaycasterInteraction);
+
+
 
 loader.load("/models/room-port-v1.glb", (glb) => {
   glb.scene.traverse((child) => {
@@ -199,13 +221,16 @@ loader.load("/models/room-port-v1.glb", (glb) => {
       specularIntensity: 1,
       envMap: environmentMap,
       envMapIntensity: 1,
-      lightIntensity: 1,
-      exposure: 1,
+
      });
 
     if(child.name.includes("glass")){
      child.material =  glassMaterial;
     }
+
+    if(child.name.includes("raycast")){
+      raycasterObjects.push(child);
+     }
   });
   scene.add(glb.scene);
 });
@@ -260,7 +285,7 @@ const render = () => {
 
   controls.update();
 
-   console.log(camera.position);
+  // console.log(camera.position);
   // console.log("xxxxxxx");
   // console.log(controls.target);
  
@@ -279,24 +304,26 @@ const render = () => {
     fan.rotation.z +=0.01;
   });
 
-	// update the picking ray with the camera and pointer position
-	raycaster.setFromCamera( pointer, camera );
-
-	// calculate objects intersecting the picking ray
-	const intersects = raycaster.intersectObjects(raycasterObjects);
-
-	for ( let i = 0; i < intersects.length; i ++ ) {
-
-		intersects[ i ].object.material.color.set( 0xff0000 );
-
-	}
-  if(intersects.length>0){
-    document.body.style.cursor = "pointer"
-  }
-  else
-  {
-    document.body.style.cursor = "default"
-  }
+  // update the picking ray with the camera and pointer position
+  raycaster.setFromCamera(pointer, camera); 
+  
+  // calculate objects intersecting the picking ray
+  const currentIntersects = raycaster.intersectObjects(raycasterObjects); 
+  
+  for (let i = 0; i < currentIntersects.length; i++) { 
+    currentIntersects[i].object.material.color.set(0xff0000); 
+  } 
+  
+  if(currentIntersects.length > 0) { 
+    const currentIntersectedObject = currentIntersects[0].object; 
+    if(currentIntersectedObject.name.includes("raycast")) { 
+      document.body.style.cursor = "pointer"; 
+    } else { 
+      document.body.style.cursor = "default"; 
+    } 
+  } else { 
+    document.body.style.cursor = "default"; 
+  } 
 
 
   renderer.render( scene, camera );
@@ -306,4 +333,3 @@ const render = () => {
 
 
 render();
-console.log("hallo")
