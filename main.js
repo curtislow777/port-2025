@@ -52,50 +52,50 @@ const environmentMap = new THREE.CubeTextureLoader()
 
 const textureMap = {
   one:{
-    day:"/textures/AGX-Texture1.webp", 
-    night: "/textures/AGX-Texture1_night.webp",
+    day:"/textures/day/AGX-Texture1.webp", 
+    night: "/textures/night/Night-Texture1.webp",
   },
   two:{
-    day:"/textures/AGX-Texture2.webp",
-    night: "/textures/AGX-Texture2_night.webp",
+    day:"/textures/day/AGX-Texture2.webp",
+    night: "/textures/night/Night-Texture2.webp",
   },
   three:{
-    day:"/textures/AGX-Texture3.webp",
-    night: "/textures/AGX-Texture3_night.webp",
+    day:"/textures/day/AGX-Texture3.webp",
+    night: "/textures/night/Night-Texture3.webp",
   },
   fourA:{
-    day:"/textures/AGX-Texture4.webp",
-    night: "/textures/AGX-Texture4_night.webp",
+    day:"/textures/day/AGX-Texture4.webp",
+    night: "/textures/night/Night-Texture4.webp",
   },
   fourB:{
-    day:"/textures/AGX-Texture4.5.webp",
-    night: "/textures/AGX-Texture4.5_night.webp",
+    day:"/textures/day/AGX-Texture4.5.webp",
+    night: "/textures/night/Night-Texture4.5.webp",
   }
   ,
   five:{
-    day:"/textures/AGX-Texture5.webp",
-    night: "/textures/AGX-Texture5_night.webp",
+    day:"/textures/day/AGX-Texture5.webp",
+    night: "/textures/night/Night-Texture5.webp",
   },
   sixA:{
-    day:"/textures/AGX-Texture6.webp",
-    night: "/textures/AGX-Texture6_night.webp",
+    day:"/textures/day/AGX-Texture6.webp",
+    night: "/textures/night/Night-Texture6.webp",
   },
   sixB:{
-    day:"/textures/AGX-Texture6.5.webp",
-    night: "/textures/AGX-Texture6.5_night.webp",
+    day:"/textures/day/AGX-Texture6.5.webp",
+    night: "/textures/night/Night-Texture6.5.webp",
   },
 
   seven:{
-    day:"/textures/AGX-Texture7.webp",
-    night: "/textures/AGX-Texture7_night.webp",
+    day:"/textures/day/AGX-Texture7.webp",
+    night: "/textures/night/Night-Texture7.webp",
   },
   eight:{
-    day:"/textures/AGX-Texture8.webp",
-    night: "/textures/AGX-Texture8_night.webp",
+    day:"/textures/day/AGX-Texture8.webp",
+    night: "/textures/night/Night-Texture8.webp",
   },
   nine:{
-    day:"/textures/AGX-Texture9.webp",
-    night: "/textures/AGX-Texture9_night.webp",
+    day:"/textures/day/AGX-Texture9.webp",
+    night: "/textures/night/Night-Texture9.webp",
   },
 
 }
@@ -165,10 +165,10 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         // gpu 0,1,2 Y
         // upper 5,6 Z
         if (child.name.includes("fan")) {
-          if (child.name.includes("003") || child.name.includes("004") || child.name.includes("007")) {
+          if (child.name.includes("animateX") || child.name.includes("004") || child.name.includes("007")) {
             xAxisFans.push(child);
           } 
-          else if (child.name.includes("005") || child.name.includes("006")) {
+          else if (child.name.includes("animateY") || child.name.includes("006")) {
             yAxisFans.push(child);
           } 
           else {
