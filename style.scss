@@ -23,3 +23,17 @@
         width: 100%;
     }
 }
+
+
+// Modals
+.modal{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    z-index: 999;
+    display: none;
+    
+
+}

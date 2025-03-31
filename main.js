@@ -3,13 +3,40 @@ import "./style.scss";
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
+import gsap from "gsap"
 
 const canvas = document.querySelector('#experience-canvas');
 const sizes ={
   width: window.innerWidth,
   height: window.innerHeight
 }
+
+const modals = {
+  work: document.querySelector(".modal.work"),
+  about: document.querySelector(".modal.about"),
+  contact: document.querySelector(".modal.contact"),
+}
+
+const showModal = (modal) => {
+  modal.style.display = "block"
+  gsap.set(modal, { opacity: 0});
+
+  gsap.to(modal, {
+    opacity: 1,
+    duration: 0.5,
+  });
+};
+
+const hideModal = (modal) => {
+  gsap.to(modal, {
+    opacity: 0,
+    duration: 0.5,
+    onComplete: () => {
+      modal.style.display = "none"
+    }
+  });
+};
+
 
 const xAxisFans = [];
 const yAxisFans = [];
