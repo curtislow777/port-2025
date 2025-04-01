@@ -188,6 +188,10 @@ function handleRaycasterInteraction() {
         window.open(url, "_blank", "noopener,noreferrer");
       }
     });
+    // Trigger spin animation if the object is in animateSpinObjects
+    if (animateSpinObjects.includes(object)) {
+      spinAnimation(object);
+    }
   }
 }
 
@@ -199,26 +203,16 @@ loader.load("/models/room-port-v1.glb", (glb) => {
       const textureKey = getTextureKeyFromName(child.name);
       if (textureKey) {
         const material = new THREE.MeshBasicMaterial({
-          map: loadedTextures.day[textureKey], // Assign new texture
+          map: loadedTextures.day[textureKey],
         });
 
         // Clone the material so it’s independent and assign MeshBasicMaterial:
         child.material = material;
-        // front and back 3,4,7 X
 
-        // gpu 0,1,2 Y
-        // upper 5,6 Z
         if (child.name.includes("fan")) {
-          if (
-            child.name.includes("animateX") ||
-            child.name.includes("004") ||
-            child.name.includes("007")
-          ) {
+          if (child.name.includes("animateX")) {
             xAxisFans.push(child);
-          } else if (
-            child.name.includes("animateY") ||
-            child.name.includes("006")
-          ) {
+          } else if (child.name.includes("animateY")) {
             yAxisFans.push(child);
           } else {
             zAxisFans.push(child);
@@ -228,7 +222,6 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         if (child.name.includes("keycapAnimate")) {
           keycapAnimateObjects.push(child);
         }
-
         if (child.name.includes("animateScale")) {
           animateScaleObjects.push(child);
         }
@@ -238,7 +231,6 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         if (child.name.includes("scaleLights")) {
           scaleLightsObjects.push(child);
         }
-
         if (child.name.includes("raycast")) {
           raycasterObjects.push(child);
         }
@@ -322,6 +314,56 @@ window.addEventListener("resize", () => {
 
 scene.background = new THREE.Color(0xa0d8f1); // Light blue
 
+const spinTimelines = new Map(); // Store spin timelines for each object
+const spinDuration = 2; // Base duration for one spin (in seconds)
+const spinAmount = Math.PI * 2; // Full 360-degree rotation
+
+function spinAnimation(object) {
+  let timeline = spinTimelines.get(object);
+  let currentRotation = object.rotation.y;
+  let newRotation = currentRotation + spinAmount;
+  let duration = spinDuration;
+
+  // Reset scale before starting the new animation
+  gsap.to(object.scale, {
+    x: 1,
+    y: 1,
+    z: 1,
+    duration: 0.2, // Reset back to original scale instantly
+    onComplete: () => {
+      if (timeline) {
+        // Extend existing animation without changing the base duration
+        const progress = timeline.progress();
+        duration += timeline.duration() * (1 - progress); // Keep the base spin duration fixed
+        timeline.clear(); // Clear queue instead of killing
+      } else {
+        // Create a new timeline
+        timeline = gsap.timeline({
+          onComplete: () => spinTimelines.delete(object),
+        });
+        spinTimelines.set(object, timeline);
+      }
+
+      // Apply the spin animation (this duration should remain constant)
+      timeline.to(object.rotation, {
+        y: newRotation,
+        duration: spinDuration, // Keep it fixed for smooth rotation
+        ease: "power1.out",
+      });
+
+      // Apply scaling feedback
+      gsap.to(object.scale, {
+        x: 1.1,
+        y: 1.1,
+        z: 1.1,
+        duration: 0.2,
+        yoyo: true,
+        repeat: 1,
+      });
+    },
+  });
+}
+
 function animate() {}
 
 function render() {
@@ -349,7 +391,7 @@ function render() {
 
   // Optional: Change color of intersected objects (for visual feedback)
   for (let i = 0; i < currentIntersects.length; i++) {
-    currentIntersects[i].object.material.color.set(0xff0000);
+    // currentIntersects[i].object.material.color.set(0xff0000);
   }
 
   // Update cursor
