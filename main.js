@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import "./style.scss";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { OrbitControls } from "./src/utils/OrbitControls.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import gsap from "gsap";
@@ -257,6 +257,14 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.set(15.533069627498524, 11.13682887752479, 20.73329508529724);
 
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.minDistance = 5;
+controls.maxDistance = 50;
+controls.minPolarAngle = 0;
+controls.maxPolarAngle = Math.PI / 2; 
+controls.minAzimuthAngle = 0;
+controls.maxAzimuthAngle = Math.PI / 2; // Limit rotation to 180 degrees
+
+
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.target.set(-0.351325034240001, 2.996378043400515, 0.6428843280589502);
