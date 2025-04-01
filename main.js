@@ -17,7 +17,9 @@ const modals = {
   contact: document.querySelector(".modal.contact"),
 };
 
+// Modal functions
 const showModal = (modal) => {
+  if (!modal) return;
   modal.style.display = "block";
   gsap.set(modal, { opacity: 0 });
 
@@ -28,6 +30,7 @@ const showModal = (modal) => {
 };
 
 const hideModal = (modal) => {
+  if (!modal) return;
   gsap.to(modal, {
     opacity: 0,
     duration: 0.5,
@@ -260,10 +263,9 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.minDistance = 5;
 controls.maxDistance = 50;
 controls.minPolarAngle = 0;
-controls.maxPolarAngle = Math.PI / 2; 
+controls.maxPolarAngle = Math.PI / 2;
 controls.minAzimuthAngle = 0;
 controls.maxAzimuthAngle = Math.PI / 2; // Limit rotation to 180 degrees
-
 
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
