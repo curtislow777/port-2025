@@ -4,73 +4,7 @@ import { OrbitControls } from "./src/utils/OrbitControls.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import gsap from "gsap";
-
-/** ----------------------------------------------------------------
- *  1) CUSTOM SHADERS FOR DAY/NIGHT BLENDING
- *  ----------------------------------------------------------------
- */
-// Basic pass-through vertex shader (just pass UVs along)
-const dayNightVertexShader = `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
-
-// Fragment shader mixes between two textures (day & night) using uMixRatio
-const dayNightFragmentShader = `
-  varying vec2 vUv;
-
-  uniform sampler2D uDayTexture;
-  uniform sampler2D uNightTexture;
-  uniform float uMixRatio; // 0 => fully day, 1 => fully night
-
-  void main() {
-    vec4 dayColor = texture2D(uDayTexture, vUv);
-    vec4 nightColor = texture2D(uNightTexture, vUv);
-    gl_FragColor = mix(dayColor, nightColor, uMixRatio);
-  }
-`;
-
-/**
- * Helper that creates a ShaderMaterial with the day/night textures
- * bound as uniforms. We'll animate uMixRatio later for day->night transitions.
- */
-function createDayNightMaterial(dayTex, nightTex) {
-  return new THREE.ShaderMaterial({
-    vertexShader: dayNightVertexShader,
-    fragmentShader: dayNightFragmentShader,
-    uniforms: {
-      uDayTexture: { value: dayTex },
-      uNightTexture: { value: nightTex },
-      uMixRatio: { value: 0.0 }, // Start in full "day" mode
-    },
-  });
-}
-
-/**
- * We'll store all day/night materials in this array so we can animate them
- * in one go when toggling night mode.
- */
-const dayNightMaterials = [];
-
-/**
- * Toggles day/night by animating each material's uMixRatio from 0->1 or 1->0.
- * Call this function whenever you want to switch between day and night.
- * E.g. from a button event or auto-time-of-day logic.
- */
-function toggleDayNight(goNight) {
-  const targetValue = goNight ? 1.0 : 0.0;
-  // Animate all materials' mix ratio
-  dayNightMaterials.forEach((mat) => {
-    gsap.to(mat.uniforms.uMixRatio, {
-      value: targetValue,
-      duration: 1.5,
-      ease: "power2.inOut",
-    });
-  });
-}
+import { themeVertexShader, themeFragmentShader } from "./themeShader";
 
 /**
  * START OF YOUR THREE.JS CODE
@@ -272,28 +206,30 @@ function handleRaycasterInteraction() {
 
 window.addEventListener("click", handleRaycasterInteraction);
 
+let uMixRatio = { value: 0 }; // shared uniform for all shader materials
+
 loader.load("/models/room-port-v1.glb", (glb) => {
   glb.scene.traverse((child) => {
     if (child.isMesh) {
       const textureKey = getTextureKeyFromName(child.name);
+
       if (textureKey) {
-        // const material = new THREE.MeshBasicMaterial({
-        //   map: loadedTextures.day[textureKey],
-        // });
-        // // Clone the material so it’s independent and assign MeshBasicMaterial:
-        // child.material = material;
+        const material = new THREE.ShaderMaterial({
+          uniforms: {
+            uDayTexture: { value: loadedTextures.day[textureKey] },
+            uNightTexture: { value: loadedTextures.night[textureKey] },
+            uMixRatio: uMixRatio, // shared reference
+          },
+          vertexShader: themeVertexShader,
+          fragmentShader: themeFragmentShader,
+        });
+        // if (textureKey) {
+        //   const material = new THREE.MeshBasicMaterial({
+        //     map: loadedTextures.day[textureKey],
+        //   });
 
-        const dayTex = loadedTextures.day[textureKey];
-        const nightTex = loadedTextures.night[textureKey];
-
-        // 2) Create a shader material that can blend
-        const dayNightMat = createDayNightMaterial(dayTex, nightTex);
-
-        // 3) Assign it to the mesh
-        child.material = dayNightMat;
-
-        // 4) Push to the dayNightMaterials array so toggleDayNight() sees it
-        dayNightMaterials.push(dayNightMat);
+        // Clone the material so it’s independent and assign MeshBasicMaterial:
+        child.material = material;
 
         if (child.name.includes("fan")) {
           if (child.name.includes("animateX")) {
@@ -488,21 +424,21 @@ function render() {
   window.requestAnimationFrame(render);
 }
 
-/**
- * 4) Add a quick example toggle to show day->night
- * (You could attach this to a button, or run from your own logic.)
- * For example:
- */
-// Listen for "d" on keyboard to toggle day/night
-window.addEventListener("keydown", (e) => {
-  if (e.key === "d") {
-    // Suppose we track a boolean
-    isNightMode = !isNightMode;
-    toggleDayNight(isNightMode);
+let isNight = false;
+
+window.addEventListener("keydown", (event) => {
+  if (event.key.toLowerCase() === "t") {
+    isNight = !isNight;
+
+    // Animate uMixRatio between 0 (day) and 1 (night)
+    gsap.to(uMixRatio, {
+      value: isNight ? 1 : 0,
+      duration: 1.5,
+      ease: "power2.inOut",
+    });
+
+    console.log(`Theme switched to: ${isNight ? "Night" : "Day"}`);
   }
 });
-
-// Keep track of whether we are in night mode or not
-let isNightMode = false;
 
 render();
