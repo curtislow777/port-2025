@@ -48,6 +48,12 @@ const socialLinks = {
   Github: "https://github.com/",
 };
 
+const animateScaleObjects = [];
+const animateSpinObjects = [];
+const keycapAnimateObjects = [];
+const scaleLightsObjects = [];
+const objects = {};
+
 const raycasterObjects = [];
 let currentIntersects = [];
 const raycaster = new THREE.Raycaster();
@@ -215,6 +221,20 @@ loader.load("/models/room-port-v1.glb", (glb) => {
             zAxisFans.push(child);
           }
         }
+
+        if (child.name.includes("keycapAnimate")) {
+          keycapAnimateObjects.push(child);
+        }
+
+        if (child.name.includes("animateScale")) {
+          animateScaleObjects.push(child);
+        }
+        if (child.name.includes("animateSpin")) {
+          animateSpinObjects.push(child);
+        }
+        if (child.name.includes("scaleLights")) {
+          scaleLightsObjects.push(child);
+        }
       }
 
       if (child.material.map) {
@@ -246,7 +266,15 @@ loader.load("/models/room-port-v1.glb", (glb) => {
     }
   });
   scene.add(glb.scene);
+  playIntroAnimation();
 });
+
+function playIntroAnimation() {
+  const t1 = gsap.timeline({
+    duration: 0.8,
+    ease: "back.out(1.8)",
+  });
+}
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
