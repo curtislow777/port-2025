@@ -45,7 +45,8 @@ const yAxisFans = [];
 const zAxisFans = [];
 
 const socialLinks = {
-  Github: "https://github.com/",
+  Github: "https://github.com/curtislow777",
+  LinkedIn: "https://www.linkedin.com/in/curtis-low/",
 };
 
 const animateScaleObjects = [];
@@ -180,9 +181,11 @@ function handleRaycasterInteraction() {
   if (currentIntersects.length > 0) {
     const object = currentIntersects[0].object;
 
+    // Check if the object name contains any of the social media keywords
     Object.entries(socialLinks).forEach(([key, url]) => {
-      if (object.name.includes(key)) {
-        const newWindow = window.open(url, "_blank", "noopener,noreferrer");
+      if (object.name.toLowerCase().includes(key.toLowerCase())) {
+        console.log(`Opening ${key} link: ${url}`);
+        window.open(url, "_blank", "noopener,noreferrer");
       }
     });
   }
@@ -235,6 +238,10 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         if (child.name.includes("scaleLights")) {
           scaleLightsObjects.push(child);
         }
+
+        if (child.name.includes("raycast")) {
+          raycasterObjects.push(child);
+        }
       }
 
       if (child.material.map) {
@@ -259,10 +266,6 @@ loader.load("/models/room-port-v1.glb", (glb) => {
 
     if (child.name.includes("glass")) {
       child.material = glassMaterial;
-    }
-
-    if (child.name.includes("raycast")) {
-      raycasterObjects.push(child);
     }
   });
   scene.add(glb.scene);
@@ -321,52 +324,43 @@ scene.background = new THREE.Color(0xa0d8f1); // Light blue
 
 function animate() {}
 
-const render = () => {
+function render() {
   controls.update();
 
-  // console.log(camera.position);
-  // console.log("xxxxxxx");
-  // console.log(controls.target);
-
-  // animate fans
+  // Rotate fans
   xAxisFans.forEach((fan) => {
     fan.rotation.x += 0.01;
   });
 
-  // animate fans
   yAxisFans.forEach((fan) => {
     fan.rotation.y += 0.01;
   });
 
-  // animate fans
   zAxisFans.forEach((fan) => {
     fan.rotation.z += 0.01;
   });
 
-  // update the picking ray with the camera and pointer position
+  // Update the picking ray with the camera and pointer position
   raycaster.setFromCamera(pointer, camera);
 
-  // calculate objects intersecting the picking ray
-  const currentIntersects = raycaster.intersectObjects(raycasterObjects);
+  // Calculate objects intersecting the picking ray
+  // Store intersections in the global variable
+  currentIntersects = raycaster.intersectObjects(raycasterObjects);
 
+  // Optional: Change color of intersected objects (for visual feedback)
   for (let i = 0; i < currentIntersects.length; i++) {
     currentIntersects[i].object.material.color.set(0xff0000);
   }
 
+  // Update cursor
   if (currentIntersects.length > 0) {
-    const currentIntersectedObject = currentIntersects[0].object;
-    if (currentIntersectedObject.name.includes("raycast")) {
-      document.body.style.cursor = "pointer";
-    } else {
-      document.body.style.cursor = "default";
-    }
+    document.body.style.cursor = "pointer";
   } else {
     document.body.style.cursor = "default";
   }
 
   renderer.render(scene, camera);
-
   window.requestAnimationFrame(render);
-};
+}
 
 render();
