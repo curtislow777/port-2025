@@ -29,30 +29,46 @@ const sizes = {
 };
 
 const modals = {
-  work: document.querySelector(".modal.work"),
-  about: document.querySelector(".modal.about"),
-  contact: document.querySelector(".modal.contact"),
+  work: document.querySelector(".work-modal"),
+  about: document.querySelector(".about-modal"),
+  contact: document.querySelector(".contact-modal"),
 };
 
 // Modal functions
-const showModal = (modal) => {
-  if (!modal) return;
-  modal.style.display = "block";
-  gsap.set(modal, { opacity: 0 });
+let isModalOpen = true;
 
-  gsap.to(modal, {
-    opacity: 1,
-    duration: 0.5,
-  });
+const showModal = (modal) => {
+  // Show overlay first
+  overlay.style.display = "block";
+  modal.style.display = "block";
+
+  // Reset scale and opacity before animating
+  gsap.fromTo(
+    modal,
+    { scale: 0, opacity: 0 },
+    { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" }
+  );
+
+  gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.5 });
 };
 
 const hideModal = (modal) => {
-  if (!modal) return;
-  gsap.to(modal, {
+  isModalOpen = false;
+  controls.enabled = true;
+
+  gsap.to(overlay, {
     opacity: 0,
     duration: 0.5,
+  });
+
+  gsap.to(modal, {
+    opacity: 0,
+    scale: 0,
+    duration: 0.5,
+    ease: "back.in(2)",
     onComplete: () => {
       modal.style.display = "none";
+      overlay.style.display = "none";
     },
   });
 };
@@ -201,6 +217,15 @@ function handleRaycasterInteraction() {
   if (currentIntersects.length > 0) {
     const object = currentIntersects[0].object;
 
+    // Open modals based on object names
+    if (object.name.includes("contact-raycast")) {
+      showModal(modals.contact);
+    } else if (object.name.includes("about-raycast")) {
+      showModal(modals.about);
+    } else if (object.name.includes("work-raycast")) {
+      showModal(modals.work);
+    }
+
     // Check if the object name contains any of the social media keywords
     Object.entries(socialLinks).forEach(([key, url]) => {
       if (object.name.toLowerCase().includes(key.toLowerCase())) {
@@ -222,6 +247,11 @@ let uMixRatio = { value: 0 }; // shared uniform for all shader materials
 loader.load("/models/room-port-v1.glb", (glb) => {
   glb.scene.traverse((child) => {
     if (child.isMesh) {
+      // TEMP
+      if (child.name.includes("raycast")) {
+        raycasterObjects.push(child);
+      }
+
       const textureKey = getTextureKeyFromName(child.name);
 
       if (textureKey) {
@@ -485,3 +515,35 @@ window.addEventListener("keydown", (event) => {
 });
 
 render();
+
+// Get overlay and close buttons
+const overlay = document.querySelector(".overlay");
+const closeButtons = document.querySelectorAll(".modal-close-btn");
+
+// Handle modal close on overlay click
+overlay.addEventListener("click", () => {
+  Object.values(modals).forEach((modal) => {
+    if (modal.style.display === "block") {
+      hideModal(modal);
+    }
+  });
+});
+
+// Handle close button click
+closeButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const modal = btn.closest(".modal");
+    hideModal(modal);
+  });
+});
+
+// Optional: Buttons to trigger modals for testing
+document.getElementById("openWork")?.addEventListener("click", () => {
+  showModal(modals.work);
+});
+document.getElementById("openAbout")?.addEventListener("click", () => {
+  showModal(modals.about);
+});
+document.getElementById("openContact")?.addEventListener("click", () => {
+  showModal(modals.contact);
+});

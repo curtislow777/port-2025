@@ -22,38 +22,46 @@ html {
   }
 }
 
-/* Modal styles */
 .modal {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 32px;
-  z-index: 10;
+  transform: translate(-50%, -50%) scale(0); /* Initial scale 0 for animation */
+  transform-origin: center center;
+  transition: none; /* disable CSS transitions that could conflict */
+  opacity: 0; /* match GSAP initial */
   display: none;
-  background-color: white;
-  padding: 20px;
+  width: 60vw;
+  max-width: 600px;
+  background: white;
   border-radius: 8px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-  max-width: 80%;
-  max-height: 80%;
-  overflow: auto;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
 }
 
 .modal-title {
-  margin-top: 0;
+  margin: 0 0 1rem 0;
 }
 
 .modal-close-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 24px;
+  top: 1rem;
+  right: 1rem;
   cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: #ccc;
+  border-radius: 50%;
 }
-
-.modal-close-btn::before {
-  content: "×";
+/* Example modal variants */
+.work-modal {
+  /* Additional styling for the "work" modal */
+}
+.about-modal {
+  /* Additional styling for the "about" modal */
+}
+.contact-modal {
+  /* Additional styling for the "contact" modal */
 }

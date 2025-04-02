@@ -9,22 +9,34 @@
   <body>
     <div id="app"></div>
 
-    <div class="work-modal">
-      <h1 class="modal-title">work work work work work</h1>
-      <button class="modal-close-btn"></button>
+    <!--
+  Use a base class "modal", then additional classes for each modal.
+  The .modal-close-btn is your close button.
+-->
+    <div class="modal work-modal">
+      <h1 class="modal-title">Work Modal</h1>
+      <button class="modal-close-btn">X</button>
+      <p>Some content about your work goes here...</p>
     </div>
-    <div class="about-modal">
-      <h1 class="modal-title">memememe</h1>
-      <button class="modal-close-btn"></button>
+
+    <div class="modal about-modal">
+      <h1 class="modal-title">About Modal</h1>
+      <button class="modal-close-btn">X</button>
+      <p>Your biography or details go here...</p>
     </div>
-    <div class="contact-modal">
-      <h1 class="modal-title">contact</h1>
-      <button class="modal-close-btn"></button>
+
+    <div class="modal contact-modal">
+      <h1 class="modal-title">Contact Modal</h1>
+      <button class="modal-close-btn">X</button>
+      <p>Contact form or info goes here...</p>
     </div>
 
     <div id="experience">
       <canvas id="experience-canvas" class="experience-canvas"></canvas>
     </div>
+
+    <!-- The dark overlay for all modals -->
+    <div class="overlay"></div>
 
     <script type="module" src="/main.js"></script>
   </body>
