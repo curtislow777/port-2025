@@ -6,6 +6,17 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import gsap from "gsap";
 import { themeVertexShader, themeFragmentShader } from "./themeShader";
 
+// Outline post processing
+// Add these imports at the top with your other imports
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+
+// After initializing your renderer, add these variables
+let composer, outlinePass;
+let selectedObjects = [];
+
 /**
  * START OF YOUR THREE.JS CODE
  * ---------------------------------------------------------------
@@ -317,6 +328,41 @@ controls.update();
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+function setupPostProcessing() {
+  // Create a new EffectComposer
+  composer = new EffectComposer(renderer);
+
+  // Add the render pass which renders the scene with the camera
+  const renderPass = new RenderPass(scene, camera);
+  composer.addPass(renderPass);
+
+  // Create an outline pass and add it to the composer
+  outlinePass = new OutlinePass(
+    new THREE.Vector2(sizes.width, sizes.height),
+    scene,
+    camera
+  );
+
+  // -- CHANGED LINES BELOW --
+  outlinePass.edgeStrength = 5.0; // was 3.0
+  outlinePass.edgeThickness = 2.0; // was 1.0
+  outlinePass.edgeGlow = 0.0; // unchanged value, but shown here for clarity
+  outlinePass.pulsePeriod = 0; // unchanged value, but shown here for clarity
+  outlinePass.usePatternTexture = false; // added line (prevents patterned outlines)
+  outlinePass.visibleEdgeColor.set("#ffffff"); // unchanged color
+  outlinePass.hiddenEdgeColor.set("#ffffff"); // was "#190a05"
+  // -- CHANGED LINES ABOVE --
+
+  composer.addPass(outlinePass);
+
+  // Add an output pass as the final pass
+  const outputPass = new OutputPass();
+  composer.addPass(outputPass);
+}
+
+// Call the setup function after creating your renderer
+setupPostProcessing();
+
 // Event Listeners
 window.addEventListener("resize", () => {
   sizes.width = window.innerWidth;
@@ -329,6 +375,8 @@ window.addEventListener("resize", () => {
   // Update renderer
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  composer.setSize(sizes.width, sizes.height);
 });
 
 scene.background = new THREE.Color(0xe8e8e8); // Light blue
@@ -392,35 +440,30 @@ function render() {
   xAxisFans.forEach((fan) => {
     fan.rotation.x += 0.01;
   });
-
   yAxisFans.forEach((fan) => {
     fan.rotation.y += 0.01;
   });
-
   zAxisFans.forEach((fan) => {
     fan.rotation.z += 0.01;
   });
 
   // Update the picking ray with the camera and pointer position
   raycaster.setFromCamera(pointer, camera);
-
-  // Calculate objects intersecting the picking ray
-  // Store intersections in the global variable
   currentIntersects = raycaster.intersectObjects(raycasterObjects);
 
-  // Optional: Change color of intersected objects (for visual feedback)
-  for (let i = 0; i < currentIntersects.length; i++) {
-    // currentIntersects[i].object.material.color.set(0xff0000);
-  }
-
-  // Update cursor
   if (currentIntersects.length > 0) {
+    const selectedObject = currentIntersects[0].object;
+    selectedObjects = [selectedObject];
+    outlinePass.selectedObjects = selectedObjects;
     document.body.style.cursor = "pointer";
   } else {
+    // -- ADDED LINES TO CLEAR ANY PREVIOUS HOVER SELECTION --
+    selectedObjects = [];
+    outlinePass.selectedObjects = [];
     document.body.style.cursor = "default";
   }
 
-  renderer.render(scene, camera);
+  composer.render();
   window.requestAnimationFrame(render);
 }
 
