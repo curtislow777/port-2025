@@ -122,49 +122,53 @@ const environmentMap = new THREE.CubeTextureLoader()
 
 const textureMap = {
   one: {
-    day: "/textures/day/AGX-Texture1.webp",
+    day: "/textures/day/Day-Texture1.webp",
     night: "/textures/night/Night-Texture1.webp",
   },
   two: {
-    day: "/textures/day/AGX-Texture2.webp",
+    day: "/textures/day/Day-Texture2.webp",
     night: "/textures/night/Night-Texture2.webp",
   },
   three: {
-    day: "/textures/day/AGX-Texture3.webp",
+    day: "/textures/day/Day-Texture3.webp",
     night: "/textures/night/Night-Texture3.webp",
   },
   fourA: {
-    day: "/textures/day/AGX-Texture4.webp",
-    night: "/textures/night/Night-Texture4.webp",
+    day: "/textures/day/Day-Texture4A.webp",
+    night: "/textures/night/Night-Texture4A.webp",
   },
   fourB: {
-    day: "/textures/day/AGX-Texture4.5.webp",
-    night: "/textures/night/Night-Texture4.5.webp",
+    day: "/textures/day/Day-Texture4B.webp",
+    night: "/textures/night/Night-Texture4B.webp",
   },
   five: {
-    day: "/textures/day/AGX-Texture5.webp",
+    day: "/textures/day/Day-Texture5.webp",
     night: "/textures/night/Night-Texture5.webp",
   },
   sixA: {
-    day: "/textures/day/AGX-Texture6.webp",
-    night: "/textures/night/Night-Texture6.webp",
+    day: "/textures/day/Day-Texture6A.webp",
+    night: "/textures/night/Night-Texture6A.webp",
   },
   sixB: {
-    day: "/textures/day/AGX-Texture6.5.webp",
-    night: "/textures/night/Night-Texture6.5.webp",
+    day: "/textures/day/Day-Texture6B.webp",
+    night: "/textures/night/Night-Texture6B.webp",
   },
 
   seven: {
-    day: "/textures/day/AGX-Texture7.webp",
+    day: "/textures/day/Day-Texture7.webp",
     night: "/textures/night/Night-Texture7.webp",
   },
   eight: {
-    day: "/textures/day/AGX-Texture8.webp",
+    day: "/textures/day/Day-Texture8.webp",
     night: "/textures/night/Night-Texture8.webp",
   },
   nine: {
-    day: "/textures/day/AGX-Texture9.webp",
+    day: "/textures/day/Day-Texture9.webp",
     night: "/textures/night/Night-Texture9.webp",
+  },
+  emissive: {
+    day: "/textures/day/Day-Emissive.webp",
+    night: "/textures/night/Night-Emissive.webp",
   },
 };
 
@@ -205,6 +209,8 @@ function getTextureKeyFromName(meshName) {
   if (meshName.includes("-seven")) return "seven";
   if (meshName.includes("-eight")) return "eight";
   if (meshName.includes("-nine")) return "nine";
+  if (meshName.includes("-emissive")) return "emissive";
+
   return null;
 }
 
@@ -339,9 +345,9 @@ camera.position.set(15.533069627498524, 11.13682887752479, 20.73329508529724);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.minDistance = 5;
-controls.maxDistance = 75;
+controls.maxDistance = 50;
 controls.minPolarAngle = 0;
-controls.maxPolarAngle = Math.PI;
+controls.maxPolarAngle = Math.PI / 2;
 controls.minAzimuthAngle = 0;
 controls.maxAzimuthAngle = Math.PI / 2; // Limit rotation to 180 degrees
 
@@ -463,13 +469,13 @@ function render() {
 
   // Rotate fans
   xAxisFans.forEach((fan) => {
-    fan.rotation.x += 0.01;
+    fan.rotation.x -= 0.05;
   });
   yAxisFans.forEach((fan) => {
-    fan.rotation.y += 0.01;
+    fan.rotation.y -= 0.05;
   });
   zAxisFans.forEach((fan) => {
-    fan.rotation.z += 0.01;
+    fan.rotation.z -= 0.05;
   });
 
   // Update the picking ray with the camera and pointer position
