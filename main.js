@@ -6,6 +6,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import gsap from "gsap";
 import { themeVertexShader, themeFragmentShader } from "./themeShader";
 
+import { Howl } from "howler";
 // Outline post processing
 // Add these imports at the top with your other imports
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
@@ -409,22 +410,15 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 
-// create an AudioListener and add it to the camera
-const listener = new THREE.AudioListener();
-camera.add(listener);
-
-// create a global audio source
-const sound = new THREE.Audio(listener);
-
-// load a sound and set it as the Audio object's buffer
-const audioLoader = new THREE.AudioLoader();
-audioLoader.load("audio/moving.oog", function (buffer) {
-  sound.setBuffer(buffer);
-  sound.setLoop(true);
-  sound.setVolume(0.5);
-  sound.play();
-  console.log("audio");
+const sound = new Howl({
+  //  src: ["audio/imok.ogg"],
+  src: ["audio/moving.ogg"],
+  loop: true,
+  volume: 0,
+  onplay: () => console.log("audio playing"),
 });
+
+sound.play();
 // Set camera position BEFORE initializing controls
 camera.position.set(15.533069627498524, 11.13682887752479, 20.73329508529724);
 
