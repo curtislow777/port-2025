@@ -340,6 +340,22 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 
+// create an AudioListener and add it to the camera
+const listener = new THREE.AudioListener();
+camera.add(listener);
+
+// create a global audio source
+const sound = new THREE.Audio(listener);
+
+// load a sound and set it as the Audio object's buffer
+const audioLoader = new THREE.AudioLoader();
+audioLoader.load("audio/rainbow.oog", function (buffer) {
+  sound.setBuffer(buffer);
+  sound.setLoop(true);
+  sound.setVolume(0.5);
+  sound.play();
+  console.log("audio");
+});
 // Set camera position BEFORE initializing controls
 camera.position.set(15.533069627498524, 11.13682887752479, 20.73329508529724);
 
