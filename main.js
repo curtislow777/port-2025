@@ -247,11 +247,6 @@ let uMixRatio = { value: 0 }; // shared uniform for all shader materials
 loader.load("/models/room-port-v1.glb", (glb) => {
   glb.scene.traverse((child) => {
     if (child.isMesh) {
-      // TEMP
-      if (child.name.includes("raycast")) {
-        raycasterObjects.push(child);
-      }
-
       const textureKey = getTextureKeyFromName(child.name);
 
       if (textureKey) {
@@ -344,9 +339,9 @@ camera.position.set(15.533069627498524, 11.13682887752479, 20.73329508529724);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.minDistance = 5;
-controls.maxDistance = 50;
+controls.maxDistance = 75;
 controls.minPolarAngle = 0;
-controls.maxPolarAngle = Math.PI / 2;
+controls.maxPolarAngle = Math.PI;
 controls.minAzimuthAngle = 0;
 controls.maxAzimuthAngle = Math.PI / 2; // Limit rotation to 180 degrees
 
@@ -491,6 +486,14 @@ function render() {
     selectedObjects = [];
     outlinePass.selectedObjects = [];
     document.body.style.cursor = "default";
+  }
+
+  // Add this temporarily to your hover detection
+  if (currentIntersects.length > 0) {
+    const selectedObject = currentIntersects[0].object;
+    console.log("Hovering over:", selectedObject.name);
+    console.log("Material type:", selectedObject.material.type);
+    // ...rest of your code
   }
 
   composer.render();
