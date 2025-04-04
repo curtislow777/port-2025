@@ -93,12 +93,81 @@ let currentIntersects = [];
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
+// Add this in your main.js after initializing the GLTF loader, before or around when calling `loader.load`
+
+const loadingScreen = document.querySelector(".loading-screen");
+const loadingText = document.querySelector(".loading-text");
+const loadingButton = document.querySelector(".loading-screen-btn");
+
+// Track load progress
+const loadingManager = new THREE.LoadingManager();
+
+loadingManager.onStart = () => {
+  console.log("Loading started");
+  gsap.to(".loading-screen", { opacity: 1, duration: 1, ease: "power2.out" });
+};
+
+const loadingBarFill = document.querySelector(".loading-bar-fill");
+
+loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+  const percent = Math.floor((itemsLoaded / itemsTotal) * 100);
+  loadingBarFill.style.width = `${percent}%`;
+
+  // Subtle pulsing while loading
+  gsap.to(".loading-bar-fill", {
+    scaleY: 1.05,
+    repeat: -1,
+    yoyo: true,
+    duration: 0.5,
+  });
+};
+
+loadingManager.onLoad = () => {
+  // Stop pulsing
+  gsap.killTweensOf(".loading-bar-fill");
+
+  // Fade out loading bar, show button
+  gsap.to(".loading-bar", { opacity: 0, duration: 0.5 });
+  gsap.to(".loading-screen-btn", {
+    opacity: 1,
+    duration: 1,
+    ease: "power2.out",
+    delay: 0.3,
+    onComplete: () => {
+      loadingButton.classList.add("ready");
+      loadingButton.style.pointerEvents = "auto";
+    },
+  });
+
+  gsap.fromTo(
+    ".loading-screen-btn",
+    { scale: 0.9 },
+    { scale: 1, duration: 0.5, ease: "bounce.out", delay: 0.5 }
+  );
+};
+
+// Click Event: Only works after loading completes
+loadingButton.addEventListener("click", () => {
+  if (!loadingButton.classList.contains("ready")) return; // Prevent early clicks
+
+  console.log("Enter clicked");
+
+  gsap.to(".loading-screen", {
+    opacity: 0,
+    duration: 1,
+    onComplete: () => {
+      loadingScreen.style.display = "none";
+    },
+  });
+});
+
 // Loaders
-const textureLoader = new THREE.TextureLoader();
+const textureLoader = new THREE.TextureLoader(loadingManager);
 const dracoLoader = new DRACOLoader();
+
 // Specify path to a folder containing WASM/JS decoding libraries.
 
-const loader = new GLTFLoader();
+const loader = new GLTFLoader(loadingManager);
 
 loader.setDRACOLoader(dracoLoader);
 dracoLoader.setDecoderPath("/draco/");
@@ -349,7 +418,7 @@ const sound = new THREE.Audio(listener);
 
 // load a sound and set it as the Audio object's buffer
 const audioLoader = new THREE.AudioLoader();
-audioLoader.load("audio/rainbow.oog", function (buffer) {
+audioLoader.load("audio/moving.oog", function (buffer) {
   sound.setBuffer(buffer);
   sound.setLoop(true);
   sound.setVolume(0.5);
