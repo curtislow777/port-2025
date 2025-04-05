@@ -3,23 +3,19 @@ import "./style.scss";
 import { OrbitControls } from "./src/utils/OrbitControls.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import gsap from "gsap";
 import { themeVertexShader, themeFragmentShader } from "./themeShader";
 
+import gsap from "gsap";
 import { Howl } from "howler";
+
 // Outline post processing
-// Add these imports at the top with your other imports
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 
-// After initializing your renderer, add these variables
-let composer, outlinePass;
-let selectedObjects = [];
-
 /**
- * START OF YOUR THREE.JS CODE
+ * START OF THREE.JS CODE
  * ---------------------------------------------------------------
  */
 
@@ -169,6 +165,9 @@ const dracoLoader = new DRACOLoader();
 // Specify path to a folder containing WASM/JS decoding libraries.
 
 const loader = new GLTFLoader(loadingManager);
+
+let composer, outlinePass;
+let selectedObjects = [];
 
 loader.setDRACOLoader(dracoLoader);
 dracoLoader.setDecoderPath("/draco/");
