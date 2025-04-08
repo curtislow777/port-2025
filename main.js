@@ -1,4 +1,5 @@
 import * as THREE from "three";
+// Add this import at the top with your other imports
 import "./style.scss";
 import { OrbitControls } from "./src/utils/OrbitControls.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
@@ -19,6 +20,24 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
  * ---------------------------------------------------------------
  */
 
+// Create a whiteboard toggle button
+const whiteboardToggleBtn = document.createElement("button");
+whiteboardToggleBtn.textContent = "Toggle Whiteboard";
+whiteboardToggleBtn.style.position = "fixed";
+whiteboardToggleBtn.style.top = "20px";
+whiteboardToggleBtn.style.right = "20px";
+whiteboardToggleBtn.style.padding = "10px 15px";
+whiteboardToggleBtn.style.borderRadius = "5px";
+whiteboardToggleBtn.style.backgroundColor = "#4CAF50";
+whiteboardToggleBtn.style.color = "white";
+whiteboardToggleBtn.style.border = "none";
+whiteboardToggleBtn.style.cursor = "pointer";
+whiteboardToggleBtn.style.zIndex = "100";
+document.body.appendChild(whiteboardToggleBtn);
+
+// Initialize whiteboard after your scene is loaded
+let whiteboard;
+
 const canvas = document.querySelector("#experience-canvas");
 const sizes = {
   width: window.innerWidth,
@@ -33,6 +52,8 @@ const modals = {
 
 // Modal functions
 let isModalOpen = true;
+let hourHand;
+let minuteHand;
 
 const showModal = (modal) => {
   // Show overlay first
@@ -236,7 +257,7 @@ const textureMap = {
     night: "/textures/night/Night-Texture9.webp",
   },
   emissive: {
-    day: "/textures/day/Day-Emissive.webp",
+    day: "/textures/day/Dayfasdf-Emissive.webp",
     night: "/textures/night/Night-Emissive.webp",
   },
 };
@@ -347,7 +368,7 @@ loader.load("/models/room-port-v1.glb", (glb) => {
             xAxisFans.push(child);
           } else if (child.name.includes("animateY")) {
             yAxisFans.push(child);
-          } else {
+          } else if (child.name.includes("animateZ")) {
             zAxisFans.push(child);
           }
         }
@@ -371,6 +392,16 @@ loader.load("/models/room-port-v1.glb", (glb) => {
 
       if (child.material.map) {
         child.material.map.minFilter = THREE.LinearFilter;
+      }
+
+      if (child.name.includes("minute-hand")) {
+        minuteHand = child;
+        child.userData.initialRotation = new THREE.Euler().copy(child.rotation);
+      }
+
+      if (child.name.includes("hour-hand")) {
+        hourHand = child;
+        child.userData.initialRotation = new THREE.Euler().copy(child.rotation);
       }
     }
 
@@ -422,12 +453,12 @@ sound.play();
 camera.position.set(15.533069627498524, 11.13682887752479, 20.73329508529724);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.minDistance = 5;
+controls.minDistance = 0;
 controls.maxDistance = 50;
-controls.minPolarAngle = 0;
-controls.maxPolarAngle = Math.PI / 2;
-controls.minAzimuthAngle = 0;
-controls.maxAzimuthAngle = Math.PI / 2; // Limit rotation to 180 degrees
+// controls.minPolarAngle = 0;
+// controls.maxPolarAngle = Math.PI / 2;
+// controls.minAzimuthAngle = 0;
+// controls.maxAzimuthAngle = Math.PI / 2; // Limit rotation to 180 degrees
 
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
@@ -542,8 +573,30 @@ function spinAnimation(object) {
 
 function animate() {}
 
+/**  -------------------------- Render and Animations Stuff -------------------------- */
+const clock = new THREE.Clock();
+
+const updateClockHands = () => {
+  if (!hourHand || !minuteHand) return;
+
+  const now = new Date();
+  const hours = now.getHours() % 12;
+  const minutes = now.getMinutes();
+  const seconds = now.getSeconds();
+
+  const minuteAngle = (minutes + seconds / 60) * ((Math.PI * 2) / 60);
+
+  const hourAngle = (hours + minutes / 60) * ((Math.PI * 2) / 12);
+
+  minuteHand.rotation.z = -minuteAngle;
+  hourHand.rotation.z = -hourAngle;
+};
+
 function render() {
   controls.update();
+
+  // Update Clock hand rotation
+  updateClockHands();
 
   // Rotate fans
   xAxisFans.forEach((fan) => {
@@ -575,8 +628,7 @@ function render() {
   // Add this temporarily to your hover detection
   if (currentIntersects.length > 0) {
     const selectedObject = currentIntersects[0].object;
-    console.log("Hovering over:", selectedObject.name);
-    console.log("Material type:", selectedObject.material.type);
+
     // ...rest of your code
   }
 

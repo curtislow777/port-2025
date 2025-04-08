@@ -1,9 +1,16 @@
+@use "./styles/fonts.scss";
+@use "./styles/variables.scss" as vars;
+
 /* Base styles */
 body,
 html {
   margin: 0;
   padding: 0;
   overflow: hidden;
+}
+
+* {
+  font-family: "Blinky Star";
 }
 
 .loading-screen {
@@ -136,4 +143,30 @@ lottie-player {
 }
 .contact-modal {
   /* Additional styling for the "contact" modal */
+}
+/* Add these styles to your style.scss */
+
+.whiteboard-toolbar {
+  transition: all 0.3s ease;
+}
+
+.circular-button-whiteboard {
+  transition: transform 0.2s ease;
+  outline: none;
+}
+
+.circular-button-whiteboard:hover {
+  transform: scale(1.1);
+}
+
+.whiteboard-selected {
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+#drawing-canvas {
+  /* This canvas should be hidden */
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
 }
