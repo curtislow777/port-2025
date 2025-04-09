@@ -15,6 +15,7 @@ export default class Whiteboard {
     this.drawColor = "black";
     this.isActive = false;
     this.drawing = false;
+    this.whiteboardModeOn = false;
     this.whiteboardGroup = new THREE.Group();
 
     // Initialize the whiteboard
@@ -87,11 +88,11 @@ export default class Whiteboard {
   }
 
   onMouseDown(event) {
-    // Convert screen coordinates to normalized device coordinates
+    if (!this.whiteboardModeOn) return;
+
     this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-    // Cast ray to find intersections
     this.raycaster.setFromCamera(this.mouse, this.camera);
     const intersects = this.raycaster.intersectObject(this.whiteboardMesh);
 
@@ -106,7 +107,7 @@ export default class Whiteboard {
   }
 
   onMouseMove(event) {
-    if (!this.drawing) return;
+    if (!this.whiteboardModeOn || !this.drawing) return;
 
     this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -115,8 +116,8 @@ export default class Whiteboard {
     const intersects = this.raycaster.intersectObject(this.whiteboardMesh);
 
     if (intersects.length > 0) {
-      const x = intersects[0].uv.x * 2048;
-      const y = 2048 * 0.65 - intersects[0].uv.y * (2048 * 0.65);
+      const x = intersects[0].uv.x * this.canvasWidth;
+      const y = this.canvasHeight - intersects[0].uv.y * this.canvasHeight;
       this.draw(x, y);
     } else {
       this.drawing = false;
@@ -124,6 +125,8 @@ export default class Whiteboard {
   }
 
   onMouseUp() {
+    if (!this.whiteboardModeOn) return;
+
     this.drawing = false;
     this.drawingContext.closePath();
   }
@@ -218,5 +221,8 @@ export default class Whiteboard {
 
   setRotation(x, y, z) {
     this.whiteboardMesh.rotation.set(x, y, z);
+  }
+  toggleWhiteboardMode(state) {
+    this.whiteboardModeOn = state;
   }
 }
