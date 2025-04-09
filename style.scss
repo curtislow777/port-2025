@@ -144,15 +144,53 @@ lottie-player {
 .contact-modal {
   /* Additional styling for the "contact" modal */
 }
-/* Add these styles to your style.scss */
 
-.whiteboard-toolbar {
-  transition: all 0.3s ease;
+.hamburger-btn {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  width: 40px;
+  height: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.hamburger-line {
+  height: 4px;
+  background-color: white;
+  border-radius: 2px;
+  width: 100%;
+  transition: 0.3s ease;
+}
+
+.hamburger-btn:hover .hamburger-line {
+  background-color: #facc15; /* amber-400 for hover effect */
+}
+.whiteboard-controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 10px;
 }
 
 .circular-button-whiteboard {
-  transition: transform 0.2s ease;
-  outline: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #333;
+  cursor: pointer;
+  transition: transform 0.3s ease;
 }
 
 .circular-button-whiteboard:hover {
@@ -160,13 +198,39 @@ lottie-player {
 }
 
 .whiteboard-selected {
-  transform: scale(1.2);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  border: 3px solid #fff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
-#drawing-canvas {
-  /* This canvas should be hidden */
-  position: absolute;
-  top: -9999px;
-  left: -9999px;
+#black-marker {
+  background-color: black;
+}
+#red-marker {
+  background-color: red;
+}
+#green-marker {
+  background-color: darkgreen;
+}
+#blue-marker {
+  background-color: blue;
+}
+#eraser {
+  background-color: white;
+}
+
+.whiteboard-btn,
+.toggle-btn {
+  padding: 8px 16px;
+  background: #444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.toggle-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
 }

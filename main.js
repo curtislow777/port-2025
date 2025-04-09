@@ -1,6 +1,8 @@
 import * as THREE from "three";
 // Add this import at the top with your other imports
 import "./style.scss";
+import Whiteboard from "./whiteboard.js";
+
 import { OrbitControls } from "./src/utils/OrbitControls.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -20,22 +22,6 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
  * ---------------------------------------------------------------
  */
 
-// Create a whiteboard toggle button
-const whiteboardToggleBtn = document.createElement("button");
-whiteboardToggleBtn.textContent = "Toggle Whiteboard";
-whiteboardToggleBtn.style.position = "fixed";
-whiteboardToggleBtn.style.top = "20px";
-whiteboardToggleBtn.style.right = "20px";
-whiteboardToggleBtn.style.padding = "10px 15px";
-whiteboardToggleBtn.style.borderRadius = "5px";
-whiteboardToggleBtn.style.backgroundColor = "#4CAF50";
-whiteboardToggleBtn.style.color = "white";
-whiteboardToggleBtn.style.border = "none";
-whiteboardToggleBtn.style.cursor = "pointer";
-whiteboardToggleBtn.style.zIndex = "100";
-document.body.appendChild(whiteboardToggleBtn);
-
-// Initialize whiteboard after your scene is loaded
 let whiteboard;
 
 const canvas = document.querySelector("#experience-canvas");
@@ -340,10 +326,18 @@ window.addEventListener("click", handleRaycasterInteraction);
 
 let uMixRatio = { value: 0 }; // shared uniform for all shader materials
 
+let whiteboardSevenMesh;
+
 loader.load("/models/room-port-v1.glb", (glb) => {
   glb.scene.traverse((child) => {
     if (child.isMesh) {
       const textureKey = getTextureKeyFromName(child.name);
+      // 🔍 Check for the whiteboard-seven mesh
+      if (child.name === "whiteboard-seven-raycast") {
+        whiteboardSevenMesh = child;
+        console.log("whiteboard-seven position:", child.position);
+        console.log("whiteboard-seven position:", child.rotation);
+      }
 
       if (textureKey) {
         const material = new THREE.ShaderMaterial({
@@ -449,6 +443,7 @@ const sound = new Howl({
 });
 
 sound.play();
+
 // Set camera position BEFORE initializing controls
 camera.position.set(15.533069627498524, 11.13682887752479, 20.73329508529724);
 
@@ -467,6 +462,9 @@ controls.update();
 
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+whiteboard = new Whiteboard(scene, camera, renderer, controls);
+whiteboard.setPosition(-5.8, 4.12675142288208, 0.121265381);
+whiteboard.setRotation(0, Math.PI / 2, 0);
 
 function setupPostProcessing() {
   // Create a new EffectComposer
@@ -631,6 +629,10 @@ function render() {
 
     // ...rest of your code
   }
+  // Update whiteboard if it exists and is active
+  if (whiteboard && whiteboard.isActive) {
+    whiteboard.update();
+  }
 
   composer.render();
   window.requestAnimationFrame(render);
@@ -685,4 +687,21 @@ document.getElementById("openAbout")?.addEventListener("click", () => {
 });
 document.getElementById("openContact")?.addEventListener("click", () => {
   showModal(modals.contact);
+});
+
+const hamburgerBtn = document.querySelector(".hamburger-btn");
+hamburgerBtn.addEventListener("click", () => {
+  console.log("Hamburger clicked");
+});
+
+// After initializing the whiteboard
+document.getElementById("toggle-whiteboard").addEventListener("click", () => {
+  const isVisible = whiteboard.toggle();
+  document.querySelector(".whiteboard-controls").style.display = isVisible
+    ? "flex"
+    : "none";
+});
+
+document.getElementById("clear-whiteboard").addEventListener("click", () => {
+  whiteboard.clear();
 });
