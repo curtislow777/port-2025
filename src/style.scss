@@ -144,7 +144,81 @@ lottie-player {
 .contact-modal {
   /* Additional styling for the "contact" modal */
 }
+/* Add this to your CSS */
+.side-panel {
+  position: fixed;
+  top: 0;
+  right: -250px;
+  width: 250px;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 999;
+  transition: right 0.3s ease-in-out;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+}
 
+.side-panel.active {
+  right: 0; /* Slide in */
+}
+
+.panel-content {
+  padding: 80px 15px 30px 40px;
+  color: white;
+}
+
+.panel-content h2 {
+  margin-bottom: 30px;
+  font-size: 24px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.panel-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.panel-link {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  transition: color 0.2s;
+  padding: 8px 0;
+  position: relative;
+}
+
+.panel-link:after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #facc15;
+  transition: width 0.3s;
+}
+
+.panel-link:hover {
+  color: #facc15;
+}
+
+.panel-link:hover:after {
+  width: 100%;
+}
+
+/* Hamburger to X animation */
+.hamburger-btn.active .hamburger-line:nth-child(1) {
+  transform: translateY(13px) rotate(45deg);
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(3) {
+  transform: translateY(-13px) rotate(-45deg);
+}
 .hamburger-btn {
   position: fixed;
   top: 2rem;
@@ -248,7 +322,7 @@ lottie-player {
   width: 75px;
   height: 75px;
   border-radius: 25%;
-  border: none;
+  border: 5px solid; /* Default border for day mode */
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -263,20 +337,22 @@ lottie-player {
 }
 /* Light theme (day mode) */
 .light-theme .control-btn {
-  background-color: #ffffff;
-  color: #333333;
+  background-color: vars.$button-bg-day;
+  border-color: vars.$button-border-day;
+  color: #ffffff;
 }
 
 .light-theme .control-btn:hover {
-  background-color: #f0f0f0;
+  background-color: vars.$button-hover-day;
 }
 
 /* Dark theme (night mode) */
 .dark-theme .control-btn {
-  background-color: #333333;
+  background-color: vars.$button-bg-night;
+  border-color: vars.$button-border-night;
   color: #ffffff;
 }
 
 .dark-theme .control-btn:hover {
-  background-color: #444444;
+  background-color: vars.$button-hover-night;
 }

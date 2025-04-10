@@ -1,4 +1,12 @@
-$base-blue: #4fc3f7;
-$base-black: #000;
-$base-purple: #81d4fa;
-$base-white: #000;
+$base-blue: #7ec8e3; // A soft, pastel blue for the base
+$base-black: #2e2e2e; // A dark gray-black for contrast (soft, not too harsh)
+$base-purple: #b392d0; // A light, pastel purple for accents or highlights
+$base-white: #ffffff; // Pure white for contrast and readability
+
+$button-bg-day: #80d0f7; // A soft pastel blue for the day button background
+$button-border-day: #ffffff; // A slightly darker pastel blue for the button border during the day
+$button-hover-day: #67c1e0; // A darker shade of pastel blue for the button hover effect (similar to the base, but darker)
+
+$button-bg-night: #232b72; // A subtle, cool gray for the night button background
+$button-hover-night: #313f8d;
+$button-border-night: #4f5b86;

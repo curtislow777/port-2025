@@ -10,6 +10,7 @@ import { themeVertexShader, themeFragmentShader } from "../themeShader.js";
 
 import gsap from "gsap";
 import { Howl } from "howler";
+import * as flubber from "flubber";
 
 // Outline post processing
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
@@ -22,105 +23,94 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
  * ---------------------------------------------------------------
  */
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Get the buttons
-  const themeToggle = document.getElementById("theme-toggle");
-  const soundToggle = document.getElementById("sound-toggle");
-  const body = document.body;
+document.addEventListener("DOMContentLoaded", () => {});
+// Get the buttons
+const themeToggle = document.getElementById("theme-toggle");
+const soundToggle = document.getElementById("sound-toggle");
+const body = document.body;
 
-  // Initialize state
-  let isDarkMode = false;
-  let isMuted = false;
+// Initialize state
+let isDarkMode = false;
+let isMuted = false;
 
-  // Define the SVG paths
-  const sunPath = "M50,20 a30,30 0 1,0 0.01,0"; // full sun
-  const moonPath = "M60,50 a30,30 0 1,1 0,-0.01 a20,30 0 1,0 0,0.01"; // crescent
+// Load GSAP library if not already included
+if (!window.gsap) {
+  const script = document.createElement("script");
+  script.src = "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js";
+  document.head.appendChild(script);
+}
 
-  const themeToggled = document.querySelector("#theme-toggled");
-  const iconPath = document.querySelector("#icon-path");
+// Theme toggle functionality with GSAP animation
+themeToggle.addEventListener("click", () => {
+  isDarkMode = !isDarkMode;
 
-  themeToggled.addEventListener("click", () => {
-    const isNight = document.body.classList.toggle("night");
+  // Update icon
+  themeToggle.innerHTML = isDarkMode
+    ? '<i class="fas fa-moon"></i>'
+    : '<i class="fas fa-sun"></i>';
 
-    gsap.to(themeToggled, {
-      rotate: isNight ? 180 : 0,
-      duration: 0.5,
-      ease: "power2.inOut",
-    });
+  // Update classes for other styling (optional)
+  if (isDarkMode) {
+    body.classList.remove("light-theme");
+    body.classList.add("dark-theme");
 
-    gsap.to("body", {
-      backgroundColor: isNight ? "#0b1e35" : "#f2f0e6",
-      duration: 0.8,
-      ease: "power2.inOut",
-    });
-
-    gsap.to(iconPath, {
-      morphSVG: isNight ? moonPath : sunPath,
-      duration: 0.5,
-      ease: "power2.inOut",
-      fill: isNight ? "#B0BEC5" : "#FFD54F",
-    });
-
-    if (isNight) {
-      gsap.fromTo(
-        themeToggled,
-        { boxShadow: "0 0 0px #9fa8da" },
-        { boxShadow: "0 0 20px #9fa8da", duration: 0.6, yoyo: true, repeat: 1 }
-      );
+    // If you need to change Three.js scene for night mode
+    if (
+      window.updateSceneToNightMode &&
+      typeof window.updateSceneToNightMode === "function"
+    ) {
+      window.updateSceneToNightMode();
     }
-  });
+  } else {
+    body.classList.remove("dark-theme");
+    body.classList.add("light-theme");
 
-  // Theme toggle functionality
-  themeToggle.addEventListener("click", () => {
-    isDarkMode = !isDarkMode;
-
-    if (isDarkMode) {
-      body.classList.remove("light-theme");
-      body.classList.add("dark-theme");
-      themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-
-      // If you need to change Three.js scene for night mode
-      if (
-        window.updateSceneToNightMode &&
-        typeof window.updateSceneToNightMode === "function"
-      ) {
-        window.updateSceneToNightMode();
-      }
-    } else {
-      body.classList.remove("dark-theme");
-      body.classList.add("light-theme");
-      themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-
-      // If you need to change Three.js scene for day mode
-      if (
-        window.updateSceneToDayMode &&
-        typeof window.updateSceneToDayMode === "function"
-      ) {
-        window.updateSceneToDayMode();
-      }
+    // If you need to change Three.js scene for day mode
+    if (
+      window.updateSceneToDayMode &&
+      typeof window.updateSceneToDayMode === "function"
+    ) {
+      window.updateSceneToDayMode();
     }
-  });
+  }
+});
 
-  // Sound toggle functionality
-  soundToggle.addEventListener("click", () => {
-    isMuted = !isMuted;
-
-    if (isMuted) {
-      soundToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
-
-      // If you need to mute sound in your Three.js scene
-      if (window.muteSound && typeof window.muteSound === "function") {
-        window.muteSound();
-      }
-    } else {
-      soundToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
-
-      // If you need to unmute sound in your Three.js scene
-      if (window.unmuteSound && typeof window.unmuteSound === "function") {
-        window.unmuteSound();
-      }
+// Sound toggle functionality (unchanged)
+soundToggle.addEventListener("click", () => {
+  isMuted = !isMuted;
+  if (isMuted) {
+    soundToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
+    // If you need to mute sound in your Three.js scene
+    if (window.muteSound && typeof window.muteSound === "function") {
+      window.muteSound();
     }
-  });
+  } else {
+    soundToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
+    // If you need to unmute sound in your Three.js scene
+    if (window.unmuteSound && typeof window.unmuteSound === "function") {
+      window.unmuteSound();
+    }
+  }
+});
+// Sound toggle functionality
+soundToggle.addEventListener("click", () => {
+  isMuted = !isMuted;
+
+  if (isMuted) {
+    soundToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
+
+    // If you need to mute sound in your Three.js scene
+    if (window.muteSound && typeof window.muteSound === "function") {
+      window.muteSound();
+    }
+  } else {
+    soundToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
+
+    // If you need to unmute sound in your Three.js scene
+    if (window.unmuteSound && typeof window.unmuteSound === "function") {
+      window.unmuteSound();
+    }
+  }
 });
 
 const canvas = document.querySelector("#experience-canvas");
@@ -471,7 +461,7 @@ function handleRaycasterInteraction() {
       }
     });
     // Trigger spin animation if the object is in animateSpinObjects
-    if (animateSpinObjects.includes(object)) {
+    if (animatedObjects.spin.includes(object)) {
       spinAnimation(object);
     }
   }
@@ -778,19 +768,47 @@ document.getElementById("openContact")?.addEventListener("click", () => {
   showModal(modals.contact);
 });
 
-const hamburgerBtn = document.querySelector(".hamburger-btn");
-hamburgerBtn.addEventListener("click", () => {
-  console.log("Hamburger clicked");
-});
+document.addEventListener("DOMContentLoaded", function () {
+  const hamburgerBtn = document.querySelector(".hamburger-btn");
+  const sidePanel = document.querySelector(".side-panel");
+  const panelLinks = document.querySelectorAll(".panel-link");
 
-// After initializing the whiteboard
+  // Toggle panel and hamburger icon
+  hamburgerBtn.addEventListener("click", () => {
+    hamburgerBtn.classList.toggle("active");
+    sidePanel.classList.toggle("active");
+  });
+
+  // Close panel when clicking a link
+  panelLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+      hamburgerBtn.classList.remove("active");
+      sidePanel.classList.remove("active");
+    });
+  });
+
+  // Close panel when clicking outside
+  document.addEventListener("click", (e) => {
+    if (
+      !sidePanel.contains(e.target) &&
+      !hamburgerBtn.contains(e.target) &&
+      sidePanel.classList.contains("active")
+    ) {
+      hamburgerBtn.classList.remove("active");
+      sidePanel.classList.remove("active");
+    }
+  });
+});
+// Temporary button to toggle whiteeboard
 document.getElementById("toggle-whiteboard").addEventListener("click", () => {
   const isVisible = whiteboard.toggle();
   document.querySelector(".whiteboard-controls").style.display = isVisible
     ? "flex"
     : "none";
-});
 
+  whiteboard.toggleWhiteboardMode(isVisible);
+});
+// Temporary button to toggle whiteeboard
 document.getElementById("clear-whiteboard").addEventListener("click", () => {
   whiteboard.clear();
 });
