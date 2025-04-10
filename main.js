@@ -22,7 +22,68 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
  * ---------------------------------------------------------------
  */
 
-let whiteboard;
+document.addEventListener("DOMContentLoaded", () => {
+  // Get the buttons
+  const themeToggle = document.getElementById("theme-toggle");
+  const soundToggle = document.getElementById("sound-toggle");
+  const body = document.body;
+
+  // Initialize state
+  let isDarkMode = false;
+  let isMuted = false;
+
+  // Theme toggle functionality
+  themeToggle.addEventListener("click", () => {
+    isDarkMode = !isDarkMode;
+
+    if (isDarkMode) {
+      body.classList.remove("light-theme");
+      body.classList.add("dark-theme");
+      themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+
+      // If you need to change Three.js scene for night mode
+      if (
+        window.updateSceneToNightMode &&
+        typeof window.updateSceneToNightMode === "function"
+      ) {
+        window.updateSceneToNightMode();
+      }
+    } else {
+      body.classList.remove("dark-theme");
+      body.classList.add("light-theme");
+      themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+
+      // If you need to change Three.js scene for day mode
+      if (
+        window.updateSceneToDayMode &&
+        typeof window.updateSceneToDayMode === "function"
+      ) {
+        window.updateSceneToDayMode();
+      }
+    }
+  });
+
+  // Sound toggle functionality
+  soundToggle.addEventListener("click", () => {
+    isMuted = !isMuted;
+
+    if (isMuted) {
+      soundToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
+
+      // If you need to mute sound in your Three.js scene
+      if (window.muteSound && typeof window.muteSound === "function") {
+        window.muteSound();
+      }
+    } else {
+      soundToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
+
+      // If you need to unmute sound in your Three.js scene
+      if (window.unmuteSound && typeof window.unmuteSound === "function") {
+        window.unmuteSound();
+      }
+    }
+  });
+});
 
 const canvas = document.querySelector("#experience-canvas");
 const sizes = {
@@ -37,9 +98,10 @@ const modals = {
 };
 
 // Modal functions
-let isModalOpen = true;
+let isModalOpen = false;
 let hourHand;
 let minuteHand;
+let whiteboard;
 
 const showModal = (modal) => {
   // Show overlay first
@@ -86,24 +148,22 @@ const socialLinks = {
   LinkedIn: "https://www.linkedin.com/in/curtis-low/",
 };
 
-const animateScaleObjects = [];
-const animateSpinObjects = [];
-const keycapAnimateObjects = [];
-const scaleLightsObjects = [];
-const objects = {};
+const animatedObjects = {
+  spin: [],
+  scale: [],
+  scaleLights: [],
+  keycaps: [],
+  lights: [],
+};
 
 const raycasterObjects = [];
 let currentIntersects = [];
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
-// Add this in your main.js after initializing the GLTF loader, before or around when calling `loader.load`
-
 const loadingScreen = document.querySelector(".loading-screen");
 const loadingText = document.querySelector(".loading-text");
 const loadingButton = document.querySelector(".loading-screen-btn");
-
-// Track load progress
 const loadingManager = new THREE.LoadingManager();
 
 loadingManager.onStart = () => {
@@ -116,8 +176,6 @@ const loadingBarFill = document.querySelector(".loading-bar-fill");
 loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
   const percent = Math.floor((itemsLoaded / itemsTotal) * 100);
   loadingBarFill.style.width = `${percent}%`;
-
-  // Subtle pulsing while loading
   gsap.to(".loading-bar-fill", {
     scaleY: 1.05,
     repeat: -1,
@@ -127,7 +185,6 @@ loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
 };
 
 loadingManager.onLoad = () => {
-  // Stop pulsing
   gsap.killTweensOf(".loading-bar-fill");
 
   // Fade out loading bar, show button
@@ -150,7 +207,6 @@ loadingManager.onLoad = () => {
   );
 };
 
-// Click Event: Only works after loading completes
 loadingButton.addEventListener("click", () => {
   if (!loadingButton.classList.contains("ready")) return; // Prevent early clicks
 
@@ -166,35 +222,105 @@ loadingButton.addEventListener("click", () => {
 });
 
 // Loaders
+
 const textureLoader = new THREE.TextureLoader(loadingManager);
 const dracoLoader = new DRACOLoader();
-
-// Specify path to a folder containing WASM/JS decoding libraries.
-
 const loader = new GLTFLoader(loadingManager);
-
 let composer, outlinePass;
+
 let selectedObjects = [];
 
 loader.setDRACOLoader(dracoLoader);
 dracoLoader.setDecoderPath("/draco/");
-const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+
+function initializeRenderer(canvas, sizes) {
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setSize(sizes.width, sizes.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.0;
+  return renderer;
+}
+
+// usage
+const renderer = initializeRenderer(canvas, sizes);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xe8e8e8); // Light blue
+
+const camera = new THREE.PerspectiveCamera(
+  35,
+  sizes.width / sizes.height,
+  0.1,
+  1000
+);
+
+// Set camera position BEFORE initializing controls
+camera.position.set(15.533069627498524, 11.13682887752479, 20.73329508529724);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.minDistance = 0;
+controls.maxDistance = 50;
+// controls.minPolarAngle = 0;
+// controls.maxPolarAngle = Math.PI / 2;
+// controls.minAzimuthAngle = 0;
+// controls.maxAzimuthAngle = Math.PI / 2; // Limit rotation to 180 degrees
+
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.target.set(-0.351325034240001, 2.996378043400515, 0.6428843280589502);
+controls.update();
+
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.outputColorSpace = THREE.SRGBColorSpace; // NEW: color space
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.0;
 
-const environmentMap = new THREE.CubeTextureLoader()
-  .setPath("textures/skybox/")
-  .load([
-    "px.webp", // Positive X
-    "nx.webp", // Negative X
-    "py.webp", // Positive Y
-    "ny.webp", // Negative Y
-    "pz.webp", // Positive Z
-    "nz.webp", // Negative Z
-  ]);
+function setupPostProcessing() {
+  // Create a new EffectComposer
+  composer = new EffectComposer(renderer);
+
+  // Add the render pass which renders the scene with the camera
+  const renderPass = new RenderPass(scene, camera);
+  composer.addPass(renderPass);
+
+  // Create an outline pass and add it to the composer
+  outlinePass = new OutlinePass(
+    new THREE.Vector2(sizes.width, sizes.height),
+    scene,
+    camera
+  );
+
+  outlinePass.edgeStrength = 5.0; // was 3.0
+  outlinePass.edgeThickness = 2.0; // was 1.0
+  outlinePass.edgeGlow = 0.0; // unchanged value, but shown here for clarity
+  outlinePass.pulsePeriod = 0; // unchanged value, but shown here for clarity
+  outlinePass.usePatternTexture = false; // added line (prevents patterned outlines)
+  outlinePass.visibleEdgeColor.set("#ffffff"); // unchanged color
+  outlinePass.hiddenEdgeColor.set("#ffffff"); // was "#190a05"
+
+  composer.addPass(outlinePass);
+
+  const outputPass = new OutputPass();
+  composer.addPass(outputPass);
+}
+
+setupPostProcessing();
+
+function loadGlassEnvironmentMap(
+  path = "textures/skybox/",
+  files = ["px.webp", "nx.webp", "py.webp", "ny.webp", "pz.webp", "nz.webp"]
+) {
+  const loader = new THREE.CubeTextureLoader().setPath(path);
+  const cubeMap = loader.load(files);
+
+  cubeMap.colorSpace = THREE.SRGBColorSpace;
+  cubeMap.magFilter = THREE.LinearFilter;
+  cubeMap.minFilter = THREE.LinearMipmapLinearFilter;
+  cubeMap.generateMipmaps = true;
+  cubeMap.needsUpdate = true;
+
+  return cubeMap;
+}
+const glassEnvMap = loadGlassEnvironmentMap();
 
 const textureMap = {
   one: {
@@ -253,23 +379,19 @@ const loadedTextures = {
   night: {},
 };
 
+function loadTexture(path) {
+  const tex = textureLoader.load(path);
+  tex.flipY = false;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.generateMipmaps = true;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  return tex;
+}
+
 Object.entries(textureMap).forEach(([key, paths]) => {
-  const dayTexture = textureLoader.load(paths.day);
-  dayTexture.flipY = false;
-  dayTexture.colorSpace = THREE.SRGBColorSpace;
-  dayTexture.generateMipmaps = true;
-  dayTexture.minFilter = THREE.LinearMipmapLinearFilter;
-  dayTexture.magFilter = THREE.LinearFilter;
-
-  loadedTextures.day[key] = dayTexture;
-
-  const nightTexture = textureLoader.load(paths.night);
-  nightTexture.flipY = false;
-  nightTexture.colorSpace = THREE.SRGBColorSpace;
-  nightTexture.generateMipmaps = true;
-  nightTexture.minFilter = THREE.LinearMipmapLinearFilter;
-  nightTexture.magFilter = THREE.LinearFilter;
-  loadedTextures.night[key] = nightTexture;
+  loadedTextures.day[key] = loadTexture(paths.day);
+  loadedTextures.night[key] = loadTexture(paths.night);
 });
 
 // Helper function to extract the texture key from the mesh name
@@ -289,11 +411,6 @@ function getTextureKeyFromName(meshName) {
 
   return null;
 }
-
-window.addEventListener("mousemove", (event) => {
-  pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-  pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
-});
 
 function handleRaycasterInteraction() {
   if (currentIntersects.length > 0) {
@@ -322,22 +439,19 @@ function handleRaycasterInteraction() {
   }
 }
 
+window.addEventListener("mousemove", (event) => {
+  pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+  pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+});
+
 window.addEventListener("click", handleRaycasterInteraction);
 
 let uMixRatio = { value: 0 }; // shared uniform for all shader materials
-
-let whiteboardSevenMesh;
 
 loader.load("/models/room-port-v1.glb", (glb) => {
   glb.scene.traverse((child) => {
     if (child.isMesh) {
       const textureKey = getTextureKeyFromName(child.name);
-      // 🔍 Check for the whiteboard-seven mesh
-      if (child.name === "whiteboard-seven-raycast") {
-        whiteboardSevenMesh = child;
-        console.log("whiteboard-seven position:", child.position);
-        console.log("whiteboard-seven position:", child.rotation);
-      }
 
       if (textureKey) {
         const material = new THREE.ShaderMaterial({
@@ -368,16 +482,16 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         }
 
         if (child.name.includes("keycapAnimate")) {
-          keycapAnimateObjects.push(child);
+          animatedObjects.keycaps.push(child);
         }
         if (child.name.includes("animateScale")) {
-          animateScaleObjects.push(child);
+          animatedObjects.scale.push(child);
         }
         if (child.name.includes("animateSpin")) {
-          animateSpinObjects.push(child);
+          animatedObjects.spin.push(child);
         }
         if (child.name.includes("scaleLights")) {
-          scaleLightsObjects.push(child);
+          animatedObjects.scaleLights.push(child);
         }
         if (child.name.includes("raycast")) {
           raycasterObjects.push(child);
@@ -407,7 +521,7 @@ loader.load("/models/room-port-v1.glb", (glb) => {
       ior: 1.5,
       thickness: 0.01,
       specularIntensity: 1,
-      envMap: environmentMap,
+      envMap: glassEnvMap,
       envMapIntensity: 1,
     });
 
@@ -419,21 +533,6 @@ loader.load("/models/room-port-v1.glb", (glb) => {
   playIntroAnimation();
 });
 
-function playIntroAnimation() {
-  const t1 = gsap.timeline({
-    duration: 0.8,
-    ease: "back.out(1.8)",
-  });
-}
-
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-  35,
-  sizes.width / sizes.height,
-  0.1,
-  1000
-);
-
 const sound = new Howl({
   //  src: ["audio/imok.ogg"],
   src: ["audio/moving.ogg"],
@@ -444,80 +543,37 @@ const sound = new Howl({
 
 sound.play();
 
-// Set camera position BEFORE initializing controls
-camera.position.set(15.533069627498524, 11.13682887752479, 20.73329508529724);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.minDistance = 0;
-controls.maxDistance = 50;
-// controls.minPolarAngle = 0;
-// controls.maxPolarAngle = Math.PI / 2;
-// controls.minAzimuthAngle = 0;
-// controls.maxAzimuthAngle = Math.PI / 2; // Limit rotation to 180 degrees
-
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.target.set(-0.351325034240001, 2.996378043400515, 0.6428843280589502);
-controls.update();
-
-renderer.setSize(sizes.width, sizes.height);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 whiteboard = new Whiteboard(scene, camera, renderer, controls);
 whiteboard.setPosition(-5.8, 4.12675142288208, 0.121265381);
 whiteboard.setRotation(0, Math.PI / 2, 0);
 
-function setupPostProcessing() {
-  // Create a new EffectComposer
-  composer = new EffectComposer(renderer);
+function animate() {}
 
-  // Add the render pass which renders the scene with the camera
-  const renderPass = new RenderPass(scene, camera);
-  composer.addPass(renderPass);
+/**  -------------------------- Render and Animations Stuff -------------------------- */
+const clock = new THREE.Clock();
 
-  // Create an outline pass and add it to the composer
-  outlinePass = new OutlinePass(
-    new THREE.Vector2(sizes.width, sizes.height),
-    scene,
-    camera
-  );
+const updateClockHands = () => {
+  if (!hourHand || !minuteHand) return;
 
-  // -- CHANGED LINES BELOW --
-  outlinePass.edgeStrength = 5.0; // was 3.0
-  outlinePass.edgeThickness = 2.0; // was 1.0
-  outlinePass.edgeGlow = 0.0; // unchanged value, but shown here for clarity
-  outlinePass.pulsePeriod = 0; // unchanged value, but shown here for clarity
-  outlinePass.usePatternTexture = false; // added line (prevents patterned outlines)
-  outlinePass.visibleEdgeColor.set("#ffffff"); // unchanged color
-  outlinePass.hiddenEdgeColor.set("#ffffff"); // was "#190a05"
-  // -- CHANGED LINES ABOVE --
+  const now = new Date();
+  const hours = now.getHours() % 12;
+  const minutes = now.getMinutes();
+  const seconds = now.getSeconds();
 
-  composer.addPass(outlinePass);
+  const minuteAngle = (minutes + seconds / 60) * ((Math.PI * 2) / 60);
 
-  // Add an output pass as the final pass
-  const outputPass = new OutputPass();
-  composer.addPass(outputPass);
+  const hourAngle = (hours + minutes / 60) * ((Math.PI * 2) / 12);
+
+  minuteHand.rotation.z = -minuteAngle;
+  hourHand.rotation.z = -hourAngle;
+};
+
+function playIntroAnimation() {
+  const t1 = gsap.timeline({
+    duration: 0.8,
+    ease: "back.out(1.8)",
+  });
 }
-
-// Call the setup function after creating your renderer
-setupPostProcessing();
-
-// Event Listeners
-window.addEventListener("resize", () => {
-  sizes.width = window.innerWidth;
-  sizes.height = window.innerHeight;
-
-  // Update camera
-  camera.aspect = sizes.width / sizes.height;
-  camera.updateProjectionMatrix();
-
-  // Update renderer
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-  composer.setSize(sizes.width, sizes.height);
-});
-
-scene.background = new THREE.Color(0xe8e8e8); // Light blue
 
 const spinTimelines = new Map(); // Store spin timelines for each object
 const spinDuration = 2; // Base duration for one spin (in seconds)
@@ -568,27 +624,6 @@ function spinAnimation(object) {
     },
   });
 }
-
-function animate() {}
-
-/**  -------------------------- Render and Animations Stuff -------------------------- */
-const clock = new THREE.Clock();
-
-const updateClockHands = () => {
-  if (!hourHand || !minuteHand) return;
-
-  const now = new Date();
-  const hours = now.getHours() % 12;
-  const minutes = now.getMinutes();
-  const seconds = now.getSeconds();
-
-  const minuteAngle = (minutes + seconds / 60) * ((Math.PI * 2) / 60);
-
-  const hourAngle = (hours + minutes / 60) * ((Math.PI * 2) / 12);
-
-  minuteHand.rotation.z = -minuteAngle;
-  hourHand.rotation.z = -hourAngle;
-};
 
 function render() {
   controls.update();
@@ -660,6 +695,22 @@ render();
 // Get overlay and close buttons
 const overlay = document.querySelector(".overlay");
 const closeButtons = document.querySelectorAll(".modal-close-btn");
+
+// Event Listeners
+window.addEventListener("resize", () => {
+  sizes.width = window.innerWidth;
+  sizes.height = window.innerHeight;
+
+  // Update camera
+  camera.aspect = sizes.width / sizes.height;
+  camera.updateProjectionMatrix();
+
+  // Update renderer
+  renderer.setSize(sizes.width, sizes.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  composer.setSize(sizes.width, sizes.height);
+});
 
 // Handle modal close on overlay click
 overlay.addEventListener("click", () => {
