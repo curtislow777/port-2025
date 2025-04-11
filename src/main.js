@@ -17,6 +17,8 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 
+import { TransformControls } from "three/examples/jsm/controls/TransformControls";
+
 /**
  * START OF THREE.JS CODE
  * ---------------------------------------------------------------
@@ -46,6 +48,9 @@ const soundToggle = document.getElementById("sound-toggle");
 const body = document.body;
 
 let isNight = false;
+let mailboxCover = null;
+let mailboxHovered = false;
+let isMailboxOpen = false;
 
 window.addEventListener("keydown", (event) => {
   if (event.key.toLowerCase() === "t") {
@@ -539,6 +544,9 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         if (child.name.includes("raycast")) {
           raycasterObjects.push(child);
         }
+        if (child.name.includes("mailbox-cover")) {
+          mailboxCover = child;
+        }
       }
 
       if (child.material.map) {
@@ -715,7 +723,7 @@ function render() {
 
   if (currentIntersects.length > 0) {
     const selectedObject = currentIntersects[0].object;
-    selectedObjects = [selectedObject];
+    selectedObjects = [selectedObject, ...selectedObject.children];
     outlinePass.selectedObjects = selectedObjects;
     document.body.style.cursor = "pointer";
   } else {
@@ -725,11 +733,21 @@ function render() {
     document.body.style.cursor = "default";
   }
 
-  // Add this temporarily to your hover detection
-  if (currentIntersects.length > 0) {
-    const selectedObject = currentIntersects[0].object;
+  // Mailbox hover logic
+  const mailboxRaycastObj = currentIntersects.find((hit) =>
+    hit.object.name.includes("mailbox-raycast")
+  );
 
-    // ...rest of your code
+  if (mailboxRaycastObj) {
+    if (!mailboxHovered) {
+      mailboxHovered = true;
+      toggleMailboxCover(true); // Animate open
+    }
+  } else {
+    if (mailboxHovered) {
+      mailboxHovered = false;
+      toggleMailboxCover(false); // Animate close
+    }
   }
   // Update whiteboard if it exists and is active
   if (whiteboard && whiteboard.isActive) {
@@ -967,3 +985,15 @@ document.addEventListener("keydown", (event) => {
       break;
   }
 });
+
+function toggleMailboxCover(open) {
+  if (!mailboxCover || open === isMailboxOpen) return;
+
+  isMailboxOpen = open;
+
+  gsap.to(mailboxCover.rotation, {
+    x: open ? Math.PI / 2 : 0, // Adjust axis & angle if needed
+    duration: 0.8,
+    ease: "power2.out",
+  });
+}

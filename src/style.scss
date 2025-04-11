@@ -10,6 +10,10 @@ html {
 }
 
 * {
+  font-family: "Sniglet", sans-serif;
+}
+
+.heading {
   font-family: "Blinky Star";
 }
 
@@ -105,13 +109,16 @@ lottie-player {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0); /* Initial scale 0 for animation */
+  transform: translate(-50%, -50%) scale(0); /* GSAP animation setup */
   transform-origin: center center;
-  transition: none; /* disable CSS transitions that could conflict */
-  opacity: 0; /* match GSAP initial */
+  transition: none;
+  opacity: 0;
   display: none;
-  width: 60vw;
-  max-width: 1000px;
+
+  width: 80vw;
+  max-width: 1400px;
+  min-width: 300px;
+
   background: white;
   border-radius: 8px;
   padding: 2rem;
@@ -120,6 +127,8 @@ lottie-player {
 }
 
 .modal-title {
+  font-family: "Blinky Star";
+  font-weight: 100;
   margin: 0 0 1rem 0;
 }
 
