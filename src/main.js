@@ -10,7 +10,6 @@ import { themeVertexShader, themeFragmentShader } from "../themeShader.js";
 
 import gsap from "gsap";
 import { Howl } from "howler";
-import * as flubber from "flubber";
 
 // Outline post processing
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
@@ -24,6 +23,23 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
  */
 
 document.addEventListener("DOMContentLoaded", () => {});
+
+// Store default camera and controls settings
+const defaultCameraTarget = {
+  position: new THREE.Vector3(15.53, 11.14, 20.73),
+  target: new THREE.Vector3(-0.35, 3.0, 0.64),
+};
+
+const whiteboardZoomTarget = {
+  position: new THREE.Vector3(0.25, 4.38, -0.069),
+  rotation: new THREE.Euler(
+    0, // x-axis (0 degrees)
+    Math.PI / 2, // y-axis (90 degrees)
+    0, // z-axis (0 degrees)
+    "XYZ" // rotation order
+  ),
+};
+
 // Get the buttons
 const themeToggle = document.getElementById("theme-toggle");
 const soundToggle = document.getElementById("sound-toggle");
@@ -32,13 +48,6 @@ const body = document.body;
 // Initialize state
 let isDarkMode = false;
 let isMuted = false;
-
-// Load GSAP library if not already included
-if (!window.gsap) {
-  const script = document.createElement("script");
-  script.src = "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js";
-  document.head.appendChild(script);
-}
 
 // Theme toggle functionality with GSAP animation
 themeToggle.addEventListener("click", () => {
@@ -250,7 +259,6 @@ loadingButton.addEventListener("click", () => {
 });
 
 // Loaders
-
 const textureLoader = new THREE.TextureLoader(loadingManager);
 const dracoLoader = new DRACOLoader();
 const loader = new GLTFLoader(loadingManager);
@@ -284,7 +292,11 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 // Set camera position BEFORE initializing controls
-camera.position.set(15.533069627498524, 11.13682887752479, 20.73329508529724);
+camera.position.set(
+  defaultCameraTarget.position.x,
+  defaultCameraTarget.position.y,
+  defaultCameraTarget.position.z
+);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.minDistance = 0;
@@ -296,7 +308,11 @@ controls.maxDistance = 50;
 
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
-controls.target.set(-0.351325034240001, 2.996378043400515, 0.6428843280589502);
+controls.target.set(
+  defaultCameraTarget.target.x,
+  defaultCameraTarget.target.y,
+  defaultCameraTarget.target.z
+);
 controls.update();
 
 renderer.setSize(sizes.width, sizes.height);
@@ -656,6 +672,10 @@ function spinAnimation(object) {
 function render() {
   controls.update();
 
+  console.log(camera.position);
+  console.log("aa");
+  console.log(camera.rotation);
+
   // Update Clock hand rotation
   updateClockHands();
 
@@ -799,6 +819,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
 // Temporary button to toggle whiteeboard
 document.getElementById("toggle-whiteboard").addEventListener("click", () => {
   const isVisible = whiteboard.toggle();
@@ -808,7 +829,152 @@ document.getElementById("toggle-whiteboard").addEventListener("click", () => {
 
   whiteboard.toggleWhiteboardMode(isVisible);
 });
-// Temporary button to toggle whiteeboard
 document.getElementById("clear-whiteboard").addEventListener("click", () => {
   whiteboard.clear();
+});
+
+// Function to zoom camera to exact position and rotation
+function zoomToWhiteboard(duration = 2, cb = null) {
+  // Disable controls during animation
+  controls.enabled = false;
+
+  // Calculate target point based on the rotation
+  // This uses the rotation to determine where the camera should look
+  const direction = new THREE.Vector3(0, 0, -1);
+  direction.applyEuler(whiteboardZoomTarget.rotation);
+
+  // Calculate a point 5 units away in the direction the camera is facing
+  const targetPoint = new THREE.Vector3().copy(whiteboardZoomTarget.position);
+  targetPoint.add(direction.multiplyScalar(5));
+
+  // Start timeline animation
+  const timeline = gsap.timeline({
+    onComplete: () => {
+      // Re-enable controls when animation completes
+      controls.enabled = true;
+
+      // Call callback if provided
+      if (cb && typeof cb === "function") cb();
+    },
+  });
+
+  // Animate camera position
+  timeline.to(
+    camera.position,
+    {
+      x: whiteboardZoomTarget.position.x,
+      y: whiteboardZoomTarget.position.y,
+      z: whiteboardZoomTarget.position.z,
+      duration: duration,
+      ease: "power3.inOut",
+    },
+    0
+  );
+
+  // Animate camera rotation
+  timeline.to(
+    camera.rotation,
+    {
+      x: whiteboardZoomTarget.rotation.x,
+      y: whiteboardZoomTarget.rotation.y,
+      z: whiteboardZoomTarget.rotation.z,
+      duration: duration,
+      ease: "power3.inOut",
+    },
+    0
+  );
+
+  // Animate orbit controls target to match new camera direction
+  timeline.to(
+    controls.target,
+    {
+      x: targetPoint.x,
+      y: targetPoint.y,
+      z: targetPoint.z,
+      duration: duration,
+      ease: "power3.inOut",
+      onUpdate: () => controls.update(),
+    },
+    0
+  );
+
+  return timeline;
+}
+
+// Function to return camera to default position
+function resetCameraPosition(duration = 2, cb = null) {
+  controls.enabled = false;
+  const timeline = gsap.timeline({
+    onComplete: () => {
+      // Re-enable controls when animation completes
+      controls.enabled = true;
+      // Call callback if provided
+      if (cb && typeof cb === "function") cb();
+    },
+  });
+
+  // Animate camera position back to default
+  timeline.to(
+    camera.position,
+    {
+      x: defaultCameraTarget.position.x,
+      y: defaultCameraTarget.position.y,
+      z: defaultCameraTarget.position.z,
+      duration: duration,
+      ease: "power2.inOut",
+    },
+    0
+  );
+  const lookAtVector = new THREE.Vector3()
+    .subVectors(defaultCameraTarget.target, defaultCameraTarget.position)
+    .normalize();
+
+  const targetQuaternion = new THREE.Quaternion().setFromRotationMatrix(
+    new THREE.Matrix4().lookAt(
+      new THREE.Vector3(0, 0, 0),
+      lookAtVector,
+      new THREE.Vector3(0, 1, 0)
+    )
+  );
+
+  // Use quaternion slerp internally
+  timeline.to(
+    camera.quaternion,
+    {
+      x: targetQuaternion.x,
+      y: targetQuaternion.y,
+      z: targetQuaternion.z,
+      w: targetQuaternion.w,
+      duration: duration,
+      ease: "power2.inOut",
+    },
+    0
+  );
+
+  // Animate orbit controls target back to default
+  timeline.to(
+    controls.target,
+    {
+      x: defaultCameraTarget.target.x,
+      y: defaultCameraTarget.target.y,
+      z: defaultCameraTarget.target.z,
+      duration: duration,
+      ease: "power2.inOut",
+      onUpdate: () => controls.update(),
+    },
+    0
+  );
+
+  return timeline;
+}
+
+document.addEventListener("keydown", (event) => {
+  switch (event.key.toLowerCase()) {
+    case "o":
+      zoomToWhiteboard(1.5);
+      break;
+    case "p":
+      resetCameraPosition(2);
+      break;
+  }
 });
