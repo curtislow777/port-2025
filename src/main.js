@@ -45,6 +45,23 @@ const themeToggle = document.getElementById("theme-toggle");
 const soundToggle = document.getElementById("sound-toggle");
 const body = document.body;
 
+let isNight = false;
+
+window.addEventListener("keydown", (event) => {
+  if (event.key.toLowerCase() === "t") {
+    isNight = !isNight;
+
+    // Animate uMixRatio between 0 (day) and 1 (night)
+    gsap.to(uMixRatio, {
+      value: isDarkMode ? 1 : 0,
+      duration: 1.5,
+      ease: "power2.inOut",
+    });
+
+    console.log(`Theme switched to: ${isNight ? "Night" : "Day"}`);
+  }
+});
+
 // Initialize state
 let isDarkMode = false;
 let isMuted = false;
@@ -53,35 +70,15 @@ let isMuted = false;
 themeToggle.addEventListener("click", () => {
   isDarkMode = !isDarkMode;
 
-  // Update icon
+  // Update UI
   themeToggle.innerHTML = isDarkMode
     ? '<i class="fas fa-moon"></i>'
     : '<i class="fas fa-sun"></i>';
 
-  // Update classes for other styling (optional)
-  if (isDarkMode) {
-    body.classList.remove("light-theme");
-    body.classList.add("dark-theme");
+  body.classList.toggle("dark-theme", isDarkMode);
+  body.classList.toggle("light-theme", !isDarkMode);
 
-    // If you need to change Three.js scene for night mode
-    if (
-      window.updateSceneToNightMode &&
-      typeof window.updateSceneToNightMode === "function"
-    ) {
-      window.updateSceneToNightMode();
-    }
-  } else {
-    body.classList.remove("dark-theme");
-    body.classList.add("light-theme");
-
-    // If you need to change Three.js scene for day mode
-    if (
-      window.updateSceneToDayMode &&
-      typeof window.updateSceneToDayMode === "function"
-    ) {
-      window.updateSceneToDayMode();
-    }
-  }
+  updateThreeJSTheme();
 });
 
 // Sound toggle functionality (unchanged)
@@ -596,6 +593,30 @@ whiteboard.setRotation(0, Math.PI / 2, 0);
 function animate() {}
 
 /**  -------------------------- Render and Animations Stuff -------------------------- */
+
+// Update Three.js theme
+function updateThreeJSTheme() {
+  // Animate uMixRatio for shader blending
+  gsap.to(uMixRatio, {
+    value: isDarkMode ? 1 : 0,
+    duration: 1.5,
+    ease: "power2.inOut",
+  });
+
+  // Optional scene-level updates
+  if (isDarkMode) {
+    if (typeof window.updateSceneToNightMode === "function") {
+      window.updateSceneToNightMode();
+    }
+  } else {
+    if (typeof window.updateSceneToDayMode === "function") {
+      window.updateSceneToDayMode();
+    }
+  }
+
+  console.log(`Theme switched to: ${isDarkMode ? "Night" : "Day"}`);
+}
+
 const clock = new THREE.Clock();
 
 const updateClockHands = () => {
@@ -719,23 +740,6 @@ function render() {
   window.requestAnimationFrame(render);
 }
 
-let isNight = false;
-
-window.addEventListener("keydown", (event) => {
-  if (event.key.toLowerCase() === "t") {
-    isNight = !isNight;
-
-    // Animate uMixRatio between 0 (day) and 1 (night)
-    gsap.to(uMixRatio, {
-      value: isNight ? 1 : 0,
-      duration: 1.5,
-      ease: "power2.inOut",
-    });
-
-    console.log(`Theme switched to: ${isNight ? "Night" : "Day"}`);
-  }
-});
-
 render();
 
 // Get overlay and close buttons
@@ -847,7 +851,6 @@ function zoomToWhiteboard(duration = 2, cb = null) {
     },
   });
 
-  // Animate camera position
   timeline.to(
     camera.position,
     {
@@ -860,7 +863,6 @@ function zoomToWhiteboard(duration = 2, cb = null) {
     0
   );
 
-  // Animate camera rotation
   timeline.to(
     camera.rotation,
     {
@@ -873,7 +875,6 @@ function zoomToWhiteboard(duration = 2, cb = null) {
     0
   );
 
-  // Animate orbit controls target to match new camera direction
   timeline.to(
     controls.target,
     {
@@ -895,14 +896,12 @@ function resetCameraPosition(duration = 2, cb = null) {
   controls.enabled = false;
   const timeline = gsap.timeline({
     onComplete: () => {
-      // Re-enable controls when animation completes
+      // Re-enable controls
       controls.enabled = true;
-      // Call callback if provided
       if (cb && typeof cb === "function") cb();
     },
   });
 
-  // Animate camera position back to default
   timeline.to(
     camera.position,
     {
