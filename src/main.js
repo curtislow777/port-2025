@@ -19,7 +19,7 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 import { setupPerryCupAnimation } from "./scripts/perryCup.js";
-
+import { randomOink } from "./scripts/pig.js";
 /**
  * START OF THREE.JS CODE
  * ---------------------------------------------------------------
@@ -66,7 +66,7 @@ let mailboxCover = null;
 let mailboxHovered = false;
 let isMailboxOpen = false;
 let perryHatObject = null;
-
+let pigObject = null;
 window.addEventListener("keydown", (event) => {
   if (event.key.toLowerCase() === "t") {
     isNight = !isNight;
@@ -503,6 +503,10 @@ function handleRaycasterInteraction() {
         console.log("Perry cup lid toggled!");
       }
     }
+    if (object.name.includes("pig-head")) {
+      randomOink(pigObject);
+      console.log("Pig head clicked!");
+    }
     // Trigger spin animation if the object is in animateSpinObjects
     if (animatedObjects.spin.includes(object)) {
       spinAnimation(object);
@@ -569,6 +573,9 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         }
         if (child.name.includes("mailbox-cover")) {
           mailboxCover = child;
+        }
+        if (child.name.includes("pig-head")) {
+          pigObject = child;
         }
         if (child.name.includes("perry-hat")) {
           perryHatObject = child;
