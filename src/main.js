@@ -18,6 +18,7 @@ import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
+import { setupPerryCupAnimation } from "./scripts/perryCup.js";
 
 /**
  * START OF THREE.JS CODE
@@ -25,6 +26,7 @@ import { TransformControls } from "three/examples/jsm/controls/TransformControls
  */
 
 document.addEventListener("DOMContentLoaded", () => {});
+let perryCupControls = null; // ✅ Add this
 
 // Store default camera and controls settings
 const defaultCameraTarget = {
@@ -42,6 +44,18 @@ const whiteboardZoomTarget = {
   ),
 };
 
+const perryHatClosed = {
+  x: -4.177665710449219,
+  y: 2.7323927879333496,
+  z: 1.0796866416931152,
+};
+
+const perryHatOpen = {
+  x: -4.51853,
+  y: 2.48441,
+  z: 0.875922,
+};
+
 // Get the buttons
 const themeToggle = document.getElementById("theme-toggle");
 const soundToggle = document.getElementById("sound-toggle");
@@ -51,6 +65,7 @@ let isNight = false;
 let mailboxCover = null;
 let mailboxHovered = false;
 let isMailboxOpen = false;
+let perryHatObject = null;
 
 window.addEventListener("keydown", (event) => {
   if (event.key.toLowerCase() === "t") {
@@ -480,6 +495,14 @@ function handleRaycasterInteraction() {
       zoomToWhiteboard(1.5);
       whiteboard.toggleWhiteboardMode(true); // Enable drawing mode
     }
+
+    // Add this new condition with your other click handlers
+    if (object.name.includes("perry-hat")) {
+      if (perryCupControls) {
+        perryCupControls.toggleLid();
+        console.log("Perry cup lid toggled!");
+      }
+    }
     // Trigger spin animation if the object is in animateSpinObjects
     if (animatedObjects.spin.includes(object)) {
       spinAnimation(object);
@@ -547,6 +570,14 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         if (child.name.includes("mailbox-cover")) {
           mailboxCover = child;
         }
+        if (child.name.includes("perry-hat")) {
+          perryHatObject = child;
+          console.log("Found perry hat:", perryHatObject.position);
+          console.log("Initializing perry cup controls:", perryHatObject);
+
+          // Initialize the cup animation right after finding the object
+          perryCupControls = setupPerryCupAnimation(perryHatObject);
+        }
       }
 
       if (child.material.map) {
@@ -581,6 +612,8 @@ loader.load("/models/room-port-v1.glb", (glb) => {
     }
   });
   scene.add(glb.scene);
+  console.log(perryHatObject.position);
+
   playIntroAnimation();
 });
 
@@ -749,6 +782,7 @@ function render() {
       toggleMailboxCover(false); // Animate close
     }
   }
+
   // Update whiteboard if it exists and is active
   if (whiteboard && whiteboard.isActive) {
     whiteboard.update();
