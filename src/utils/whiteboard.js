@@ -6,7 +6,7 @@ export default class Whiteboard {
     this.scene = scene;
     this.camera = camera;
     this.renderer = renderer;
-    this.controls = controls;
+    this.controls = controls; // Store the controls instance
     this.raycaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
     this.canvasWidth = 2048;
@@ -15,7 +15,8 @@ export default class Whiteboard {
     this.drawColor = "black";
     this.isActive = false;
     this.drawing = false;
-    this.whiteboardModeOn = false;
+    this.whiteboardModeOn = false; // Renamed for clarity:  true = drawing/active, false = inactive
+    this.whiteboardVisible = true;
     this.whiteboardGroup = new THREE.Group();
 
     // Initialize the whiteboard
@@ -82,13 +83,11 @@ export default class Whiteboard {
         button.classList.add("whiteboard-selected");
       });
     });
-
-    // Set up mouse events for drawing
-    this.activateControls();
+    this.activateControls(); // Call this to set up the bound functions, but they only fire when this.isActive is true.
   }
 
   onMouseDown(event) {
-    if (!this.whiteboardModeOn) return;
+    if (!this.whiteboardModeOn) return; // Only process if whiteboardModeOn
 
     this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -107,7 +106,7 @@ export default class Whiteboard {
   }
 
   onMouseMove(event) {
-    if (!this.whiteboardModeOn || !this.drawing) return;
+    if (!this.whiteboardModeOn || !this.drawing) return; // Only process if drawing
 
     this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -125,7 +124,7 @@ export default class Whiteboard {
   }
 
   onMouseUp() {
-    if (!this.whiteboardModeOn) return;
+    if (!this.whiteboardModeOn) return; // Only process if whiteboardModeOn
 
     this.drawing = false;
     this.drawingContext.closePath();
@@ -167,51 +166,68 @@ export default class Whiteboard {
   }
 
   activateControls() {
-    window.addEventListener("pointerdown", this.onMouseDown.bind(this), false);
-    window.addEventListener(
-      "pointermove",
-      this.throttle(this.onMouseMove.bind(this), 15),
-      false
-    );
-    window.addEventListener("pointerup", this.onMouseUp.bind(this), false);
-    this.isActive = true;
+    // Only attach event listeners once.  The  this.whiteboardModeOn flag controls if they *do* anything.
+    if (!this.boundMouseDown) {
+      // Check if they are already bound
+      this.boundMouseDown = this.onMouseDown.bind(this);
+      this.boundMouseMove = this.throttle(this.onMouseMove.bind(this), 15);
+      this.boundMouseUp = this.onMouseUp.bind(this);
+
+      window.addEventListener("pointerdown", this.boundMouseDown, false);
+      window.addEventListener("pointermove", this.boundMouseMove, false);
+      window.addEventListener("pointerup", this.boundMouseUp, false);
+    }
+    this.isActive = true; //Set to true, so that the events can be removed if necessary
   }
 
   deactivateControls() {
-    window.removeEventListener(
-      "pointerdown",
-      this.onMouseDown.bind(this),
-      false
-    );
-    window.removeEventListener(
-      "pointermove",
-      this.throttle(this.onMouseMove.bind(this), 15),
-      false
-    );
-    window.removeEventListener("pointerup", this.onMouseUp.bind(this), false);
+    // Remove event listeners.
+    if (this.boundMouseDown) {
+      // Check if they are bound
+      window.removeEventListener("pointerdown", this.boundMouseDown, false);
+      window.removeEventListener("pointermove", this.boundMouseMove, false);
+      window.removeEventListener("pointerup", this.boundMouseUp, false);
+    }
     this.isActive = false;
   }
 
   update() {
     // This method can be called from the main render loop
     // to update any continuous state changes
-    if (!this.isActive) return;
-
     // Additional update logic can go here
-    // For example, checking if the camera's view of the whiteboard has changed
   }
 
-  // Optional: Method to clear the whiteboard
+  // Method to clear the whiteboard
   clear() {
     this.drawingContext.fillStyle = "white";
-    this.drawingContext.fillRect(0, 0, 2048, 1024);
+    this.drawingContext.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.canvasTexture.needsUpdate = true;
   }
 
-  // Optional: Method to toggle visibility
-  toggle() {
-    this.whiteboardGroup.visible = !this.whiteboardGroup.visible;
-    return this.whiteboardGroup.visible;
+  /**
+   * Toggles the whiteboard drawing mode (and therefore, OrbitControls).
+   * @param {boolean} enable - True to enable drawing mode (and disable controls), false to disable.
+   */
+  toggleWhiteboardMode(enable) {
+    this.whiteboardModeOn = enable;
+
+    if (this.controls) {
+      this.controls.enabled = !enable; // Disable controls when whiteboard mode is on
+    }
+
+    // Activate or deactivate drawing event listeners based on mode.  Use the this.isActive flag.
+    if (enable) {
+      this.activateControls(); // Ensure controls are set up
+    } else {
+      this.deactivateControls();
+    }
+    //this.isActive = enable;  // No longer needed, the events are attached once in activateControls
+
+    // Optional: Show/hide UI controls (like color buttons)
+    const whiteboardUI = document.querySelector(".whiteboard-controls");
+    if (whiteboardUI) {
+      whiteboardUI.style.display = enable ? "flex" : "none";
+    }
   }
 
   // Optional: Method to set whiteboard position and rotation
@@ -221,8 +237,5 @@ export default class Whiteboard {
 
   setRotation(x, y, z) {
     this.whiteboardMesh.rotation.set(x, y, z);
-  }
-  toggleWhiteboardMode(state) {
-    this.whiteboardModeOn = state;
   }
 }

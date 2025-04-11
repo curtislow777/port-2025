@@ -204,7 +204,6 @@ const loadingButton = document.querySelector(".loading-screen-btn");
 const loadingManager = new THREE.LoadingManager();
 
 loadingManager.onStart = () => {
-  console.log("Loading started");
   gsap.to(".loading-screen", { opacity: 1, duration: 1, ease: "power2.out" });
 };
 
@@ -246,9 +245,6 @@ loadingManager.onLoad = () => {
 
 loadingButton.addEventListener("click", () => {
   if (!loadingButton.classList.contains("ready")) return; // Prevent early clicks
-
-  console.log("Enter clicked");
-
   gsap.to(".loading-screen", {
     opacity: 0,
     duration: 1,
@@ -476,6 +472,12 @@ function handleRaycasterInteraction() {
         window.open(url, "_blank", "noopener,noreferrer");
       }
     });
+
+    if (object.name.includes("whiteboard-raycast")) {
+      console.log("Whiteboard clicked!");
+      zoomToWhiteboard(1.5);
+      whiteboard.toggleWhiteboardMode(true); // Enable drawing mode
+    }
     // Trigger spin animation if the object is in animateSpinObjects
     if (animatedObjects.spin.includes(object)) {
       spinAnimation(object);
@@ -672,10 +674,6 @@ function spinAnimation(object) {
 function render() {
   controls.update();
 
-  console.log(camera.position);
-  console.log("aa");
-  console.log(camera.rotation);
-
   // Update Clock hand rotation
   updateClockHands();
 
@@ -835,25 +833,16 @@ document.getElementById("clear-whiteboard").addEventListener("click", () => {
 
 // Function to zoom camera to exact position and rotation
 function zoomToWhiteboard(duration = 2, cb = null) {
-  // Disable controls during animation
   controls.enabled = false;
 
-  // Calculate target point based on the rotation
-  // This uses the rotation to determine where the camera should look
   const direction = new THREE.Vector3(0, 0, -1);
   direction.applyEuler(whiteboardZoomTarget.rotation);
 
-  // Calculate a point 5 units away in the direction the camera is facing
   const targetPoint = new THREE.Vector3().copy(whiteboardZoomTarget.position);
   targetPoint.add(direction.multiplyScalar(5));
 
-  // Start timeline animation
   const timeline = gsap.timeline({
     onComplete: () => {
-      // Re-enable controls when animation completes
-      controls.enabled = true;
-
-      // Call callback if provided
       if (cb && typeof cb === "function") cb();
     },
   });
@@ -972,6 +961,7 @@ document.addEventListener("keydown", (event) => {
   switch (event.key.toLowerCase()) {
     case "o":
       zoomToWhiteboard(1.5);
+      whiteboard.toggleWhiteboardMode(true); // Enable drawing mode
       break;
     case "p":
       resetCameraPosition(2);
