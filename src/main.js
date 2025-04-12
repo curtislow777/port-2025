@@ -22,6 +22,10 @@ import { randomOink } from "./scripts/pig.js";
 import { setupMailbox } from "./scripts/mailbox.js";
 import { processFanObject, updateFans } from "./scripts/fanRotation.js";
 import ClockManager from "./scripts/clock.js";
+import {
+  setupHoverOutline,
+  updateOutlineHover,
+} from "./scripts/hoverOutline.js";
 
 /**
  * START OF THREE.JS CODE
@@ -206,7 +210,6 @@ const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
 const loadingScreen = document.querySelector(".loading-screen");
-const loadingText = document.querySelector(".loading-text");
 const loadingButton = document.querySelector(".loading-screen-btn");
 const loadingManager = new THREE.LoadingManager();
 
@@ -265,7 +268,6 @@ loadingButton.addEventListener("click", () => {
 const textureLoader = new THREE.TextureLoader(loadingManager);
 const dracoLoader = new DRACOLoader();
 const loader = new GLTFLoader(loadingManager);
-let composer, outlinePass;
 
 let selectedObjects = [];
 
@@ -321,36 +323,12 @@ controls.update();
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-function setupPostProcessing() {
-  // Create a new EffectComposer
-  composer = new EffectComposer(renderer);
+let composer, outlinePass;
 
-  // Add the render pass which renders the scene with the camera
-  const renderPass = new RenderPass(scene, camera);
-  composer.addPass(renderPass);
-
-  // Create an outline pass and add it to the composer
-  outlinePass = new OutlinePass(
-    new THREE.Vector2(sizes.width, sizes.height),
-    scene,
-    camera
-  );
-
-  outlinePass.edgeStrength = 5.0;
-  outlinePass.edgeThickness = 2.0;
-  outlinePass.edgeGlow = 0.0;
-  outlinePass.pulsePeriod = 0;
-  outlinePass.usePatternTexture = false;
-  outlinePass.visibleEdgeColor.set("#ffffff");
-  outlinePass.hiddenEdgeColor.set("#ffffff");
-
-  composer.addPass(outlinePass);
-
-  const outputPass = new OutputPass();
-  composer.addPass(outputPass);
-}
-
-setupPostProcessing();
+const { composer: outlineComposer, outlinePass: hoverOutlinePass } =
+  setupHoverOutline(renderer, scene, camera, sizes);
+composer = outlineComposer;
+outlinePass = hoverOutlinePass;
 
 function loadGlassEnvironmentMap(
   path = "textures/skybox/",
@@ -494,7 +472,7 @@ function handleRaycasterInteraction() {
     }
 
     if (mailbox.handleRaycastIntersection(object, modals.contact)) {
-      return; // Optional: add this if you want to prevent further processing
+      return;
     }
     // Trigger spin animation if the object is in animateSpinObjects
     if (animatedObjects.spin.includes(object)) {
@@ -697,18 +675,14 @@ function render() {
   // Update the picking ray with the camera and pointer position
   raycaster.setFromCamera(pointer, camera);
   currentIntersects = raycaster.intersectObjects(raycasterObjects);
+  currentIntersects = updateOutlineHover(
+    raycaster,
+    pointer,
+    camera,
+    raycasterObjects,
+    outlinePass
+  );
 
-  if (currentIntersects.length > 0) {
-    const selectedObject = currentIntersects[0].object;
-    selectedObjects = [selectedObject, ...selectedObject.children];
-    outlinePass.selectedObjects = selectedObjects;
-    document.body.style.cursor = "pointer";
-  } else {
-    // -- ADDED LINES TO CLEAR ANY PREVIOUS HOVER SELECTION --
-    selectedObjects = [];
-    outlinePass.selectedObjects = [];
-    document.body.style.cursor = "default";
-  }
   mailbox.updateMailboxHover(currentIntersects);
 
   // Update whiteboard if it exists and is active
