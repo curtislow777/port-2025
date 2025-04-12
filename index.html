@@ -54,9 +54,53 @@
     </div>
 
     <div class="modal contact-modal">
-      <h1 class="modal-title">Contact Modal</h1>
+      <!-- Close button (same as before) -->
       <button class="modal-close-btn">X</button>
-      <p>Contact form or info goes here...</p>
+
+      <!-- Heading -->
+      <h1 class="modal-title">CONTACT ME</h1>
+
+      <!-- Contact links/icons row -->
+      <div class="contact-links">
+        <!-- LinkedIn (FA “fab fa-linkedin-in”) -->
+        <a href="https://www.linkedin.com/in/curtis-low/" target="_blank">
+          <i class="fa-brands fa-linkedin-in"></i>
+        </a>
+
+        <!-- GitHub (FA “fab fa-github”) -->
+        <a href="https://github.com/curtislow777" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+
+        <!-- Email (FA “fas fa-envelope”) -->
+        <a href="mailto:curtlow10@gmail.com">
+          <i class="fas fa-envelope"></i>
+          curtlow10@gmail.com
+        </a>
+      </div>
+
+      <!-- Contact form -->
+      <form class="contact-form">
+        <label for="contact-name">Name</label>
+        <input type="text" id="contact-name" placeholder="Your Name" required />
+
+        <label for="contact-email">Email</label>
+        <input
+          type="email"
+          id="contact-email"
+          placeholder="Your Email"
+          required
+        />
+
+        <label for="contact-message">Message</label>
+        <textarea
+          id="contact-message"
+          rows="4"
+          placeholder="Your Message"
+        ></textarea>
+
+        <button type="submit" class="send-button">Send Message</button>
+      </form>
     </div>
 
     <div id="experience">

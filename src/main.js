@@ -110,9 +110,6 @@ const sizes = {
   height: window.innerHeight,
 };
 
-// Modal functions
-let isModalOpen = false;
-
 let whiteboard;
 
 // Create a modal system object to pass to the mailbox module
@@ -139,8 +136,6 @@ let currentIntersects = [];
 
 // Loaders
 AudioManager.playBGM(0); // Plays BGM at 30% volume
-
-let selectedObjects = [];
 
 // Get the scene/camera/renderer from init
 const {
@@ -173,8 +168,6 @@ const dracoLoader = new DRACOLoader();
 const loader = new GLTFLoader(loadingManager);
 loader.setDRACOLoader(dracoLoader);
 dracoLoader.setDecoderPath("/draco/");
-
-// usage
 
 const loadingScreen = document.querySelector(".loading-screen");
 const loadingButton = document.querySelector(".loading-screen-btn");
@@ -617,59 +610,3 @@ document.addEventListener("keydown", (event) => {
       break;
   }
 });
-
-// // Function to zoom camera to exact position and rotation
-// function zoomToWhiteboard(duration = 2, cb = null) {
-//   cameraManager.disableControls();
-
-//   const direction = new THREE.Vector3(0, 0, -1);
-//   direction.applyEuler(whiteboardZoomTarget.rotation);
-
-//   const targetPoint = new THREE.Vector3().copy(whiteboardZoomTarget.position);
-//   targetPoint.add(direction.multiplyScalar(5));
-
-//   const timeline = gsap.timeline({
-//     onComplete: () => {
-//       if (cb && typeof cb === "function") cb();
-//     },
-//   });
-
-//   timeline.to(
-//     camera.position,
-//     {
-//       x: whiteboardZoomTarget.position.x,
-//       y: whiteboardZoomTarget.position.y,
-//       z: whiteboardZoomTarget.position.z,
-//       duration: duration,
-//       ease: "power3.inOut",
-//     },
-//     0
-//   );
-
-//   timeline.to(
-//     camera.rotation,
-//     {
-//       x: whiteboardZoomTarget.rotation.x,
-//       y: whiteboardZoomTarget.rotation.y,
-//       z: whiteboardZoomTarget.rotation.z,
-//       duration: duration,
-//       ease: "power3.inOut",
-//     },
-//     0
-//   );
-
-//   timeline.to(
-//     controls.target,
-//     {
-//       x: targetPoint.x,
-//       y: targetPoint.y,
-//       z: targetPoint.z,
-//       duration: duration,
-//       ease: "power3.inOut",
-//       onUpdate: () => controls.update(),
-//     },
-//     0
-//   );
-
-//   return timeline;
-// }

@@ -221,9 +221,7 @@ export default class Whiteboard {
     } else {
       this.deactivateControls();
     }
-    //this.isActive = enable;  // No longer needed, the events are attached once in activateControls
 
-    // Optional: Show/hide UI controls (like color buttons)
     const whiteboardUI = document.querySelector(".whiteboard-controls");
     if (whiteboardUI) {
       whiteboardUI.style.display = enable ? "flex" : "none";
