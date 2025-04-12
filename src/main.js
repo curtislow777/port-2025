@@ -22,6 +22,8 @@ import { setupPerryCupAnimation } from "./scripts/perryCup.js";
 import { randomOink } from "./scripts/pig.js";
 import { setupMailbox } from "./scripts/mailbox.js";
 import { processFanObject, updateFans } from "./scripts/fanRotation.js";
+import ClockManager from "./scripts/clock.js";
+
 /**
  * START OF THREE.JS CODE
  * ---------------------------------------------------------------
@@ -30,6 +32,7 @@ import { processFanObject, updateFans } from "./scripts/fanRotation.js";
 document.addEventListener("DOMContentLoaded", () => {});
 
 let perryCupControls = null; // ✅ Add this
+const clockManager = new ClockManager();
 
 // Store default camera and controls settings
 const defaultCameraTarget = {
@@ -589,14 +592,11 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         child.material.map.minFilter = THREE.LinearFilter;
       }
 
-      if (child.name.includes("minute-hand")) {
-        minuteHand = child;
-        child.userData.initialRotation = new THREE.Euler().copy(child.rotation);
-      }
-
       if (child.name.includes("hour-hand")) {
-        hourHand = child;
-        child.userData.initialRotation = new THREE.Euler().copy(child.rotation);
+        clockManager.setHourHand(child);
+      }
+      if (child.name.includes("minute-hand")) {
+        clockManager.setMinuteHand(child);
       }
     }
 
@@ -665,22 +665,6 @@ function updateThreeJSTheme() {
 
 const clock = new THREE.Clock();
 
-const updateClockHands = () => {
-  if (!hourHand || !minuteHand) return;
-
-  const now = new Date();
-  const hours = now.getHours() % 12;
-  const minutes = now.getMinutes();
-  const seconds = now.getSeconds();
-
-  const minuteAngle = (minutes + seconds / 60) * ((Math.PI * 2) / 60);
-
-  const hourAngle = (hours + minutes / 60) * ((Math.PI * 2) / 12);
-
-  minuteHand.rotation.z = -minuteAngle;
-  hourHand.rotation.z = -hourAngle;
-};
-
 function playIntroAnimation() {
   const t1 = gsap.timeline({
     duration: 0.8,
@@ -743,9 +727,10 @@ function render() {
 
   // Update Clock hand rotation
   updateClockHands();
-
   // Rotate fans
   updateFans();
+  // Update clock local time
+  clockManager.update();
 
   // Update the picking ray with the camera and pointer position
   raycaster.setFromCamera(pointer, camera);
