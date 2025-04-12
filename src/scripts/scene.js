@@ -1,12 +1,13 @@
-// File: src/scripts/initThreeJS.js
+// File: src/scripts/scene.js
 import * as THREE from "three";
-import { OrbitControls } from "../utils/OrbitControls.js";
-import { setupHoverOutline } from "./hoverOutline.js"; // or wherever your outline function lives
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
+// If you still want your outline pass or post-processing inside here, you can,
+// but let's keep camera stuff minimal so there's no conflict with CameraManager.
+
 export function initThreeJS(canvas, sizes) {
-  // ------------------ Loading Manager ------------------
+  // 1) Loading managers + loaders
   const loadingManager = new THREE.LoadingManager();
   const textureLoader = new THREE.TextureLoader(loadingManager);
 
@@ -16,23 +17,25 @@ export function initThreeJS(canvas, sizes) {
   const gltfLoader = new GLTFLoader(loadingManager);
   gltfLoader.setDRACOLoader(dracoLoader);
 
-  // ------------------ Scene ------------------
+  // 2) Scene
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xe8e8e8);
+  const pointer = new THREE.Vector2();
+  const raycaster = new THREE.Raycaster();
 
-  // ------------------ Camera ------------------
+  // 3) Camera (but no OrbitControls yet)
   const camera = new THREE.PerspectiveCamera(
     35,
     sizes.width / sizes.height,
     0.1,
     1000
   );
-  // Position the camera wherever you like:
-  camera.position.set(15.53, 11.14, 20.73);
+  // Position can be optional here. The actual desired position
+  // might be set by CameraManager's constructor or methods.
 
-  // ------------------ Renderer ------------------
+  // 4) Renderer
   const renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
+    canvas,
     antialias: true,
   });
   renderer.setSize(sizes.width, sizes.height);
@@ -41,42 +44,13 @@ export function initThreeJS(canvas, sizes) {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
 
-  // ------------------ OrbitControls ------------------
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.minDistance = 0;
-  controls.maxDistance = 50;
-
-  // controls.minPolarAngle = 0;
-  // controls.maxPolarAngle = Math.PI / 2;
-  // controls.minAzimuthAngle = 0;
-  // controls.maxAzimuthAngle = Math.PI / 2; // Limit rotation to 180 degrees
-
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.05;
-  controls.target.set(-0.35, 3.0, 0.64);
-  controls.update();
-
-  // ------------------ Post Processing (Hover Outline) ------------------
-  let composer, outlinePass;
-  const { composer: outlineComposer, outlinePass: hoverOutlinePass } =
-    setupHoverOutline(renderer, scene, camera, sizes);
-  composer = outlineComposer;
-  outlinePass = hoverOutlinePass;
-
-  // ------------------ Raycaster Setup ------------------
-  const raycaster = new THREE.Raycaster();
-  const pointer = new THREE.Vector2();
-
-  // Return all core objects we need elsewhere
+  // 5) Return what you need
   return {
     scene,
     camera,
     renderer,
-    controls,
-    composer,
-    outlinePass,
-    raycaster,
     pointer,
+    raycaster,
     loadingManager,
     textureLoader,
     gltfLoader,

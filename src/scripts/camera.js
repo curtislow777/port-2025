@@ -170,6 +170,21 @@ class CameraManager {
     return timeline;
   }
 
+  zoomToWhiteboard(whiteboard, duration = 2) {
+    // Use the built-in zoomToPosition for “whiteboard”
+    this.zoomToPosition("whiteboard", duration, () => {
+      // Once camera is at whiteboard, enable drawing mode:
+      whiteboard.toggleWhiteboardMode(true);
+    });
+  }
+
+  leaveWhiteboard(whiteboard, duration = 2) {
+    // Return the camera to default
+    this.resetToDefault(duration, () => {
+      whiteboard.toggleWhiteboardMode(false);
+    });
+  }
+
   resetToDefault(duration = 2, callback = null) {
     // Stop any current animation
     if (this.currentAnimation) {

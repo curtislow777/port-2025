@@ -81,10 +81,10 @@ const {
   closeButtonSelector: ".modal-close-btn",
   // Optionally pass callbacks to disable/enable OrbitControls
   onModalOpen: () => {
-    controls.enabled = false;
+    cameraManager.enableControls();
   },
   onModalClose: () => {
-    controls.enabled = true;
+    cameraManager.disableControls();
   },
 });
 // Theme toggle functionality with GSAP animation
@@ -177,19 +177,32 @@ let currentIntersects = [];
 
 let selectedObjects = [];
 
-let {
+// Get the scene/camera/renderer from init
+const {
   scene,
   camera,
   renderer,
-  controls,
-  composer,
-  outlinePass,
-  raycaster,
   pointer,
+  raycaster,
   loadingManager,
   textureLoader,
   gltfLoader,
 } = initThreeJS(canvas, sizes);
+const { composer, outlinePass } = setupHoverOutline(
+  renderer,
+  scene,
+  camera,
+  sizes
+);
+
+// 2) Create CameraManager
+// Provide the camera, renderer, and desired initial position/target
+const cameraManager = new CameraManager(
+  camera,
+  renderer,
+  new THREE.Vector3(15.53, 11.14, 20.73), // default camera position
+  new THREE.Vector3(-0.35, 3.0, 0.64) // default camera target
+);
 
 const dracoLoader = new DRACOLoader();
 const loader = new GLTFLoader(loadingManager);
@@ -379,7 +392,7 @@ function handleRaycasterInteraction() {
 
     if (object.name.includes("whiteboard-raycast")) {
       console.log("Whiteboard clicked!");
-      zoomToWhiteboard(1.5);
+      cameraManager.zoomToWhiteboard(whiteboard, 1.5);
       whiteboard.toggleWhiteboardMode(true); // Enable drawing mode
     }
 
@@ -509,7 +522,7 @@ const sound = new Howl({
 
 sound.play();
 
-whiteboard = new Whiteboard(scene, camera, renderer, controls);
+whiteboard = new Whiteboard(scene, camera, renderer, cameraManager.controls);
 whiteboard.setPosition(-5.8, 4.12675142288208, 0.121265381);
 whiteboard.setRotation(0, Math.PI / 2, 0);
 
@@ -537,7 +550,7 @@ function playIntroAnimation() {
 }
 
 function render() {
-  controls.update();
+  cameraManager.update();
 
   // Rotate fans
   updateFans();
@@ -636,135 +649,72 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// Function to zoom camera to exact position and rotation
-function zoomToWhiteboard(duration = 2, cb = null) {
-  controls.enabled = false;
-
-  const direction = new THREE.Vector3(0, 0, -1);
-  direction.applyEuler(whiteboardZoomTarget.rotation);
-
-  const targetPoint = new THREE.Vector3().copy(whiteboardZoomTarget.position);
-  targetPoint.add(direction.multiplyScalar(5));
-
-  const timeline = gsap.timeline({
-    onComplete: () => {
-      if (cb && typeof cb === "function") cb();
-    },
-  });
-
-  timeline.to(
-    camera.position,
-    {
-      x: whiteboardZoomTarget.position.x,
-      y: whiteboardZoomTarget.position.y,
-      z: whiteboardZoomTarget.position.z,
-      duration: duration,
-      ease: "power3.inOut",
-    },
-    0
-  );
-
-  timeline.to(
-    camera.rotation,
-    {
-      x: whiteboardZoomTarget.rotation.x,
-      y: whiteboardZoomTarget.rotation.y,
-      z: whiteboardZoomTarget.rotation.z,
-      duration: duration,
-      ease: "power3.inOut",
-    },
-    0
-  );
-
-  timeline.to(
-    controls.target,
-    {
-      x: targetPoint.x,
-      y: targetPoint.y,
-      z: targetPoint.z,
-      duration: duration,
-      ease: "power3.inOut",
-      onUpdate: () => controls.update(),
-    },
-    0
-  );
-
-  return timeline;
-}
-
-// Function to return camera to default position
-function resetCameraPosition(duration = 2, cb = null) {
-  controls.enabled = false;
-  const timeline = gsap.timeline({
-    onComplete: () => {
-      // Re-enable controls
-      controls.enabled = true;
-      if (cb && typeof cb === "function") cb();
-    },
-  });
-
-  timeline.to(
-    camera.position,
-    {
-      x: defaultCameraTarget.position.x,
-      y: defaultCameraTarget.position.y,
-      z: defaultCameraTarget.position.z,
-      duration: duration,
-      ease: "power2.inOut",
-    },
-    0
-  );
-  const lookAtVector = new THREE.Vector3()
-    .subVectors(defaultCameraTarget.target, defaultCameraTarget.position)
-    .normalize();
-
-  const targetQuaternion = new THREE.Quaternion().setFromRotationMatrix(
-    new THREE.Matrix4().lookAt(
-      new THREE.Vector3(0, 0, 0),
-      lookAtVector,
-      new THREE.Vector3(0, 1, 0)
-    )
-  );
-
-  // Use quaternion slerp internally
-  timeline.to(
-    camera.quaternion,
-    {
-      x: targetQuaternion.x,
-      y: targetQuaternion.y,
-      z: targetQuaternion.z,
-      w: targetQuaternion.w,
-      duration: duration,
-      ease: "power2.inOut",
-    },
-    0
-  );
-
-  // Animate orbit controls target back to default
-  timeline.to(
-    controls.target,
-    {
-      x: defaultCameraTarget.target.x,
-      y: defaultCameraTarget.target.y,
-      z: defaultCameraTarget.target.z,
-      duration: duration,
-      ease: "power2.inOut",
-      onUpdate: () => controls.update(),
-    },
-    0
-  );
-
-  return timeline;
-}
-
 document.addEventListener("keydown", (event) => {
   switch (event.key.toLowerCase()) {
     case "o":
-      zoomToWhiteboard(1.5);
-      whiteboard.toggleWhiteboardMode(true); // Enable drawing mode
+      // Zoom to whiteboard, enabling drawing mode
+      cameraManager.zoomToWhiteboard(whiteboard, 1.5);
       break;
+
     case "p":
-      resetCameraPosition(2);
+      // Reset to default camera, disabling drawing
+      cameraManager.leaveWhiteboard(whiteboard, 1.5);
       break;
   }
 });
+
+// // Function to zoom camera to exact position and rotation
+// function zoomToWhiteboard(duration = 2, cb = null) {
+//   cameraManager.disableControls();
+
+//   const direction = new THREE.Vector3(0, 0, -1);
+//   direction.applyEuler(whiteboardZoomTarget.rotation);
+
+//   const targetPoint = new THREE.Vector3().copy(whiteboardZoomTarget.position);
+//   targetPoint.add(direction.multiplyScalar(5));
+
+//   const timeline = gsap.timeline({
+//     onComplete: () => {
+//       if (cb && typeof cb === "function") cb();
+//     },
+//   });
+
+//   timeline.to(
+//     camera.position,
+//     {
+//       x: whiteboardZoomTarget.position.x,
+//       y: whiteboardZoomTarget.position.y,
+//       z: whiteboardZoomTarget.position.z,
+//       duration: duration,
+//       ease: "power3.inOut",
+//     },
+//     0
+//   );
+
+//   timeline.to(
+//     camera.rotation,
+//     {
+//       x: whiteboardZoomTarget.rotation.x,
+//       y: whiteboardZoomTarget.rotation.y,
+//       z: whiteboardZoomTarget.rotation.z,
+//       duration: duration,
+//       ease: "power3.inOut",
+//     },
+//     0
+//   );
+
+//   timeline.to(
+//     controls.target,
+//     {
+//       x: targetPoint.x,
+//       y: targetPoint.y,
+//       z: targetPoint.z,
+//       duration: duration,
+//       ease: "power3.inOut",
+//       onUpdate: () => controls.update(),
+//     },
+//     0
+//   );
+
+//   return timeline;
+// }
