@@ -89,41 +89,18 @@ themeToggle.addEventListener("click", () => {
   updateThreeJSTheme();
 });
 
-// Sound toggle functionality (unchanged)
-soundToggle.addEventListener("click", () => {
-  isMuted = !isMuted;
-  if (isMuted) {
-    soundToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
-    // If you need to mute sound in your Three.js scene
-    if (window.muteSound && typeof window.muteSound === "function") {
-      window.muteSound();
-    }
-  } else {
-    soundToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
-    // If you need to unmute sound in your Three.js scene
-    if (window.unmuteSound && typeof window.unmuteSound === "function") {
-      window.unmuteSound();
-    }
-  }
-});
-// Sound toggle functionality
 soundToggle.addEventListener("click", () => {
   isMuted = !isMuted;
 
   if (isMuted) {
     soundToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
 
-    // If you need to mute sound in your Three.js scene
-    if (window.muteSound && typeof window.muteSound === "function") {
-      window.muteSound();
-    }
+    // Pause BGM
+    AudioManager.pauseBGM();
   } else {
     soundToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
 
-    // If you need to unmute sound in your Three.js scene
-    if (window.unmuteSound && typeof window.unmuteSound === "function") {
-      window.unmuteSound();
-    }
+    AudioManager.playBGM(0.3);
   }
 });
 

@@ -16,6 +16,10 @@ const AudioManager = {
     bgm.volume(volume);
     if (!bgm.playing()) bgm.play();
   },
+  pauseBGM: (volume = 1.0) => {
+    bgm.volume(volume);
+    if (bgm.playing()) bgm.pause();
+  },
 
   playClick: (volume = 1.0) => {
     click.volume(volume);
