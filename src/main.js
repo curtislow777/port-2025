@@ -4,14 +4,13 @@ import { initThreeJS } from "./scripts/scene.js";
 // Add this import at the top with your other imports
 import "./style.scss";
 import Whiteboard from "./utils/whiteboard.js";
+import AudioManager from "./scripts/audio.js";
 
-import { OrbitControls } from "./utils/OrbitControls.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { themeVertexShader, themeFragmentShader } from "../themeShader.js";
 
 import gsap from "gsap";
-import { Howl } from "howler";
 
 import CameraManager from "./scripts/camera.js";
 
@@ -19,7 +18,7 @@ import { setupPerryCupAnimation } from "./scripts/perryCup.js";
 import { randomOink } from "./scripts/pig.js";
 import { setupMailbox } from "./scripts/mailbox.js";
 import { processFanObject, updateFans } from "./scripts/fanRotation.js";
-import { spinAnimation } from "./scripts/spinnyObjects.js"; // <-- Import from new script
+import { spinAnimation } from "./scripts/spinnyObjects.js";
 
 import ClockManager from "./scripts/clock.js";
 import {
@@ -48,18 +47,6 @@ let isNight = false;
 
 let perryHatObject = null;
 let pigObject = null;
-window.addEventListener("keydown", (event) => {
-  if (event.key.toLowerCase() === "t") {
-    isNight = !isNight;
-
-    // Animate uMixRatio between 0 (day) and 1 (night)
-    gsap.to(uMixRatio, {
-      value: isDarkMode ? 1 : 0,
-      duration: 1.5,
-      ease: "power2.inOut",
-    });
-  }
-});
 
 // Initialize state
 let isDarkMode = false;
@@ -174,6 +161,7 @@ const raycasterObjects = [];
 let currentIntersects = [];
 
 // Loaders
+AudioManager.playBGM(0); // Plays BGM at 30% volume
 
 let selectedObjects = [];
 
@@ -511,16 +499,6 @@ loader.load("/models/room-port-v1.glb", (glb) => {
 
   playIntroAnimation();
 });
-
-const sound = new Howl({
-  //  src: ["audio/imok.ogg"],
-  src: ["audio/moving.ogg"],
-  loop: true,
-  volume: 0.0,
-  onplay: () => console.log("audio playing"),
-});
-
-sound.play();
 
 whiteboard = new Whiteboard(scene, camera, renderer, cameraManager.controls);
 whiteboard.setPosition(-5.8, 4.12675142288208, 0.121265381);

@@ -7,7 +7,7 @@ const sounds = [
   new Howl({ src: ["audio/pig/Pig_idle3.ogg"], volume: 0.5 }),
 ];
 
-export function playOink(index) {
+function playOink(index) {
   if (sounds[index]) {
     sounds[index].play();
   } else {
