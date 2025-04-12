@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import { initThreeJS } from "./scripts/scene.js";
+
 // Add this import at the top with your other imports
 import "./style.scss";
 import Whiteboard from "./utils/whiteboard.js";
@@ -24,6 +26,7 @@ import {
   setupHoverOutline,
   updateOutlineHover,
 } from "./scripts/hoverOutline.js";
+import { initModalSystem } from "./scripts/modal.js";
 
 /**
  * START OF THREE.JS CODE
@@ -33,23 +36,8 @@ import {
 document.addEventListener("DOMContentLoaded", () => {});
 
 let perryCupControls = null;
+
 const clockManager = new ClockManager();
-
-// Store default camera and controls settings
-const defaultCameraTarget = {
-  position: new THREE.Vector3(15.53, 11.14, 20.73),
-  target: new THREE.Vector3(-0.35, 3.0, 0.64),
-};
-
-const whiteboardZoomTarget = {
-  position: new THREE.Vector3(0.25, 4.38, -0.069),
-  rotation: new THREE.Euler(
-    0, // x-axis (0 degrees)
-    Math.PI / 2, // y-axis (90 degrees)
-    0, // z-axis (0 degrees)
-    "XYZ" // rotation order
-  ),
-};
 
 // Get the buttons
 const themeToggle = document.getElementById("theme-toggle");
@@ -76,7 +64,29 @@ window.addEventListener("keydown", (event) => {
 // Initialize state
 let isDarkMode = false;
 let isMuted = false;
-
+/** Initialize modal system */
+const {
+  overlay,
+  modals, // { work, about, contact } as defined in modalSelectors
+  showModal,
+  hideModal,
+  hideAllModals,
+} = initModalSystem({
+  overlaySelector: ".overlay",
+  modalSelectors: {
+    work: ".work-modal",
+    about: ".about-modal",
+    contact: ".contact-modal",
+  },
+  closeButtonSelector: ".modal-close-btn",
+  // Optionally pass callbacks to disable/enable OrbitControls
+  onModalOpen: () => {
+    controls.enabled = false;
+  },
+  onModalClose: () => {
+    controls.enabled = true;
+  },
+});
 // Theme toggle functionality with GSAP animation
 themeToggle.addEventListener("click", () => {
   isDarkMode = !isDarkMode;
@@ -136,52 +146,10 @@ const sizes = {
   height: window.innerHeight,
 };
 
-const modals = {
-  work: document.querySelector(".work-modal"),
-  about: document.querySelector(".about-modal"),
-  contact: document.querySelector(".contact-modal"),
-};
-
 // Modal functions
 let isModalOpen = false;
 
 let whiteboard;
-
-const showModal = (modal) => {
-  // Show overlay first
-  overlay.style.display = "block";
-  modal.style.display = "block";
-
-  // Reset scale and opacity before animating
-  gsap.fromTo(
-    modal,
-    { scale: 0, opacity: 0 },
-    { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" }
-  );
-
-  gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.5 });
-};
-
-const hideModal = (modal) => {
-  isModalOpen = false;
-  controls.enabled = true;
-
-  gsap.to(overlay, {
-    opacity: 0,
-    duration: 0.5,
-  });
-
-  gsap.to(modal, {
-    opacity: 0,
-    scale: 0,
-    duration: 0.5,
-    ease: "back.in(2)",
-    onComplete: () => {
-      modal.style.display = "none";
-      overlay.style.display = "none";
-    },
-  });
-};
 
 // Create a modal system object to pass to the mailbox module
 const modalSystem = {
@@ -204,12 +172,34 @@ const animatedObjects = {
 
 const raycasterObjects = [];
 let currentIntersects = [];
-const raycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2();
+
+// Loaders
+
+let selectedObjects = [];
+
+let {
+  scene,
+  camera,
+  renderer,
+  controls,
+  composer,
+  outlinePass,
+  raycaster,
+  pointer,
+  loadingManager,
+  textureLoader,
+  gltfLoader,
+} = initThreeJS(canvas, sizes);
+
+const dracoLoader = new DRACOLoader();
+const loader = new GLTFLoader(loadingManager);
+loader.setDRACOLoader(dracoLoader);
+dracoLoader.setDecoderPath("/draco/");
+
+// usage
 
 const loadingScreen = document.querySelector(".loading-screen");
 const loadingButton = document.querySelector(".loading-screen-btn");
-const loadingManager = new THREE.LoadingManager();
 
 loadingManager.onStart = () => {
   gsap.to(".loading-screen", { opacity: 1, duration: 1, ease: "power2.out" });
@@ -261,72 +251,6 @@ loadingButton.addEventListener("click", () => {
     },
   });
 });
-
-// Loaders
-const textureLoader = new THREE.TextureLoader(loadingManager);
-const dracoLoader = new DRACOLoader();
-const loader = new GLTFLoader(loadingManager);
-
-let selectedObjects = [];
-
-loader.setDRACOLoader(dracoLoader);
-dracoLoader.setDecoderPath("/draco/");
-
-function initializeRenderer(canvas, sizes) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.0;
-  return renderer;
-}
-
-// usage
-const renderer = initializeRenderer(canvas, sizes);
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xe8e8e8); // Light blue
-
-const camera = new THREE.PerspectiveCamera(
-  35,
-  sizes.width / sizes.height,
-  0.1,
-  1000
-);
-
-// Set camera position BEFORE initializing controls
-camera.position.set(
-  defaultCameraTarget.position.x,
-  defaultCameraTarget.position.y,
-  defaultCameraTarget.position.z
-);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.minDistance = 0;
-controls.maxDistance = 50;
-// controls.minPolarAngle = 0;
-// controls.maxPolarAngle = Math.PI / 2;
-// controls.minAzimuthAngle = 0;
-// controls.maxAzimuthAngle = Math.PI / 2; // Limit rotation to 180 degrees
-
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.target.set(
-  defaultCameraTarget.target.x,
-  defaultCameraTarget.target.y,
-  defaultCameraTarget.target.z
-);
-controls.update();
-
-renderer.setSize(sizes.width, sizes.height);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-let composer, outlinePass;
-
-const { composer: outlineComposer, outlinePass: hoverOutlinePass } =
-  setupHoverOutline(renderer, scene, camera, sizes);
-composer = outlineComposer;
-outlinePass = hoverOutlinePass;
 
 function loadGlassEnvironmentMap(
   path = "textures/skybox/",
@@ -645,7 +569,6 @@ function render() {
 render();
 
 // Get overlay and close buttons
-const overlay = document.querySelector(".overlay");
 const closeButtons = document.querySelectorAll(".modal-close-btn");
 
 // Event Listeners
