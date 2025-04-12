@@ -7,13 +7,8 @@ export default class ClockManager {
     this.minuteHand = null;
   }
 
-  /**
-   * Attach references to the hour and minute hand Meshes
-   * that were loaded in the main scene.
-   */
   setHourHand(mesh) {
     this.hourHand = mesh;
-    // Store initial rotation if you need it
     this.hourHand.userData.initialRotation =
       this.hourHand.userData.initialRotation ||
       new THREE.Euler().copy(mesh.rotation);
@@ -21,16 +16,11 @@ export default class ClockManager {
 
   setMinuteHand(mesh) {
     this.minuteHand = mesh;
-    // Store initial rotation if you need it
     this.minuteHand.userData.initialRotation =
       this.minuteHand.userData.initialRotation ||
       new THREE.Euler().copy(mesh.rotation);
   }
 
-  /**
-   * Call this in your render/animation loop to keep the
-   * clock hands in sync with the current local time.
-   */
   updateClockHands() {
     if (!this.hourHand || !this.minuteHand) return;
 

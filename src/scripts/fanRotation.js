@@ -1,18 +1,14 @@
-// fanRotation.js - Module for managing fan rotation animations in 3D scene
-
-// Store fans in arrays based on their rotation axis
 const fans = {
   xAxis: [],
   yAxis: [],
   zAxis: [],
 };
 
-// Default rotation speed
 let rotationSpeed = 0.05;
 
 /**
- * Process a mesh to determine if it's a fan and add it to the appropriate collection
- * @param {THREE.Mesh} mesh - The mesh to process
+ * Process  mesh to determine if it's a fan
+ * @param {THREE.Mesh} mesh -
  */
 function processFanObject(mesh) {
   if (!mesh.name.includes("fan")) return;
@@ -26,9 +22,6 @@ function processFanObject(mesh) {
   }
 }
 
-/**
- * Update all fan rotations - call this in your render loop
- */
 function updateFans() {
   // Rotate fans on X axis
   fans.xAxis.forEach((fan) => {

@@ -87,7 +87,7 @@ class CameraManager {
       },
     });
 
-    // If we have a rotation defined for this position
+    // If we a rotation is defined for this position
     if (this.rotations[positionName]) {
       // Animate position
       timeline.to(
@@ -115,7 +115,6 @@ class CameraManager {
         0
       );
 
-      // If it's the whiteboard view, calculate a target point
       if (positionName === "whiteboard") {
         const direction = new THREE.Vector3(0, 0, -1);
         direction.applyEuler(this.rotations[positionName]);

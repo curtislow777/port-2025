@@ -1,12 +1,73 @@
-$base-blue: #7ec8e3; // A soft, pastel blue for the base
-$base-black: #2e2e2e; // A dark gray-black for contrast (soft, not too harsh)
-$base-purple: #b392d0; // A light, pastel purple for accents or highlights
-$base-white: #ffffff; // Pure white for contrast and readability
+$button-bg-day: #80d0f7;
+$button-border-day: #ffffff;
+$button-hover-day: #67c1e0;
 
-$button-bg-day: #80d0f7; // A soft pastel blue for the day button background
-$button-border-day: #ffffff; // A slightly darker pastel blue for the button border during the day
-$button-hover-day: #67c1e0; // A darker shade of pastel blue for the button hover effect (similar to the base, but darker)
-
-$button-bg-night: #232b72; // A subtle, cool gray for the night button background
+$button-bg-night: #232b72;
 $button-hover-night: #313f8d;
 $button-border-night: #4f5b86;
+
+/* ===============================
+   🎨 Base Colour Palette
+================================= */
+$colour-blue: #7ec8e3;
+$colour-purple: #b392d0;
+$colour-black: #2e2e2e;
+$colour-white: #ffffff;
+
+$colour-wood: #a86432;
+$colour-cream: #fdfaf4;
+$colour-light-blue: #cdeffc;
+$colour-accent-pink: #f0b7cf;
+$colour-green: #b2ddbf;
+
+$colour-shadow: rgba(0, 0, 0, 0.15);
+
+/* ===============================
+   ☀️ Day Theme
+================================= */
+$bg-day: #eef9fe;
+$text-day: $colour-black;
+$card-bg-day: $colour-white;
+$icon-colour-day: $colour-black;
+
+$button-bg-day: #80d0f7;
+$button-hover-bg-day: #67c1e0;
+$button-border-day: $colour-white;
+
+/* ===============================
+   🌙 Night Theme
+================================= */
+$bg-night: #1a1e3a;
+$text-night: #eaeaff;
+$card-bg-night: #2b3060;
+$icon-colour-night: #c9d1ff;
+
+$button-bg-night: #232b72;
+$button-hover-bg-night: #313f8d;
+$button-border-night: #4f5b86;
+
+/* ===============================
+   🧠 Semantic Tokens
+================================= */
+$colour-primary: $colour-blue;
+$colour-secondary: $colour-purple;
+$colour-surface: $colour-white;
+$colour-background: $bg-day; // override in theme switch
+$colour-text: $text-day; // override in theme switch
+
+$colour-on-primary: $colour-white; // text/icons on primary buttons
+
+/* ===============================
+   🔘 Button Tokens
+================================= */
+$button-bg: $colour-primary;
+$button-hover-bg: $button-hover-bg-day;
+$button-border: $button-border-day;
+$button-text: $colour-on-primary;
+
+/* ===============================
+   🪟 Modal Tokens
+================================= */
+$modal-bg: $card-bg-day;
+$modal-text: $text-day;
+$modal-backdrop: rgba(0, 0, 0, 0.4);
