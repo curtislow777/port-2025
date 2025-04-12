@@ -577,7 +577,7 @@ const sound = new Howl({
   //  src: ["audio/imok.ogg"],
   src: ["audio/moving.ogg"],
   loop: true,
-  volume: 0,
+  volume: 0.3,
   onplay: () => console.log("audio playing"),
 });
 
