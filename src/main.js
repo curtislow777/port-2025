@@ -20,12 +20,15 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 import { setupPerryCupAnimation } from "./scripts/perryCup.js";
 import { randomOink } from "./scripts/pig.js";
+import { setupMailbox } from "./scripts/mailbox.js";
+import { processFanObject, updateFans } from "./scripts/fanRotation.js";
 /**
  * START OF THREE.JS CODE
  * ---------------------------------------------------------------
  */
 
 document.addEventListener("DOMContentLoaded", () => {});
+
 let perryCupControls = null; // ✅ Add this
 
 // Store default camera and controls settings
@@ -193,9 +196,11 @@ const hideModal = (modal) => {
   });
 };
 
-const xAxisFans = [];
-const yAxisFans = [];
-const zAxisFans = [];
+// Create a modal system object to pass to the mailbox module
+const modalSystem = {
+  showModal: showModal,
+  hideModal: hideModal,
+};
 
 const socialLinks = {
   Github: "https://github.com/curtislow777",
@@ -473,10 +478,7 @@ function handleRaycasterInteraction() {
   if (currentIntersects.length > 0) {
     const object = currentIntersects[0].object;
 
-    // Open modals based on object names
-    if (object.name.includes("contact-raycast")) {
-      showModal(modals.contact);
-    } else if (object.name.includes("about-raycast")) {
+    if (object.name.includes("about-raycast")) {
       showModal(modals.about);
     } else if (object.name.includes("work-raycast")) {
       showModal(modals.work);
@@ -507,6 +509,10 @@ function handleRaycasterInteraction() {
       randomOink(pigObject);
       console.log("Pig head clicked!");
     }
+
+    if (mailbox.handleRaycastIntersection(object, modals.contact)) {
+      return; // Optional: add this if you want to prevent further processing
+    }
     // Trigger spin animation if the object is in animateSpinObjects
     if (animatedObjects.spin.includes(object)) {
       spinAnimation(object);
@@ -522,6 +528,7 @@ window.addEventListener("mousemove", (event) => {
 window.addEventListener("click", handleRaycasterInteraction);
 
 let uMixRatio = { value: 0 }; // shared uniform for all shader materials
+const mailbox = setupMailbox(scene, modalSystem);
 
 loader.load("/models/room-port-v1.glb", (glb) => {
   glb.scene.traverse((child) => {
@@ -545,16 +552,7 @@ loader.load("/models/room-port-v1.glb", (glb) => {
 
         // Clone the material so it’s independent and assign MeshBasicMaterial:
         child.material = material;
-
-        if (child.name.includes("fan")) {
-          if (child.name.includes("animateX")) {
-            xAxisFans.push(child);
-          } else if (child.name.includes("animateY")) {
-            yAxisFans.push(child);
-          } else if (child.name.includes("animateZ")) {
-            zAxisFans.push(child);
-          }
-        }
+        processFanObject(child);
 
         if (child.name.includes("keycapAnimate")) {
           animatedObjects.keycaps.push(child);
@@ -571,9 +569,9 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         if (child.name.includes("raycast")) {
           raycasterObjects.push(child);
         }
-        if (child.name.includes("mailbox-cover")) {
-          mailboxCover = child;
-        }
+
+        mailbox.processMailboxObject(child);
+
         if (child.name.includes("pig-head")) {
           pigObject = child;
         }
@@ -747,15 +745,7 @@ function render() {
   updateClockHands();
 
   // Rotate fans
-  xAxisFans.forEach((fan) => {
-    fan.rotation.x -= 0.05;
-  });
-  yAxisFans.forEach((fan) => {
-    fan.rotation.y -= 0.05;
-  });
-  zAxisFans.forEach((fan) => {
-    fan.rotation.z -= 0.05;
-  });
+  updateFans();
 
   // Update the picking ray with the camera and pointer position
   raycaster.setFromCamera(pointer, camera);
@@ -772,23 +762,7 @@ function render() {
     outlinePass.selectedObjects = [];
     document.body.style.cursor = "default";
   }
-
-  // Mailbox hover logic
-  const mailboxRaycastObj = currentIntersects.find((hit) =>
-    hit.object.name.includes("mailbox-raycast")
-  );
-
-  if (mailboxRaycastObj) {
-    if (!mailboxHovered) {
-      mailboxHovered = true;
-      toggleMailboxCover(true); // Animate open
-    }
-  } else {
-    if (mailboxHovered) {
-      mailboxHovered = false;
-      toggleMailboxCover(false); // Animate close
-    }
-  }
+  mailbox.updateMailboxHover(currentIntersects);
 
   // Update whiteboard if it exists and is active
   if (whiteboard && whiteboard.isActive) {
