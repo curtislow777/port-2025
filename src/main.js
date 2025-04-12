@@ -11,11 +11,7 @@ import { themeVertexShader, themeFragmentShader } from "../themeShader.js";
 import gsap from "gsap";
 import { Howl } from "howler";
 
-// Outline post processing
-import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
-import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
-import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
-import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import CameraManager from "./scripts/camera.js";
 
 import { setupPerryCupAnimation } from "./scripts/perryCup.js";
 import { randomOink } from "./scripts/pig.js";
@@ -672,6 +668,8 @@ function render() {
   // Update clock local time
   clockManager.updateClockHands();
 
+  mailbox.updateMailboxHover(currentIntersects);
+
   // Update the picking ray with the camera and pointer position
   raycaster.setFromCamera(pointer, camera);
   currentIntersects = raycaster.intersectObjects(raycasterObjects);
@@ -682,8 +680,6 @@ function render() {
     raycasterObjects,
     outlinePass
   );
-
-  mailbox.updateMailboxHover(currentIntersects);
 
   // Update whiteboard if it exists and is active
   if (whiteboard && whiteboard.isActive) {
@@ -763,19 +759,6 @@ document.addEventListener("DOMContentLoaded", function () {
       sidePanel.classList.remove("active");
     }
   });
-});
-
-// Temporary button to toggle whiteeboard
-document.getElementById("toggle-whiteboard").addEventListener("click", () => {
-  const isVisible = whiteboard.toggle();
-  document.querySelector(".whiteboard-controls").style.display = isVisible
-    ? "flex"
-    : "none";
-
-  whiteboard.toggleWhiteboardMode(isVisible);
-});
-document.getElementById("clear-whiteboard").addEventListener("click", () => {
-  whiteboard.clear();
 });
 
 // Function to zoom camera to exact position and rotation
