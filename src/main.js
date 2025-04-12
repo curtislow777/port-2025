@@ -64,6 +64,7 @@ const {
     work: ".work-modal",
     about: ".about-modal",
     contact: ".contact-modal",
+    erhu: ".erhu-modal",
   },
   closeButtonSelector: ".modal-close-btn",
   // Optionally pass callbacks to disable/enable OrbitControls
@@ -337,6 +338,10 @@ function handleRaycasterInteraction() {
     if (object.name.includes("about-raycast")) {
       showModal(modals.about);
     } else if (object.name.includes("work-raycast")) {
+      showModal(modals.work);
+    } else if (object.name.includes("erhu-seven")) {
+      showModal(modals.erhu);
+    } else if (object.name.includes("monitor")) {
       showModal(modals.work);
     }
 

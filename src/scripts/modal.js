@@ -7,6 +7,7 @@ export function initModalSystem({
     work: ".work-modal",
     about: ".about-modal",
     contact: ".contact-modal",
+    erhu: ".erhu-modal",
   },
   closeButtonSelector = ".modal-close-btn",
   onModalOpen = () => {},
