@@ -17,6 +17,8 @@ import { setupPerryCupAnimation } from "./scripts/perryCup.js";
 import { randomOink } from "./scripts/pig.js";
 import { setupMailbox } from "./scripts/mailbox.js";
 import { processFanObject, updateFans } from "./scripts/fanRotation.js";
+import { spinAnimation } from "./scripts/spinnyObjects.js"; // <-- Import from new script
+
 import ClockManager from "./scripts/clock.js";
 import {
   setupHoverOutline,
@@ -577,7 +579,7 @@ const sound = new Howl({
   //  src: ["audio/imok.ogg"],
   src: ["audio/moving.ogg"],
   loop: true,
-  volume: 0.3,
+  volume: 0.0,
   onplay: () => console.log("audio playing"),
 });
 
@@ -607,56 +609,6 @@ function playIntroAnimation() {
   const t1 = gsap.timeline({
     duration: 0.8,
     ease: "back.out(1.8)",
-  });
-}
-
-const spinTimelines = new Map(); // Store spin timelines for each object
-const spinDuration = 2; // Base duration for one spin (in seconds)
-const spinAmount = Math.PI * 2; // Full 360-degree rotation
-
-function spinAnimation(object) {
-  let timeline = spinTimelines.get(object);
-  let currentRotation = object.rotation.y;
-  let newRotation = currentRotation + spinAmount;
-  let duration = spinDuration;
-
-  // Reset scale before starting the new animation
-  gsap.to(object.scale, {
-    x: 1,
-    y: 1,
-    z: 1,
-    duration: 0.2, // Reset back to original scale instantly
-    onComplete: () => {
-      if (timeline) {
-        // Extend existing animation without changing the base duration
-        const progress = timeline.progress();
-        duration += timeline.duration() * (1 - progress); // Keep the base spin duration fixed
-        timeline.clear(); // Clear queue instead of killing
-      } else {
-        // Create a new timeline
-        timeline = gsap.timeline({
-          onComplete: () => spinTimelines.delete(object),
-        });
-        spinTimelines.set(object, timeline);
-      }
-
-      // Apply the spin animation (this duration should remain constant)
-      timeline.to(object.rotation, {
-        y: newRotation,
-        duration: spinDuration,
-        ease: "power1.out",
-      });
-
-      // Apply scaling feedback
-      gsap.to(object.scale, {
-        x: 1.1,
-        y: 1.1,
-        z: 1.1,
-        duration: 0.2,
-        yoyo: true,
-        repeat: 1,
-      });
-    },
   });
 }
 
