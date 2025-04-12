@@ -31,7 +31,7 @@ export default class ClockManager {
    * Call this in your render/animation loop to keep the
    * clock hands in sync with the current local time.
    */
-  update() {
+  updateClockHands() {
     if (!this.hourHand || !this.minuteHand) return;
 
     const now = new Date();
@@ -39,13 +39,9 @@ export default class ClockManager {
     const minutes = now.getMinutes();
     const seconds = now.getSeconds();
 
-    // 360 degrees = 2π radians
-    // Each hour = 30 degrees of rotation
     const hourAngle = (hours + minutes / 60) * ((Math.PI * 2) / 12);
-    // Each minute = 6 degrees of rotation
     const minuteAngle = (minutes + seconds / 60) * ((Math.PI * 2) / 60);
 
-    // Rotate in Z (depending on how your model is oriented)
     this.hourHand.rotation.z = -hourAngle;
     this.minuteHand.rotation.z = -minuteAngle;
   }

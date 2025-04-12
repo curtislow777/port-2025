@@ -17,7 +17,6 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 
-import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 import { setupPerryCupAnimation } from "./scripts/perryCup.js";
 import { randomOink } from "./scripts/pig.js";
 import { setupMailbox } from "./scripts/mailbox.js";
@@ -31,7 +30,7 @@ import ClockManager from "./scripts/clock.js";
 
 document.addEventListener("DOMContentLoaded", () => {});
 
-let perryCupControls = null; // ✅ Add this
+let perryCupControls = null;
 const clockManager = new ClockManager();
 
 // Store default camera and controls settings
@@ -50,27 +49,13 @@ const whiteboardZoomTarget = {
   ),
 };
 
-const perryHatClosed = {
-  x: -4.177665710449219,
-  y: 2.7323927879333496,
-  z: 1.0796866416931152,
-};
-
-const perryHatOpen = {
-  x: -4.51853,
-  y: 2.48441,
-  z: 0.875922,
-};
-
 // Get the buttons
 const themeToggle = document.getElementById("theme-toggle");
 const soundToggle = document.getElementById("sound-toggle");
 const body = document.body;
 
 let isNight = false;
-let mailboxCover = null;
-let mailboxHovered = false;
-let isMailboxOpen = false;
+
 let perryHatObject = null;
 let pigObject = null;
 window.addEventListener("keydown", (event) => {
@@ -83,8 +68,6 @@ window.addEventListener("keydown", (event) => {
       duration: 1.5,
       ease: "power2.inOut",
     });
-
-    console.log(`Theme switched to: ${isNight ? "Night" : "Day"}`);
   }
 });
 
@@ -159,8 +142,7 @@ const modals = {
 
 // Modal functions
 let isModalOpen = false;
-let hourHand;
-let minuteHand;
+
 let whiteboard;
 
 const showModal = (modal) => {
@@ -354,13 +336,13 @@ function setupPostProcessing() {
     camera
   );
 
-  outlinePass.edgeStrength = 5.0; // was 3.0
-  outlinePass.edgeThickness = 2.0; // was 1.0
-  outlinePass.edgeGlow = 0.0; // unchanged value, but shown here for clarity
-  outlinePass.pulsePeriod = 0; // unchanged value, but shown here for clarity
-  outlinePass.usePatternTexture = false; // added line (prevents patterned outlines)
-  outlinePass.visibleEdgeColor.set("#ffffff"); // unchanged color
-  outlinePass.hiddenEdgeColor.set("#ffffff"); // was "#190a05"
+  outlinePass.edgeStrength = 5.0;
+  outlinePass.edgeThickness = 2.0;
+  outlinePass.edgeGlow = 0.0;
+  outlinePass.pulsePeriod = 0;
+  outlinePass.usePatternTexture = false;
+  outlinePass.visibleEdgeColor.set("#ffffff");
+  outlinePass.hiddenEdgeColor.set("#ffffff");
 
   composer.addPass(outlinePass);
 
@@ -505,12 +487,10 @@ function handleRaycasterInteraction() {
     if (object.name.includes("perry-hat")) {
       if (perryCupControls) {
         perryCupControls.toggleLid();
-        console.log("Perry cup lid toggled!");
       }
     }
     if (object.name.includes("pig-head")) {
       randomOink(pigObject);
-      console.log("Pig head clicked!");
     }
 
     if (mailbox.handleRaycastIntersection(object, modals.contact)) {
@@ -580,8 +560,6 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         }
         if (child.name.includes("perry-hat")) {
           perryHatObject = child;
-          console.log("Found perry hat:", perryHatObject.position);
-          console.log("Initializing perry cup controls:", perryHatObject);
 
           // Initialize the cup animation right after finding the object
           perryCupControls = setupPerryCupAnimation(perryHatObject);
@@ -617,7 +595,6 @@ loader.load("/models/room-port-v1.glb", (glb) => {
     }
   });
   scene.add(glb.scene);
-  console.log(perryHatObject.position);
 
   playIntroAnimation();
 });
@@ -648,19 +625,6 @@ function updateThreeJSTheme() {
     duration: 1.5,
     ease: "power2.inOut",
   });
-
-  // Optional scene-level updates
-  if (isDarkMode) {
-    if (typeof window.updateSceneToNightMode === "function") {
-      window.updateSceneToNightMode();
-    }
-  } else {
-    if (typeof window.updateSceneToDayMode === "function") {
-      window.updateSceneToDayMode();
-    }
-  }
-
-  console.log(`Theme switched to: ${isDarkMode ? "Night" : "Day"}`);
 }
 
 const clock = new THREE.Clock();
@@ -705,7 +669,7 @@ function spinAnimation(object) {
       // Apply the spin animation (this duration should remain constant)
       timeline.to(object.rotation, {
         y: newRotation,
-        duration: spinDuration, // Keep it fixed for smooth rotation
+        duration: spinDuration,
         ease: "power1.out",
       });
 
@@ -725,12 +689,10 @@ function spinAnimation(object) {
 function render() {
   controls.update();
 
-  // Update Clock hand rotation
-  updateClockHands();
   // Rotate fans
   updateFans();
   // Update clock local time
-  clockManager.update();
+  clockManager.updateClockHands();
 
   // Update the picking ray with the camera and pointer position
   raycaster.setFromCamera(pointer, camera);
@@ -795,17 +757,6 @@ closeButtons.forEach((btn) => {
     const modal = btn.closest(".modal");
     hideModal(modal);
   });
-});
-
-// Optional: Buttons to trigger modals for testing
-document.getElementById("openWork")?.addEventListener("click", () => {
-  showModal(modals.work);
-});
-document.getElementById("openAbout")?.addEventListener("click", () => {
-  showModal(modals.about);
-});
-document.getElementById("openContact")?.addEventListener("click", () => {
-  showModal(modals.contact);
 });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -985,15 +936,3 @@ document.addEventListener("keydown", (event) => {
       break;
   }
 });
-
-function toggleMailboxCover(open) {
-  if (!mailboxCover || open === isMailboxOpen) return;
-
-  isMailboxOpen = open;
-
-  gsap.to(mailboxCover.rotation, {
-    x: open ? Math.PI / 2 : 0, // Adjust axis & angle if needed
-    duration: 0.8,
-    ease: "power2.out",
-  });
-}
