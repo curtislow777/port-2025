@@ -284,8 +284,8 @@ const textureMap = {
     night: "/textures/night/Night-Texture9.webp",
   },
   emissive: {
-    day: "/textures/day/Dayfasdf-Emissive.webp",
-    night: "/textures/night/Night-Emissive.webp",
+    day: "/textures/day/Day-Emissive.webp",
+    night: "/textures/night/NightEmissive.webp",
   },
 };
 

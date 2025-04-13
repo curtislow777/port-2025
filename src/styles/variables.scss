@@ -1,3 +1,70 @@
+// Light Theme Map
+$light-theme: (
+  --bg: #eef9fe,
+  --text: #2e2e2e,
+  --card-bg: #ffffff,
+  --icon: #2e2e2e,
+  --button-bg: #80d0f7,
+  --button-hover: #67c1e0,
+  --button-border: #ffffff,
+
+  --about-modal-bg: #ecf9ff,
+  --about-modal-border: #bee3f8,
+  --about-modal-text: #1e293b,
+
+  --work-modal-bg: #fff5f5,
+  --work-modal-border: #feb2b2,
+  --work-modal-text: #742a2a,
+
+  --erhu-modal-bg: #e9fcef,
+  // soft mint green background
+  --erhu-modal-border: #b5e7c4,
+  // light leafy border
+  --erhu-modal-text: #2f4f3a,
+
+  // deep green-gray for strong readability
+  --contact-modal-bg: #faf5ff,
+  --contact-modal-border: #d6bcfa,
+  --contact-modal-text: #44337a,
+);
+
+// Dark Theme Map
+$dark-theme: (
+  --bg: #1a1e3a,
+  --text: #eaeaff,
+  --card-bg: #2b3060,
+  --icon: #c9d1ff,
+  --button-bg: #232b72,
+  --button-hover: #313f8d,
+  --button-border: #4f5b86,
+
+  --about-modal-bg: #18202e,
+  --about-modal-border: #426d93,
+  --about-modal-text: #dbe9ff,
+
+  --work-modal-bg: #2b2030,
+  --work-modal-border: #a15277,
+  --work-modal-text: #f3d1df,
+
+  --erhu-modal-bg: #1e2a23,
+  // deep muted green
+  --erhu-modal-border: #4a715d,
+  // olive desaturated border
+  --erhu-modal-text: #d4f5e3,
+
+  // soft mint white text
+  --contact-modal-bg: #27243d,
+  --contact-modal-border: #7c5dbb,
+  --contact-modal-text: #e3dcff,
+);
+
+// Mixin to generate custom properties
+@mixin theme-vars($theme-map) {
+  @each $key, $val in $theme-map {
+    #{$key}: #{$val};
+  }
+}
+
 $button-bg-day: #80d0f7;
 $button-border-day: #ffffff;
 $button-hover-day: #67c1e0;
@@ -23,7 +90,7 @@ $colour-green: #b2ddbf;
 $colour-shadow: rgba(0, 0, 0, 0.15);
 
 /* ===============================
-   ☀️ Day Theme
+    Day Theme
 ================================= */
 $bg-day: #eef9fe;
 $text-day: $colour-black;
@@ -35,7 +102,7 @@ $button-hover-bg-day: #67c1e0;
 $button-border-day: $colour-white;
 
 /* ===============================
-   🌙 Night Theme
+    Night Theme
 ================================= */
 $bg-night: #1a1e3a;
 $text-night: #eaeaff;
@@ -47,7 +114,7 @@ $button-hover-bg-night: #313f8d;
 $button-border-night: #4f5b86;
 
 /* ===============================
-   🧠 Semantic Tokens
+    Semantic Tokens
 ================================= */
 $colour-primary: $colour-blue;
 $colour-secondary: $colour-purple;
