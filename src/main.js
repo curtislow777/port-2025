@@ -1,18 +1,18 @@
 import * as THREE from "three";
+import gsap from "gsap";
 import { initThreeJS } from "./scripts/scene.js";
 
 // Add this import at the top with your other imports
 import "./style.scss";
-import Whiteboard from "./utils/whiteboard.js";
+
+import Whiteboard from "./scripts/utils/whiteboard.js";
 import AudioManager from "./scripts/audio.js";
+import CameraManager from "./scripts/camera.js";
+import ClockManager from "./scripts/clock.js";
 
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { themeVertexShader, themeFragmentShader } from "../themeShader.js";
-
-import gsap from "gsap";
-
-import CameraManager from "./scripts/camera.js";
 
 import { setupPerryCupAnimation } from "./scripts/perryCup.js";
 import { randomOink } from "./scripts/pig.js";
@@ -20,7 +20,6 @@ import { setupMailbox } from "./scripts/mailbox.js";
 import { processFanObject, updateFans } from "./scripts/fanRotation.js";
 import { spinAnimation } from "./scripts/spinnyObjects.js";
 
-import ClockManager from "./scripts/clock.js";
 import {
   setupHoverOutline,
   updateOutlineHover,
@@ -42,8 +41,6 @@ const clockManager = new ClockManager();
 const themeToggle = document.getElementById("theme-toggle");
 const soundToggle = document.getElementById("sound-toggle");
 const body = document.body;
-
-let isNight = false;
 
 let perryHatObject = null;
 let pigObject = null;
@@ -67,12 +64,11 @@ const {
     erhu: ".erhu-modal",
   },
   closeButtonSelector: ".modal-close-btn",
-  // Optionally pass callbacks to disable/enable OrbitControls
   onModalOpen: () => {
-    cameraManager.enableControls();
+    //cameraManager.enableControls();
   },
   onModalClose: () => {
-    cameraManager.disableControls();
+    //cameraManager.disableControls();
   },
 });
 // Theme toggle functionality with GSAP animation
@@ -482,7 +478,6 @@ whiteboard.setRotation(0, Math.PI / 2, 0);
 function animate() {}
 
 /**  -------------------------- Render and Animations Stuff -------------------------- */
-
 // Update Three.js theme
 function updateThreeJSTheme() {
   // Animate uMixRatio for shader blending

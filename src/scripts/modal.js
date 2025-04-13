@@ -30,7 +30,6 @@ export function initModalSystem({
     // Indicate a modal is open
     isModalOpen = true;
 
-    // If you need to disable OrbitControls externally, call onModalOpen
     onModalOpen();
 
     // Show overlay first
@@ -53,7 +52,6 @@ export function initModalSystem({
 
     isModalOpen = false;
 
-    // Re-enable anything you disabled (e.g., OrbitControls)
     onModalClose();
 
     gsap.to(overlay, {

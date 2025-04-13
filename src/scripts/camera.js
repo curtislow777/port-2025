@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { OrbitControls } from "./utils/OrbitControls.js";
 import gsap from "gsap";
 
 class CameraManager {
