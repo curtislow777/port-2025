@@ -9,10 +9,10 @@ import Whiteboard from "./scripts/utils/whiteboard.js";
 import AudioManager from "./scripts/audio.js";
 import CameraManager from "./scripts/camera.js";
 import ClockManager from "./scripts/clock.js";
+import ThemeManager from "./scripts/themeManager.js"; // Add this import
 
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { themeVertexShader, themeFragmentShader } from "../themeShader.js";
 
 import { setupPerryCupAnimation } from "./scripts/perryCup.js";
 import { randomOink } from "./scripts/pig.js";
@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {});
 let perryCupControls = null;
 
 const clockManager = new ClockManager();
+const themeManager = new ThemeManager();
 
 // Get the buttons
 const themeToggle = document.getElementById("theme-toggle");
@@ -83,7 +84,7 @@ themeToggle.addEventListener("click", () => {
   body.classList.toggle("dark-theme", isDarkMode);
   body.classList.toggle("light-theme", !isDarkMode);
 
-  updateThreeJSTheme();
+  themeManager.updateThreeJSTheme();
 });
 
 soundToggle.addEventListener("click", () => {
@@ -151,7 +152,8 @@ const { composer, outlinePass } = setupHoverOutline(
   camera,
   sizes
 );
-
+const { textureMap, loadedTextures } =
+  themeManager.loadAllTextures(textureLoader);
 // 2) Create CameraManager
 // Provide the camera, renderer, and desired initial position/target
 const cameraManager = new CameraManager(
@@ -220,113 +222,6 @@ loadingButton.addEventListener("click", () => {
   });
 });
 
-function loadGlassEnvironmentMap(
-  path = "textures/skybox/",
-  files = ["px.webp", "nx.webp", "py.webp", "ny.webp", "pz.webp", "nz.webp"]
-) {
-  const loader = new THREE.CubeTextureLoader().setPath(path);
-  const cubeMap = loader.load(files);
-
-  cubeMap.colorSpace = THREE.SRGBColorSpace;
-  cubeMap.magFilter = THREE.LinearFilter;
-  cubeMap.minFilter = THREE.LinearMipmapLinearFilter;
-  cubeMap.generateMipmaps = true;
-  cubeMap.needsUpdate = true;
-
-  return cubeMap;
-}
-const glassEnvMap = loadGlassEnvironmentMap();
-
-const textureMap = {
-  one: {
-    day: "/textures/day/Day-Texture1.webp",
-    night: "/textures/night/Night-Texture1.webp",
-  },
-  two: {
-    day: "/textures/day/Day-Texture2.webp",
-    night: "/textures/night/Night-Texture2.webp",
-  },
-  three: {
-    day: "/textures/day/Day-Texture3.webp",
-    night: "/textures/night/Night-Texture3.webp",
-  },
-  fourA: {
-    day: "/textures/day/Day-Texture4A.webp",
-    night: "/textures/night/Night-Texture4A.webp",
-  },
-  fourB: {
-    day: "/textures/day/Day-Texture4B.webp",
-    night: "/textures/night/Night-Texture4B.webp",
-  },
-  five: {
-    day: "/textures/day/Day-Texture5.webp",
-    night: "/textures/night/Night-Texture5.webp",
-  },
-  sixA: {
-    day: "/textures/day/Day-Texture6A.webp",
-    night: "/textures/night/Night-Texture6A.webp",
-  },
-  sixB: {
-    day: "/textures/day/Day-Texture6B.webp",
-    night: "/textures/night/Night-Texture6B.webp",
-  },
-
-  seven: {
-    day: "/textures/day/Day-Texture7.webp",
-    night: "/textures/night/Night-Texture7.webp",
-  },
-  eight: {
-    day: "/textures/day/Day-Texture8.webp",
-    night: "/textures/night/Night-Texture8.webp",
-  },
-  nine: {
-    day: "/textures/day/Day-Texture9.webp",
-    night: "/textures/night/Night-Texture9.webp",
-  },
-  emissive: {
-    day: "/textures/day/Day-Emissive.webp",
-    night: "/textures/night/NightEmissive.webp",
-  },
-};
-
-const loadedTextures = {
-  day: {},
-  night: {},
-};
-
-function loadTexture(path) {
-  const tex = textureLoader.load(path);
-  tex.flipY = false;
-  tex.colorSpace = THREE.SRGBColorSpace;
-  tex.generateMipmaps = true;
-  tex.minFilter = THREE.LinearMipmapLinearFilter;
-  tex.magFilter = THREE.LinearFilter;
-  return tex;
-}
-
-Object.entries(textureMap).forEach(([key, paths]) => {
-  loadedTextures.day[key] = loadTexture(paths.day);
-  loadedTextures.night[key] = loadTexture(paths.night);
-});
-
-// Helper function to extract the texture key from the mesh name
-function getTextureKeyFromName(meshName) {
-  if (meshName.includes("-one")) return "one";
-  if (meshName.includes("-two")) return "two";
-  if (meshName.includes("-three")) return "three";
-  if (meshName.includes("-fourA")) return "fourA";
-  if (meshName.includes("-fourB")) return "fourB";
-  if (meshName.includes("-five")) return "five";
-  if (meshName.includes("-sixA")) return "sixA";
-  if (meshName.includes("-sixB")) return "sixB";
-  if (meshName.includes("-seven")) return "seven";
-  if (meshName.includes("-eight")) return "eight";
-  if (meshName.includes("-nine")) return "nine";
-  if (meshName.includes("-emissive")) return "emissive";
-
-  return null;
-}
-
 function handleRaycasterInteraction() {
   if (currentIntersects.length > 0) {
     const object = currentIntersects[0].object;
@@ -385,28 +280,17 @@ window.addEventListener("click", handleRaycasterInteraction);
 let uMixRatio = { value: 0 }; // shared uniform for all shader materials
 const mailbox = setupMailbox(scene, modalSystem);
 
+// Update the GLB loading section to use ThemeManager:
 loader.load("/models/room-port-v1.glb", (glb) => {
   glb.scene.traverse((child) => {
     if (child.isMesh) {
-      const textureKey = getTextureKeyFromName(child.name);
+      // Try to process as themed mesh first
+      const isThemedMesh = themeManager.processThemedMesh(
+        child,
+        loadedTextures
+      );
 
-      if (textureKey) {
-        const material = new THREE.ShaderMaterial({
-          uniforms: {
-            uDayTexture: { value: loadedTextures.day[textureKey] },
-            uNightTexture: { value: loadedTextures.night[textureKey] },
-            uMixRatio: uMixRatio, // shared reference
-          },
-          vertexShader: themeVertexShader,
-          fragmentShader: themeFragmentShader,
-        });
-        // if (textureKey) {
-        //   const material = new THREE.MeshBasicMaterial({
-        //     map: loadedTextures.day[textureKey],
-        //   });
-
-        // Clone the material so it’s independent and assign MeshBasicMaterial:
-        child.material = material;
+      if (isThemedMesh) {
         processFanObject(child);
 
         if (child.name.includes("keycapAnimate")) {
@@ -432,8 +316,6 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         }
         if (child.name.includes("perry-hat")) {
           perryHatObject = child;
-
-          // Initialize the cup animation right after finding the object
           perryCupControls = setupPerryCupAnimation(perryHatObject);
         }
       }
@@ -448,22 +330,9 @@ loader.load("/models/room-port-v1.glb", (glb) => {
       if (child.name.includes("minute-hand")) {
         clockManager.setMinuteHand(child);
       }
-    }
 
-    const glassMaterial = new THREE.MeshPhysicalMaterial({
-      transmission: 1,
-      opacity: 1,
-      metalness: 0,
-      roughness: 0,
-      ior: 1.5,
-      thickness: 0.01,
-      specularIntensity: 1,
-      envMap: glassEnvMap,
-      envMapIntensity: 1,
-    });
-
-    if (child.name.includes("glass")) {
-      child.material = glassMaterial;
+      // Process glass material
+      themeManager.processGlassMesh(child);
     }
   });
   scene.add(glb.scene);
@@ -479,14 +348,6 @@ function animate() {}
 
 /**  -------------------------- Render and Animations Stuff -------------------------- */
 // Update Three.js theme
-function updateThreeJSTheme() {
-  // Animate uMixRatio for shader blending
-  gsap.to(uMixRatio, {
-    value: isDarkMode ? 1 : 0,
-    duration: 1.5,
-    ease: "power2.inOut",
-  });
-}
 
 const clock = new THREE.Clock();
 
