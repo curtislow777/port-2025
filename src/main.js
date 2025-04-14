@@ -50,28 +50,23 @@ let pigObject = null;
 let isDarkMode = false;
 let isMuted = false;
 /** Initialize modal system */
-const {
-  overlay,
-  modals, // { work, about, contact } as defined in modalSelectors
-  showModal,
-  hideModal,
-  hideAllModals,
-} = initModalSystem({
-  overlaySelector: ".overlay",
-  modalSelectors: {
-    work: ".work-modal",
-    about: ".about-modal",
-    contact: ".contact-modal",
-    erhu: ".erhu-modal",
-  },
-  closeButtonSelector: ".modal-close-btn",
-  onModalOpen: () => {
-    //cameraManager.enableControls();
-  },
-  onModalClose: () => {
-    //cameraManager.disableControls();
-  },
-});
+const { overlay, modals, showModal, hideModal, hideAllModals } =
+  initModalSystem({
+    overlaySelector: ".overlay",
+    modalSelectors: {
+      work: ".work-modal",
+      about: ".about-modal",
+      contact: ".contact-modal",
+      erhu: ".erhu-modal",
+    },
+    closeButtonSelector: ".modal-close-btn",
+    onModalOpen: () => {
+      cameraManager.handleModalState(true); // Disable controls when modal opens
+    },
+    onModalClose: () => {
+      cameraManager.handleModalState(false); // Enable controls when modal closes
+    },
+  });
 // Theme toggle functionality with GSAP animation
 themeToggle.addEventListener("click", () => {
   isDarkMode = !isDarkMode;
@@ -154,8 +149,7 @@ const { composer, outlinePass } = setupHoverOutline(
 );
 const { textureMap, loadedTextures } =
   themeManager.loadAllTextures(textureLoader);
-// 2) Create CameraManager
-// Provide the camera, renderer, and desired initial position/target
+
 const cameraManager = new CameraManager(
   camera,
   renderer,
@@ -212,7 +206,7 @@ loadingManager.onLoad = () => {
 };
 
 loadingButton.addEventListener("click", () => {
-  if (!loadingButton.classList.contains("ready")) return; // Prevent early clicks
+  if (!loadingButton.classList.contains("ready")) return;
   gsap.to(".loading-screen", {
     opacity: 0,
     duration: 1,
@@ -277,7 +271,6 @@ window.addEventListener("mousemove", (event) => {
 
 window.addEventListener("click", handleRaycasterInteraction);
 
-let uMixRatio = { value: 0 }; // shared uniform for all shader materials
 const mailbox = setupMailbox(scene, modalSystem);
 
 // Update the GLB loading section to use ThemeManager:

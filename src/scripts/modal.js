@@ -20,19 +20,19 @@ export function initModalSystem({
     modals[key] = document.querySelector(selector);
   });
 
-  // We keep an "isModalOpen" flag if you need to check anywhere else
   let isModalOpen = false;
+  let isAnimating = false;
 
   // Show modal with GSAP
   function showModal(modal) {
-    if (!modal) return;
+    if (!modal || isAnimating) return;
 
     // Indicate a modal is open
+    isAnimating = true;
     isModalOpen = true;
 
     onModalOpen();
 
-    // Show overlay first
     overlay.style.display = "block";
     modal.style.display = "block";
 
@@ -40,7 +40,15 @@ export function initModalSystem({
     gsap.fromTo(
       modal,
       { scale: 0, opacity: 0 },
-      { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" }
+      {
+        scale: 1,
+        opacity: 1,
+        duration: 0.5,
+        ease: "back.out(2)",
+        onComplete: () => {
+          isAnimating = false; // Reset animation flag when complete
+        },
+      }
     );
 
     gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.5 });
@@ -48,17 +56,15 @@ export function initModalSystem({
 
   // Hide modal with GSAP
   function hideModal(modal) {
-    if (!modal) return;
-
+    if (!modal || isAnimating) return; // Don't proceed if animation is in progress
+    isAnimating = true;
     isModalOpen = false;
-
     onModalClose();
 
     gsap.to(overlay, {
       opacity: 0,
       duration: 0.5,
     });
-
     gsap.to(modal, {
       opacity: 0,
       scale: 0,
@@ -67,12 +73,15 @@ export function initModalSystem({
       onComplete: () => {
         modal.style.display = "none";
         overlay.style.display = "none";
+        isAnimating = false; // Reset animation flag when complete
       },
     });
   }
 
-  // Hide whichever modal is open
+  // Update hideAllModals function with cooldown check
   function hideAllModals() {
+    if (isAnimating) return;
+
     Object.values(modals).forEach((modal) => {
       if (modal.style.display === "block") {
         hideModal(modal);
@@ -80,7 +89,6 @@ export function initModalSystem({
     });
   }
 
-  // Close buttons
   const closeButtons = document.querySelectorAll(closeButtonSelector);
   closeButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -89,15 +97,33 @@ export function initModalSystem({
     });
   });
 
-  // Handle modal close on overlay click
-  overlay.addEventListener("click", () => {
-    hideAllModals();
+  document.addEventListener("mousedown", (e) => {
+    if (isModalOpen) {
+      // Check if click is outside any modal content
+      let clickedOnModalContent = false;
+
+      Object.values(modals).forEach((modal) => {
+        if (modal.style.display === "block") {
+          // Check if the click was inside the modal content
+          const modalContent = modal.querySelector(".modal-content");
+          if (modalContent && modalContent.contains(e.target)) {
+            clickedOnModalContent = true;
+          }
+        }
+      });
+
+      // If clicked outside modal content, close all modals
+      if (!clickedOnModalContent && !e.target.closest(".modal-content")) {
+        hideAllModals();
+      }
+    }
   });
 
   return {
     overlay,
     modals,
     isModalOpen,
+    isAnimating,
     showModal,
     hideModal,
     hideAllModals,
