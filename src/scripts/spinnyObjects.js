@@ -9,45 +9,24 @@ const SPIN_DURATION = 2; // seconds
 const SPIN_AMOUNT = Math.PI * 2;
 const COOLDOWN_DURATION = 2; // seconds
 
-// Create a reusable sparkle texture
-const sparkleTexture = (() => {
-  const canvas = document.createElement("canvas");
-  canvas.width = 64;
-  canvas.height = 64;
-  const context = canvas.getContext("2d");
+// Load the custom sparkle texture
+const textureLoader = new THREE.TextureLoader();
+const sparkleTexture = textureLoader.load("/images/sparkle.png");
 
-  // Create gradient
-  const gradient = context.createRadialGradient(
-    canvas.width / 2,
-    canvas.height / 2,
-    0,
-    canvas.width / 2,
-    canvas.height / 2,
-    canvas.width / 2
-  );
-  gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
-  gradient.addColorStop(0.2, "rgba(255, 255, 255, 0.8)");
-  gradient.addColorStop(0.5, "rgba(255, 200, 100, 0.5)");
-  gradient.addColorStop(1, "rgba(255, 200, 100, 0)");
+function addSparkleEffect(object, options = {}) {
+  // Default configuration
+  const config = {
+    particleCount: 20,
+    particleSize: 0.4,
+    particleSizeVariation: { min: 0.2, max: 0.5 },
+    offsetY: 0,
+    spread: 1.0,
+    duration: 3.0,
+    ...options,
+  };
 
-  // Draw circle
-  context.fillStyle = gradient;
-  context.beginPath();
-  context.arc(
-    canvas.width / 2,
-    canvas.height / 2,
-    canvas.width / 2,
-    0,
-    Math.PI * 2
-  );
-  context.fill();
-
-  return new THREE.CanvasTexture(canvas);
-})();
-
-function addSparkleEffect(object) {
-  // Create particle system with fewer particles
-  const particleCount = 20;
+  // Create particle system
+  const particleCount = config.particleCount;
   const particles = new THREE.BufferGeometry();
 
   // Particle attributes
@@ -58,31 +37,44 @@ function addSparkleEffect(object) {
   const velocities = [];
   const lifetimes = [];
 
+  // Object center position with Y offset
+  const centerPos = {
+    x: object.position.x,
+    y: object.position.y + config.offsetY,
+    z: object.position.z,
+  };
+
   // Set initial position for particles
   for (let i = 0; i < particleCount; i++) {
     // Random position around the object
     const angle = Math.random() * Math.PI * 2;
-    const radius = object.scale.x * 0.5; // Start closer to the object
+    const radius = object.scale.x * 0.5 * config.spread;
 
-    positions[i * 3] = object.position.x;
-    positions[i * 3 + 1] = object.position.y;
-    positions[i * 3 + 2] = object.position.z;
+    // Position with offset
+    positions[i * 3] =
+      centerPos.x + Math.cos(angle) * radius * (Math.random() * 0.5);
+    positions[i * 3 + 1] = centerPos.y + (Math.random() - 0.3) * radius * 0.5; // Slight upward bias
+    positions[i * 3 + 2] =
+      centerPos.z + Math.sin(angle) * radius * (Math.random() * 0.5);
 
-    // Random size
-    sizes[i] = 0.1 + Math.random() * 0.2;
+    // Random size within range
+    sizes[i] =
+      config.particleSizeVariation.min +
+      Math.random() *
+        (config.particleSizeVariation.max - config.particleSizeVariation.min);
 
     // Initial opacity
     opacities[i] = 0;
 
-    // Slight color variation
+    // Slight color variation - keeping white/yellow to preserve texture colors
     colors[i * 3] = 1; // R
-    colors[i * 3 + 1] = 0.8 + Math.random() * 0.2; // G
-    colors[i * 3 + 2] = 0.6 + Math.random() * 0.4; // B
+    colors[i * 3 + 1] = 0.9 + Math.random() * 0.1; // G
+    colors[i * 3 + 2] = 0.8 + Math.random() * 0.2; // B
 
-    // Slower velocity
+    // Velocity with upward bias for higher objects
     velocities.push({
       x: Math.cos(angle) * (0.2 + Math.random() * 0.3),
-      y: (Math.random() - 0.5) * 0.8,
+      y: Math.random() * 0.5 * 0.8, // More upward movement
       z: Math.sin(angle) * (0.2 + Math.random() * 0.3),
     });
 
@@ -96,7 +88,7 @@ function addSparkleEffect(object) {
 
   // Particle material with custom opacity handling
   const material = new THREE.PointsMaterial({
-    size: 0.25,
+    size: config.particleSize,
     map: sparkleTexture,
     transparent: true,
     vertexColors: true,
@@ -112,7 +104,7 @@ function addSparkleEffect(object) {
   // Animation loop
   const clock = new THREE.Clock();
   let elapsed = 0;
-  const duration = 3.0; // Extended duration
+  const duration = config.duration;
 
   function updateParticles() {
     const delta = clock.getDelta();
@@ -178,6 +170,33 @@ function addSparkleEffect(object) {
   updateParticles();
 }
 
+// This function detects if an object is a globe or chair based on its name
+function getObjectSparkleOptions(object) {
+  const objectName = object.name.toLowerCase();
+
+  if (objectName.includes("globe")) {
+    // Globe-specific sparkle options
+    return {
+      particleSize: 0.4,
+      particleSizeVariation: { min: 0.2, max: 0.5 },
+      offsetY: 0,
+      spread: 1.0,
+    };
+  } else if (objectName.includes("chair")) {
+    // Chair-specific sparkle options
+    return {
+      particleCount: 12, // More particles for chairs
+      particleSize: 0.8,
+      particleSizeVariation: { min: 0.4, max: 0.8 },
+      offsetY: 0.4, // Higher position
+      spread: 2, // Wider spread
+    };
+  }
+
+  // Default options for other objects
+  return {};
+}
+
 export function spinAnimation(object) {
   // Prevent spin if on cooldown
   if (cooldownSet.has(object)) return;
@@ -201,7 +220,9 @@ export function spinAnimation(object) {
 
   // Optional special sparkle effect
   if (isSpecialSpin) {
-    addSparkleEffect(object);
+    // Get appropriate sparkle options based on object name
+    const sparkleOptions = getObjectSparkleOptions(object);
+    addSparkleEffect(object, sparkleOptions);
   }
 
   // Reset scale before spin
