@@ -12,7 +12,7 @@ import * as THREE from "three";
  * @returns {THREE.Mesh} Steam mesh to be added to a Three.js scene.
  */
 export function createSteamEffect(perlinTexture, options = {}) {
-  const { width = 2, height = 4, segments = 32 } = options;
+  const { width = 1, height = 2, segments = 32 } = options;
 
   // ------------------------------
   // 1. Geometry

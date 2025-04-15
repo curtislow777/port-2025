@@ -142,12 +142,14 @@ const {
   textureLoader,
   gltfLoader,
 } = initThreeJS(canvas, sizes);
+
 const { composer, outlinePass } = setupHoverOutline(
   renderer,
   scene,
   camera,
   sizes
 );
+
 const { textureMap, loadedTextures } =
   themeManager.loadAllTextures(textureLoader);
 
@@ -312,6 +314,7 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         if (child.name.includes("perry-hat")) {
           perryHatObject = child;
           perryCupControls = setupPerryCupAnimation(perryHatObject);
+          console.log(perryHatObject.position);
         }
       }
 
@@ -350,13 +353,15 @@ textureLoader.load("/images/perlin.png", (perlinTexture) => {
 
   // Create the steam effect plane
   steamMesh = createSteamEffect(perlinTexture, {
-    width: 4,
-    height: 8,
-    segments: 32,
+    width: 0.15,
+    height: 0.6,
+    segments: 16,
   });
+  steamMesh.material.uniforms.uGlobalAlpha.value = 0.0;
+  steamMesh.visible = false;
 
   // Position it in your scene
-  steamMesh.position.set(0, 10, 0);
+  steamMesh.position.set(-4.177665710449219, 2.85, 1.0796866416931152);
 
   // Add to scene
   scene.add(steamMesh);
@@ -404,7 +409,7 @@ function render() {
   // If steamMesh is loaded, update time + orientation
   if (steamMesh) {
     steamMesh.material.uniforms.uTime.value = elapsedTime;
-    steamMesh.lookAt(camera.position); // If you want a billboard
+    //steamMesh.lookAt(camera.position);
   }
 
   composer.render();
@@ -531,13 +536,12 @@ function toggleSteam(steamMesh, duration = 0.5, onComplete) {
   const material = steamMesh.material;
   if (!material.uniforms || !material.uniforms.uGlobalAlpha) return;
 
-  // Check if it's currently visible
   const currentlyVisible = steamMesh.visible;
 
   if (!currentlyVisible) {
-    // It's hidden, so fade in from 0 to 1
+    // It's hidden → fade in
     steamMesh.visible = true;
-    // Ensure alpha is at 0 so it can fade in
+    // Force alpha to 0 so we can fade from 0 -> 1
     material.uniforms.uGlobalAlpha.value = 0;
     gsap.to(material.uniforms.uGlobalAlpha, {
       value: 1,
@@ -545,7 +549,7 @@ function toggleSteam(steamMesh, duration = 0.5, onComplete) {
       onComplete,
     });
   } else {
-    // It's visible, so fade out from current alpha to 0
+    // It's visible → fade out
     gsap.to(material.uniforms.uGlobalAlpha, {
       value: 0,
       duration,
