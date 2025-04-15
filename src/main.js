@@ -10,6 +10,7 @@ import AudioManager from "./scripts/audio.js";
 import CameraManager from "./scripts/camera.js";
 import ClockManager from "./scripts/clock.js";
 import ThemeManager from "./scripts/themeManager.js"; // Add this import
+import { createSteamEffect } from "./scripts/shaders/steamEffect.js"; // Import the steam effect function
 
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -248,6 +249,7 @@ function handleRaycasterInteraction() {
     if (object.name.includes("perry-hat")) {
       if (perryCupControls) {
         perryCupControls.toggleLid();
+        toggleSteam(steamMesh, 1);
       }
     }
     if (object.name.includes("pig-head")) {
@@ -336,8 +338,29 @@ loader.load("/models/room-port-v1.glb", (glb) => {
 whiteboard = new Whiteboard(scene, camera, renderer, cameraManager.controls);
 whiteboard.setPosition(-5.8, 4.12675142288208, 0.121265381);
 whiteboard.setRotation(0, Math.PI / 2, 0);
+// near the top of main.js
 
 function animate() {}
+
+let steamMesh; // Make sure to declare this at top-level so render() can see it
+
+textureLoader.load("/images/perlin.png", (perlinTexture) => {
+  perlinTexture.wrapS = THREE.RepeatWrapping;
+  perlinTexture.wrapT = THREE.RepeatWrapping;
+
+  // Create the steam effect plane
+  steamMesh = createSteamEffect(perlinTexture, {
+    width: 4,
+    height: 8,
+    segments: 32,
+  });
+
+  // Position it in your scene
+  steamMesh.position.set(0, 10, 0);
+
+  // Add to scene
+  scene.add(steamMesh);
+});
 
 /**  -------------------------- Render and Animations Stuff -------------------------- */
 // Update Three.js theme
@@ -353,6 +376,7 @@ function playIntroAnimation() {
 
 function render() {
   cameraManager.update();
+  const elapsedTime = clock.getElapsedTime();
 
   // Rotate fans
   updateFans();
@@ -375,6 +399,12 @@ function render() {
   // Update whiteboard if it exists and is active
   if (whiteboard && whiteboard.isActive) {
     whiteboard.update();
+  }
+
+  // If steamMesh is loaded, update time + orientation
+  if (steamMesh) {
+    steamMesh.material.uniforms.uTime.value = elapsedTime;
+    steamMesh.lookAt(camera.position); // If you want a billboard
   }
 
   composer.render();
@@ -438,19 +468,19 @@ document.addEventListener("DOMContentLoaded", function () {
       sidePanel.classList.remove("active");
       switch (label) {
         case "reset camera":
-          cameraManager.resetToDefault(); // Reset camera to default position
+          cameraManager.resetToDefault();
           break;
         case "work":
-          showModal(modals.work); // Show work modal
+          showModal(modals.work);
           break;
         case "about":
-          showModal(modals.about); // Show about modal
+          showModal(modals.about);
           break;
         case "contact":
-          showModal(modals.contact); // Show contact modal
+          showModal(modals.contact);
           break;
         case "whiteboard":
-          cameraManager.zoomToWhiteboard(whiteboard, 1.5); // Zoom into whiteboard and enable drawing mode
+          cameraManager.zoomToWhiteboard(whiteboard, 1.5);
           break;
         default:
           console.log(`No action defined for ${label}`);
@@ -485,3 +515,44 @@ document.addEventListener("keydown", (event) => {
       break;
   }
 });
+
+/**
+ * Toggles the steam mesh's visibility by fading its alpha in or out.
+ * If the mesh is currently invisible, it fades in.
+ * If it's visible, it fades out.
+ *
+ * @param {THREE.Mesh} steamMesh - The mesh from createSteamEffect.
+ * @param {number} [duration=0.5] - Fade duration in seconds.
+ * @param {Function} [onComplete] - Optional callback after fade completes.
+ */
+function toggleSteam(steamMesh, duration = 0.5, onComplete) {
+  if (!steamMesh) return;
+
+  const material = steamMesh.material;
+  if (!material.uniforms || !material.uniforms.uGlobalAlpha) return;
+
+  // Check if it's currently visible
+  const currentlyVisible = steamMesh.visible;
+
+  if (!currentlyVisible) {
+    // It's hidden, so fade in from 0 to 1
+    steamMesh.visible = true;
+    // Ensure alpha is at 0 so it can fade in
+    material.uniforms.uGlobalAlpha.value = 0;
+    gsap.to(material.uniforms.uGlobalAlpha, {
+      value: 1,
+      duration,
+      onComplete,
+    });
+  } else {
+    // It's visible, so fade out from current alpha to 0
+    gsap.to(material.uniforms.uGlobalAlpha, {
+      value: 0,
+      duration,
+      onComplete: () => {
+        steamMesh.visible = false;
+        if (onComplete) onComplete();
+      },
+    });
+  }
+}
