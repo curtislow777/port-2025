@@ -430,11 +430,32 @@ document.addEventListener("DOMContentLoaded", function () {
     sidePanel.classList.toggle("active");
   });
 
-  // Close panel when clicking a link
   panelLinks.forEach((link) => {
-    link.addEventListener("click", () => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault(); // Prevent default anchor behavior
+      const label = link.textContent.trim().toLowerCase();
       hamburgerBtn.classList.remove("active");
       sidePanel.classList.remove("active");
+      switch (label) {
+        case "reset camera":
+          cameraManager.resetToDefault(); // Reset camera to default position
+          break;
+        case "work":
+          showModal(modals.work); // Show work modal
+          break;
+        case "about":
+          showModal(modals.about); // Show about modal
+          break;
+        case "contact":
+          showModal(modals.contact); // Show contact modal
+          break;
+        case "whiteboard":
+          cameraManager.zoomToWhiteboard(whiteboard, 1.5); // Zoom into whiteboard and enable drawing mode
+          break;
+        default:
+          console.log(`No action defined for ${label}`);
+          break;
+      }
     });
   });
 
