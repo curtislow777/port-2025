@@ -94,7 +94,7 @@ soundToggle.addEventListener("click", () => {
   } else {
     soundToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
 
-    AudioManager.playBGM(0.3);
+    AudioManager.playBGM(0.25);
   }
 });
 
@@ -129,7 +129,7 @@ const raycasterObjects = [];
 let currentIntersects = [];
 
 // Loaders
-AudioManager.playBGM(0); // Plays BGM at 30% volume
+AudioManager.playBGM(0.25); // Plays BGM at 30% volume
 
 // Get the scene/camera/renderer from init
 const {
