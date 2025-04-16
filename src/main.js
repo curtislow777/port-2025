@@ -39,6 +39,13 @@ let perryCupControls = null;
 
 const clockManager = new ClockManager();
 const themeManager = new ThemeManager();
+// object name, so get the blender mesh name.
+const imageData = {
+  "duck-eight-raycast": {
+    src: "images/caspuh2.JPEG",
+    caption: "nimama",
+  },
+};
 
 // Get the buttons
 const themeToggle = document.getElementById("theme-toggle");
@@ -70,13 +77,22 @@ const { overlay, modals, showModal, hideModal, hideAllModals } =
     },
   });
 
-// Initialize the fade overlay
+// Your existing initImageOverlay setup
 const { showImageOverlay, hideImageOverlay } = initImageOverlay({
   overlaySelector: ".fade-overlay",
   contentSelector: ".fade-overlay-content",
   closeBtnSelector: ".fade-overlay-close-btn",
   imgSelector: ".fade-overlay-img",
   textSelector: ".fade-overlay-text",
+});
+
+// Add click event to all elements with class .clickable-image
+document.querySelectorAll(".clickable-image").forEach((el) => {
+  el.addEventListener("click", () => {
+    const fullImg = el.getAttribute("data-full");
+    const caption = el.getAttribute("data-caption");
+    showImageOverlay(fullImg, caption);
+  });
 });
 
 // Theme toggle functionality with GSAP animation
@@ -244,13 +260,11 @@ function handleRaycasterInteraction() {
       showModal(modals.work);
     }
 
-    if (object.name.includes("duck-eight")) {
-      //showImageModal("images/caspuh2.JPEG");
-      showImageOverlay(
-        "images/caspuh2.JPEG",
-        "Some interesting text for the second photo."
-      );
+    if (imageData[object.name]) {
+      const { src, caption } = imageData[object.name];
+      showImageOverlay(src, caption);
     }
+
     // Check if the object name contains any of the social media keywords
     Object.entries(socialLinks).forEach(([key, url]) => {
       if (object.name.toLowerCase().includes(key.toLowerCase())) {

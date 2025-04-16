@@ -92,7 +92,6 @@ lottie-player {
   transition: width 0.3s ease;
 }
 
-/* Enter button (hidden initially) */
 .loading-screen-btn {
   width: 200px;
   height: 60px;
@@ -109,7 +108,6 @@ lottie-player {
   margin-top: -35px;
 }
 
-/* Button hover effect */
 .loading-screen-btn:hover {
   transform: scale(1.25) !important;
   box-shadow: 0 0 25px rgba(79, 195, 247, 0.8);
