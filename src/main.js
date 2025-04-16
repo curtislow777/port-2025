@@ -26,6 +26,7 @@ import {
   updateOutlineHover,
 } from "./scripts/hoverOutline.js";
 import { initModalSystem } from "./scripts/modal.js";
+import { initImageOverlay } from "./scripts/fadeOverlayImage.js";
 
 /**
  * START OF THREE.JS CODE
@@ -68,6 +69,16 @@ const { overlay, modals, showModal, hideModal, hideAllModals } =
       cameraManager.handleModalState(false); // Enable controls when modal closes
     },
   });
+
+// Initialize the fade overlay
+const { showImageOverlay, hideImageOverlay } = initImageOverlay({
+  overlaySelector: ".fade-overlay",
+  contentSelector: ".fade-overlay-content",
+  closeBtnSelector: ".fade-overlay-close-btn",
+  imgSelector: ".fade-overlay-img",
+  textSelector: ".fade-overlay-text",
+});
+
 // Theme toggle functionality with GSAP animation
 themeToggle.addEventListener("click", () => {
   isDarkMode = !isDarkMode;
@@ -129,7 +140,7 @@ const raycasterObjects = [];
 let currentIntersects = [];
 
 // Loaders
-AudioManager.playBGM(0.25); // Plays BGM at 30% volume
+AudioManager.playBGM(0); // Plays BGM at 30% volume
 
 // Get the scene/camera/renderer from init
 const {
@@ -233,6 +244,13 @@ function handleRaycasterInteraction() {
       showModal(modals.work);
     }
 
+    if (object.name.includes("duck-eight")) {
+      //showImageModal("images/caspuh2.JPEG");
+      showImageOverlay(
+        "images/caspuh2.JPEG",
+        "Some interesting text for the second photo."
+      );
+    }
     // Check if the object name contains any of the social media keywords
     Object.entries(socialLinks).forEach(([key, url]) => {
       if (object.name.toLowerCase().includes(key.toLowerCase())) {

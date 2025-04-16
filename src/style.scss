@@ -71,7 +71,6 @@ lottie-player {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
 }
 
 .loading-bar {
@@ -83,7 +82,6 @@ lottie-player {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   border: 2px solid white;
   position: relative;
-  margin-bottom: 1.5rem;
 }
 
 .loading-bar-fill {
@@ -96,12 +94,8 @@ lottie-player {
 
 /* Enter button (hidden initially) */
 .loading-screen-btn {
-  position: absolute;
   width: 200px;
   height: 60px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   background: #a3d4ff;
   border: 3px solid white;
   font-size: 1.4rem;
@@ -112,12 +106,12 @@ lottie-player {
   opacity: 0;
   pointer-events: none;
   transition: all 0.3s ease;
-  margin-top: 6rem;
+  margin-top: -35px;
 }
 
 /* Button hover effect */
 .loading-screen-btn:hover {
-  transform: translate(-50%, -50%) scale(1.25) !important;
+  transform: scale(1.25) !important;
   box-shadow: 0 0 25px rgba(79, 195, 247, 0.8);
 }
 
@@ -433,6 +427,7 @@ lottie-player {
 .hamburger-btn.active .hamburger-line:nth-child(3) {
   transform: translateY(-13px) rotate(-45deg);
 }
+
 .hamburger-btn {
   position: fixed;
   top: 2rem;
@@ -577,4 +572,64 @@ lottie-player {
 
 .dark-theme .control-btn:hover {
   background-color: vars.$button-hover-night;
+}
+
+/* Full-screen, black overlay */
+.fade-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  /* Start hidden (display:none + zero opacity) */
+  display: none;
+  opacity: 0;
+
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 1200; /* Adjust if needed to sit above other modals */
+}
+
+/* Position and style your content */
+.fade-overlay-content {
+  position: relative;
+  max-width: 800px;
+  width: 90%;
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: center;
+}
+
+.fade-overlay-img {
+  width: 300px;
+  height: auto;
+  max-height: 80vh;
+  object-fit: contain;
+}
+/* The text or description under the image */
+.fade-overlay-text {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  color: #fff;
+}
+
+/* Close button, absolutely positioned in the top right of the content */
+.fade-overlay-close-btn {
+  position: absolute;
+  top: -2rem;
+  right: 0;
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.fade-overlay-close-btn:hover {
+  background: #666;
 }
