@@ -41,8 +41,57 @@ const clockManager = new ClockManager();
 const themeManager = new ThemeManager();
 // object name, so get the blender mesh name.
 const imageData = {
+  "baby-cyrus-eight-raycast": {
+    src: "images/bb-cyrus.webp",
+    caption: "nimama",
+  },
+  "ded-casper-eight-raycast": {
+    src: "images/casper-buh.webp",
+    caption: "nimama",
+  },
+  "casper-pawty-five": {
+    src: "images/caspuh_party.webp",
+    caption: "nimama",
+  },
+  "caspuh-frame-eight-raycast": {
+    src: "images/caspuh2.webp",
+    caption: "nimama",
+  },
+  "baby-casper-eight-raycast": {
+    src: "images/caspuh.webp",
+    caption: "nimama",
+  },
+  "cat-eight-raycast": {
+    src: "images/cat.webp",
+    caption: "nimama",
+  },
+  "casp-cyrus-eight-raycast": {
+    src: "images/cc.webp",
+    caption: "nimama",
+  },
+  "collection-eight-raycast": {
+    src: "images/collection.webp",
+    caption: "nimama",
+  },
+  "cyrus-eating-0-eight-raycast": {
+    src: "images/cyrus-eating-0.webp",
+    caption: "nimama",
+  },
+  "cyrus-frame-eight-raycast": {
+    src: "images/cyrus.webp",
+    caption: "nimama",
+  },
+
   "duck-eight-raycast": {
-    src: "images/caspuh2.JPEG",
+    src: "images/duck.webp",
+    caption: "nimama",
+  },
+  "goofy-casper-eight-raycast": {
+    src: "images/lmao.webp",
+    caption: "nimama",
+  },
+  "shoes-eight-raycast": {
+    src: "images/shoes.webp",
     caption: "nimama",
   },
 };
