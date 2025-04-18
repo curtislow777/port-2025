@@ -122,13 +122,12 @@ const { overlay, modals, showModal, hideModal, hideAllModals } =
     },
     closeButtonSelector: ".modal-close-btn",
     onModalOpen: () => {
-      isRaycastEnabled = false; // 👈 disable raycasting
-
-      cameraManager.handleModalState(true); // Disable controls when modal opens
+      isRaycastEnabled = false;
+      clearHoverEffects();
+      cameraManager.handleModalState(true);
     },
     onModalClose: () => {
-      isRaycastEnabled = true; // 👈 enable raycasting again
-
+      isRaycastEnabled = true;
       cameraManager.handleModalState(false); // Enable controls when modal closes
     },
   });
@@ -323,13 +322,27 @@ function handleRaycasterInteraction() {
       isRaycastEnabled = false;
     }
 
-    // Check if the object name contains any of the social media keywords
     Object.entries(socialLinks).forEach(([key, url]) => {
       if (object.name.toLowerCase().includes(key.toLowerCase())) {
         console.log(`Opening ${key} link: ${url}`);
         AudioManager.playClick();
-        window.open(url, "_blank", "noopener,noreferrer");
+
+        // 👇 Clear hover effects and block raycasting
+        clearHoverEffects();
+        isRaycastEnabled = false;
+        currentIntersects = [];
+
+        // Optional: Delay slightly before opening so you visually clear first
+        setTimeout(() => {
+          window.open(url, "_blank", "noopener,noreferrer");
+        }, 50); // small delay to allow hover clear to apply
       }
+      // Optional: re-enable raycasting a short time after returning
+      window.addEventListener("focus", () => {
+        setTimeout(() => {
+          isRaycastEnabled = true;
+        }, 500); // or any delay that feels smooth
+      });
     });
 
     if (object.name.includes("whiteboard-raycast")) {
@@ -409,7 +422,6 @@ loader.load("/models/room-port-v1.glb", (glb) => {
         if (child.name.includes("perry-hat")) {
           perryHatObject = child;
           perryCupControls = setupPerryCupAnimation(perryHatObject);
-          console.log(perryHatObject.position);
         }
       }
 
@@ -496,8 +508,7 @@ function render() {
   } else {
     currentIntersects = [];
     mailbox.updateMailboxHover([]);
-    outlinePass.selectedObjects = [];
-    updateHoverScale([], animatedObjects.scale);
+    clearHoverEffects();
   }
 
   // Update whiteboard if it exists and is active
@@ -654,4 +665,11 @@ function toggleSteam(steamMesh, duration) {
       if (!fadeIn) steamMesh.visible = false;
     },
   });
+}
+
+function clearHoverEffects() {
+  currentIntersects = [];
+  outlinePass.selectedObjects = [];
+  updateHoverScale([], animatedObjects.scale);
+  mailbox.updateMailboxHover([]);
 }
