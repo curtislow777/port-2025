@@ -98,24 +98,16 @@ export function initModalSystem({
   });
 
   document.addEventListener("mousedown", (e) => {
-    if (isModalOpen) {
-      // Check if click is outside any modal content
-      let clickedOnModalContent = false;
+    if (!isModalOpen) return;
 
-      Object.values(modals).forEach((modal) => {
-        if (modal.style.display === "block") {
-          // Check if the click was inside the modal content
-          const modalContent = modal.querySelector(".modal-content");
-          if (modalContent && modalContent.contains(e.target)) {
-            clickedOnModalContent = true;
-          }
-        }
-      });
+    // If the click hit _any_ part of an open modal, do nothing.
+    const isInsideModal = Object.values(modals).some((modal) =>
+      modal.contains(e.target)
+    );
 
-      // If clicked outside modal content, close all modals
-      if (!clickedOnModalContent && !e.target.closest(".modal-content")) {
-        hideAllModals();
-      }
+    // Otherwise, close everything.
+    if (!isInsideModal) {
+      hideAllModals();
     }
   });
 
