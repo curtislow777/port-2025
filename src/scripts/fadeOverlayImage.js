@@ -14,6 +14,7 @@ export function initImageOverlay({
   closeBtnSelector = ".fade-overlay-close-btn",
   imgSelector = ".fade-overlay-img",
   textSelector = ".fade-overlay-text",
+  onClose = () => {},
 } = {}) {
   // Grab DOM elements
   const overlay = document.querySelector(overlaySelector);
@@ -68,6 +69,7 @@ export function initImageOverlay({
    */
   function hideImageOverlay() {
     if (!overlay || isAnimating || !isOpen) return;
+    console.log("hidnig");
 
     isOpen = false;
     isAnimating = true;
@@ -79,6 +81,7 @@ export function initImageOverlay({
       onComplete: () => {
         overlay.style.display = "none";
         isAnimating = false;
+        onClose();
       },
     });
   }

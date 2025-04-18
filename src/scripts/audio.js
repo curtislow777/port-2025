@@ -7,7 +7,7 @@ const bgm = new Howl({
 });
 
 const click = new Howl({
-  src: ["audio/click.ogg"],
+  src: ["audio/ui-click.wav"],
   volume: 1.0,
 });
 
@@ -21,9 +21,10 @@ const AudioManager = {
     if (bgm.playing()) bgm.pause();
   },
 
-  playClick: (volume = 1.0) => {
+  playClick: (volume = 0.1) => {
     click.volume(volume);
     click.play();
+    console.log("buttonclick");
   },
 };
 

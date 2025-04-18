@@ -38,6 +38,7 @@ import { initImageOverlay } from "./scripts/fadeOverlayImage.js";
 document.addEventListener("DOMContentLoaded", () => {});
 
 let perryCupControls = null;
+let isRaycastEnabled = true;
 
 const clockManager = new ClockManager();
 const themeManager = new ThemeManager();
@@ -121,9 +122,13 @@ const { overlay, modals, showModal, hideModal, hideAllModals } =
     },
     closeButtonSelector: ".modal-close-btn",
     onModalOpen: () => {
+      isRaycastEnabled = false; // 👈 disable raycasting
+
       cameraManager.handleModalState(true); // Disable controls when modal opens
     },
     onModalClose: () => {
+      isRaycastEnabled = true; // 👈 enable raycasting again
+
       cameraManager.handleModalState(false); // Enable controls when modal closes
     },
   });
@@ -135,15 +140,9 @@ const { showImageOverlay, hideImageOverlay } = initImageOverlay({
   closeBtnSelector: ".fade-overlay-close-btn",
   imgSelector: ".fade-overlay-img",
   textSelector: ".fade-overlay-text",
-});
-
-// Add click event to all elements with class .clickable-image
-document.querySelectorAll(".clickable-image").forEach((el) => {
-  el.addEventListener("click", () => {
-    const fullImg = el.getAttribute("data-full");
-    const caption = el.getAttribute("data-caption");
-    showImageOverlay(fullImg, caption);
-  });
+  onClose: () => {
+    isRaycastEnabled = true;
+  },
 });
 
 // Theme toggle functionality with GSAP animation
@@ -207,7 +206,6 @@ const raycasterObjects = [];
 let currentIntersects = [];
 
 // Loaders
-AudioManager.playBGM(0); // Plays BGM at 30% volume
 
 // Get the scene/camera/renderer from init
 const {
@@ -295,37 +293,48 @@ loadingButton.addEventListener("click", () => {
       loadingScreen.style.display = "none";
     },
   });
+  AudioManager.playClick();
+  AudioManager.playBGM(0); // 20% volume
 });
 
 function handleRaycasterInteraction() {
+  if (!isRaycastEnabled || currentIntersects.length === 0) return;
   if (currentIntersects.length > 0) {
     const object = currentIntersects[0].object;
 
     if (object.name.includes("about-raycast")) {
+      AudioManager.playClick();
       showModal(modals.about);
     } else if (object.name.includes("work-raycast")) {
+      AudioManager.playClick();
       showModal(modals.work);
     } else if (object.name.includes("erhu-seven")) {
+      AudioManager.playClick();
       showModal(modals.erhu);
     } else if (object.name.includes("monitor")) {
+      AudioManager.playClick();
       showModal(modals.work);
     }
 
     if (imageData[object.name]) {
+      AudioManager.playClick();
       const { src, caption } = imageData[object.name];
       showImageOverlay(src, caption);
+      isRaycastEnabled = false;
     }
 
     // Check if the object name contains any of the social media keywords
     Object.entries(socialLinks).forEach(([key, url]) => {
       if (object.name.toLowerCase().includes(key.toLowerCase())) {
         console.log(`Opening ${key} link: ${url}`);
+        AudioManager.playClick();
         window.open(url, "_blank", "noopener,noreferrer");
       }
     });
 
     if (object.name.includes("whiteboard-raycast")) {
       console.log("Whiteboard clicked!");
+      AudioManager.playClick();
       cameraManager.zoomToWhiteboard(whiteboard, 1.5);
       whiteboard.toggleWhiteboardMode(true); // Enable drawing mode
     }
@@ -333,6 +342,7 @@ function handleRaycasterInteraction() {
     // Add this new condition with your other click handlers
     if (object.name.includes("perry-hat")) {
       if (perryCupControls) {
+        AudioManager.playClick();
         perryCupControls.toggleLid();
         toggleSteam(steamMesh, 1);
       }
@@ -342,11 +352,13 @@ function handleRaycasterInteraction() {
     }
 
     if (mailbox.handleRaycastIntersection(object, modals.contact)) {
+      AudioManager.playClick();
       return;
     }
     // Trigger spin animation if the object is in animateSpinObjects
     if (animatedObjects.spin.includes(object)) {
-      spinAnimation(object);
+      const didSpin = spinAnimation(object);
+      if (didSpin) AudioManager.playClick();
     }
   }
 }
@@ -469,19 +481,24 @@ function render() {
   // Update clock local time
   clockManager.updateClockHands();
 
-  mailbox.updateMailboxHover(currentIntersects);
-
-  // Update the picking ray with the camera and pointer position
-  raycaster.setFromCamera(pointer, camera);
-  currentIntersects = raycaster.intersectObjects(raycasterObjects);
-  currentIntersects = updateOutlineHover(
-    raycaster,
-    pointer,
-    camera,
-    raycasterObjects,
-    outlinePass
-  );
-  updateHoverScale(currentIntersects, animatedObjects.scale);
+  if (isRaycastEnabled) {
+    raycaster.setFromCamera(pointer, camera);
+    currentIntersects = raycaster.intersectObjects(raycasterObjects);
+    currentIntersects = updateOutlineHover(
+      raycaster,
+      pointer,
+      camera,
+      raycasterObjects,
+      outlinePass
+    );
+    updateHoverScale(currentIntersects, animatedObjects.scale);
+    mailbox.updateMailboxHover(currentIntersects);
+  } else {
+    currentIntersects = [];
+    mailbox.updateMailboxHover([]);
+    outlinePass.selectedObjects = [];
+    updateHoverScale([], animatedObjects.scale);
+  }
 
   // Update whiteboard if it exists and is active
   if (whiteboard && whiteboard.isActive) {
@@ -508,11 +525,9 @@ window.addEventListener("resize", () => {
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
 
-  // Update camera
   camera.aspect = sizes.width / sizes.height;
   camera.updateProjectionMatrix();
 
-  // Update renderer
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -524,6 +539,7 @@ overlay.addEventListener("click", () => {
   Object.values(modals).forEach((modal) => {
     if (modal.style.display === "block") {
       hideModal(modal);
+      isRaycastEnabled = true;
     }
   });
 });
@@ -533,6 +549,7 @@ closeButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
     const modal = btn.closest(".modal");
     hideModal(modal);
+    isRaycastEnabled = true;
   });
 });
 

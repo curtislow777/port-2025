@@ -9,7 +9,7 @@ class ThemeManager {
   constructor() {
     // Initialize state
     this.isDarkMode = false;
-    this.uMixRatio = { value: 0 }; // shared uniform for all shader materials
+    this.uMixRatio = { value: 0 };
     this.themeToggle = document.getElementById("theme-toggle");
     this.body = document.body;
 

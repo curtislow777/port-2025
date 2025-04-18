@@ -198,48 +198,38 @@ function getObjectSparkleOptions(object) {
 }
 
 export function spinAnimation(object) {
-  // Prevent spin if on cooldown
-  if (cooldownSet.has(object)) return;
+  if (cooldownSet.has(object)) return false;
 
-  // Begin cooldown
   cooldownSet.add(object);
   gsap.delayedCall(COOLDOWN_DURATION, () => {
     cooldownSet.delete(object);
   });
 
-  // Update spin count
   const count = (spinCounts.get(object) ?? 0) + 1;
   spinCounts.set(object, count);
 
-  // Determine if special effect should trigger
   const isSpecialSpin = count % 3 === 0;
-
   const rotationAmount = isSpecialSpin ? SPIN_AMOUNT * 1.5 : SPIN_AMOUNT;
   const duration = isSpecialSpin ? SPIN_DURATION * 0.7 : SPIN_DURATION;
   const newRotation = object.rotation.y + rotationAmount;
 
-  // Optional special sparkle effect
   if (isSpecialSpin) {
-    // Get appropriate sparkle options based on object name
     const sparkleOptions = getObjectSparkleOptions(object);
     addSparkleEffect(object, sparkleOptions);
   }
 
-  // Reset scale before spin
   gsap.to(object.scale, {
     x: 1,
     y: 1,
     z: 1,
     duration: 0.2,
     onComplete: () => {
-      // Spin
       gsap.to(object.rotation, {
         y: newRotation,
         duration,
         ease: "power2.out",
       });
 
-      // Pulse effect
       gsap.to(object.scale, {
         x: 1.1,
         y: 1.1,
@@ -250,4 +240,6 @@ export function spinAnimation(object) {
       });
     },
   });
+
+  return true;
 }

@@ -312,13 +312,11 @@ lottie-player {
   flex-direction: column;
 }
 
-/* Form labels */
 .contact-form label {
   margin-top: 1rem;
   font-weight: 600;
 }
 
-/* Inputs & textarea */
 .contact-form input,
 .contact-form textarea {
   margin-top: 0.5rem;
@@ -334,7 +332,6 @@ lottie-player {
   min-height: 100px;
 }
 
-/* “Send Message” button */
 .send-button {
   margin-top: 1.5rem;
   padding: 0.75rem 1.5rem;
@@ -350,7 +347,6 @@ lottie-player {
   background-color: var(--contact-modal-text);
 }
 
-/* Add this to your CSS */
 .side-panel {
   position: fixed;
   top: 0;
