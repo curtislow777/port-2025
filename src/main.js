@@ -25,6 +25,8 @@ import {
   setupHoverOutline,
   updateOutlineHover,
 } from "./scripts/hoverOutline.js";
+import { updateHoverScale } from "./scripts/hoverScale.js";
+
 import { initModalSystem } from "./scripts/modal.js";
 import { initImageOverlay } from "./scripts/fadeOverlayImage.js";
 
@@ -481,6 +483,7 @@ function render() {
     raycasterObjects,
     outlinePass
   );
+  updateHoverScale(currentIntersects, animatedObjects.scale);
 
   // Update whiteboard if it exists and is active
   if (whiteboard && whiteboard.isActive) {
