@@ -443,10 +443,8 @@ textureLoader.load("/images/perlin.png", (perlinTexture) => {
   steamMesh.material.uniforms.uGlobalAlpha.value = 0.0;
   steamMesh.visible = false;
 
-  // Position it in your scene
   steamMesh.position.set(-4.177665710449219, 2.85, 1.0796866416931152);
 
-  // Add to scene
   scene.add(steamMesh);
 });
 
@@ -610,37 +608,33 @@ document.addEventListener("keydown", (event) => {
  * If the mesh is currently invisible, it fades in.
  * If it's visible, it fades out.
  *
- * @param {THREE.Mesh} steamMesh - The mesh from createSteamEffect.
- * @param {number} [duration=0.5] - Fade duration in seconds.
- * @param {Function} [onComplete] - Optional callback after fade completes.
+ * @param {THREE.Mesh} steamMesh -
+ * @param {number} [duration=0.5]
+ * @param {Function} [onComplete]
  */
-function toggleSteam(steamMesh, duration = 0.5, onComplete) {
-  if (!steamMesh) return;
+function toggleSteam(steamMesh, duration) {
+  const mat = steamMesh.material;
+  if (!mat.uniforms?.uGlobalAlpha) return;
 
-  const material = steamMesh.material;
-  if (!material.uniforms || !material.uniforms.uGlobalAlpha) return;
+  // Flip: if it's hidden we want to fade in
+  const fadeIn = !steamMesh.visible;
+  const target = fadeIn ? 1 : 0;
 
-  const currentlyVisible = steamMesh.visible;
+  // Kill any prior tween on this uniform
+  gsap.killTweensOf(mat.uniforms.uGlobalAlpha);
 
-  if (!currentlyVisible) {
-    // It's hidden → fade in
-    steamMesh.visible = true;
-    // Force alpha to 0 so we can fade from 0 -> 1
-    material.uniforms.uGlobalAlpha.value = 0;
-    gsap.to(material.uniforms.uGlobalAlpha, {
-      value: 1,
-      duration,
-      onComplete,
-    });
-  } else {
-    // It's visible → fade out
-    gsap.to(material.uniforms.uGlobalAlpha, {
-      value: 0,
-      duration,
-      onComplete: () => {
-        steamMesh.visible = false;
-        if (onComplete) onComplete();
-      },
-    });
-  }
+  // If fading in, reset to zero first (so we always start from 0)
+  if (fadeIn) mat.uniforms.uGlobalAlpha.value = 0;
+
+  gsap.to(mat.uniforms.uGlobalAlpha, {
+    value: target,
+    duration: duration,
+    ease: "none", // true linear interpolation
+    onStart: () => {
+      if (fadeIn) steamMesh.visible = true;
+    },
+    onComplete: () => {
+      if (!fadeIn) steamMesh.visible = false;
+    },
+  });
 }
