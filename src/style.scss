@@ -244,40 +244,67 @@ lottie-player {
   font-size: 0.9em;
   color: #555;
 }
+
 .erhu-modal {
   background: var(--erhu-modal-bg);
   border: 10px solid var(--erhu-modal-border);
   color: var(--erhu-modal-text);
 
   .erhu-content {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    grid-template-areas:
+      "text portrait"
+      "gallery gallery";
     gap: 2rem;
   }
 
   .erhu-text {
+    grid-area: text;
     font-size: 1rem;
     line-height: 1.6;
   }
+  .erhu-portrait {
+    grid-area: portrait;
+    width: 100%;
+    max-height: 450px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
 
   .erhu-gallery {
+    grid-area: gallery;
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
     justify-content: center;
-  }
 
-  .erhu-img {
-    width: calc(50% - 1rem);
-    max-width: 300px;
-    height: auto;
-    border-radius: 8px;
-    object-fit: cover;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-
-  @media (max-width: 600px) {
     .erhu-img {
+      width: calc(50% - 1rem);
+      max-width: 300px;
+      border-radius: 8px;
+      object-fit: cover;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  // mobile: everything stacks nicely
+  @media (max-width: 800px) {
+    .erhu-content {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "portrait"
+        "text"
+        "gallery";
+    }
+
+    .erhu-portrait {
+      width: 60%;
+      margin: 0 auto;
+    }
+
+    .erhu-gallery .erhu-img {
       width: 100%;
     }
   }
