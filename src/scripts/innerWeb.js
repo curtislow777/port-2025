@@ -12,56 +12,66 @@ export function initInnerWeb(
   {
     html = `<iframe
                src="https://example.com"
-               style="width:100%;height:100%;border:0;border-radius:8px;"></iframe>`,
+               style="width:100%;height:100%;border:0;border-radius:8px;">
+             </iframe>`,
     position = new THREE.Vector3(0, 1.5, 0),
     rotation = new THREE.Euler(0, 0, 0),
     scale = new THREE.Vector3(1, 1, 1),
   } = {}
 ) {
-  // ——— CSS3D Renderer ———
+  // ——— 1) always let clicks pass through the CSS3D layer
   const cssRenderer = new CSS3DRenderer();
   cssRenderer.setSize(sizes.width, sizes.height);
-  Object.assign(cssRenderer.domElement.style, {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    zIndex: 1,
-    pointerEvents: "auto", // allow iframe-interaction by default
-  });
+  cssRenderer.domElement.style.position = "absolute";
+  cssRenderer.domElement.style.top = "0";
+  cssRenderer.domElement.style.left = "0";
+  cssRenderer.domElement.style.zIndex = "1";
+  cssRenderer.domElement.style.pointerEvents = "none";
   domParent.appendChild(cssRenderer.domElement);
 
-  // ——— Your iframe element (or any HTML) ———
+  // ——— 2) build your iframe *wrapper*
   const element = typeof html === "string" ? htmlToElement(html) : html;
   element.style.width ||= "600px";
   element.style.height ||= "400px";
 
-  const cssObject = new CSS3DObject(element);
+  const wrapper = document.createElement("div");
+  wrapper.style.width = element.style.width;
+  wrapper.style.height = element.style.height;
+  wrapper.style.pointerEvents = "none"; // start *disabled*
+  wrapper.appendChild(element);
+
+  const cssObject = new CSS3DObject(wrapper);
   cssObject.position.copy(position);
   cssObject.rotation.copy(rotation);
   cssObject.scale.copy(scale);
   scene.add(cssObject);
 
-  // ——— Helpers ———
+  // ——— Helpers
   function onResize() {
     cssRenderer.setSize(sizes.width, sizes.height);
   }
-
-  // Toggle pointer‐events on/off
+  function enableIframe() {
+    wrapper.style.pointerEvents = "auto";
+  }
+  function disableIframe() {
+    wrapper.style.pointerEvents = "none";
+  }
   function toggleIframe() {
-    const pe = cssRenderer.domElement.style.pointerEvents;
-    cssRenderer.domElement.style.pointerEvents =
-      pe === "none" ? "auto" : "none";
+    wrapper.style.pointerEvents =
+      wrapper.style.pointerEvents === "none" ? "auto" : "none";
   }
 
   return {
     cssRenderer,
     cssObject,
     onResize,
+    enableIframe,
+    disableIframe,
     toggleIframe,
   };
 }
 
-// Utility to convert HTML string → Element
+// minor util
 function htmlToElement(html) {
   const t = document.createElement("template");
   t.innerHTML = html.trim();

@@ -220,21 +220,17 @@ const {
   gltfLoader,
 } = initThreeJS(canvas, sizes);
 
-const innerWeb = initInnerWeb(
-  scene,
-  camera,
-  document.body, // or the div that wraps your canvas
-  sizes,
-  {
-    html: `<iframe
+const innerWeb = initInnerWeb(scene, camera, document.body, sizes, {
+  html: `<iframe
              src="https://inner-portfolio-js.vercel.app/"
              style="width:100%;height:100%;border:0;border-radius:8px;"
            ></iframe>`,
-    position: new THREE.Vector3(-2.5, 2.5, -1),
-    rotation: new THREE.Euler(0, Math.PI / 2, 0),
-    scale: new THREE.Vector3(0.002, 0.002, 0.002), // because iframes are big
-  }
-);
+  position: new THREE.Vector3(-2.5, 2.5, -1),
+  rotation: new THREE.Euler(0, Math.PI / 2, 0),
+  scale: new THREE.Vector3(0.002, 0.002, 0.002),
+});
+
+innerWeb.disableIframe();
 
 const { composer, outlinePass } = setupHoverOutline(
   renderer,
@@ -696,8 +692,15 @@ function clearHoverEffects() {
   mailbox.updateMailboxHover([]);
 }
 
+let iframeEnabled = true; // track state
+
 window.addEventListener("keydown", (e) => {
   if (e.key.toLowerCase() === "i") {
-    innerWeb.toggleIframe();
+    if (iframeEnabled) {
+      innerWeb.disableIframe();
+    } else {
+      innerWeb.enableIframe();
+    }
+    iframeEnabled = !iframeEnabled;
   }
 });
