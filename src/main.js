@@ -30,6 +30,8 @@ import { updateHoverScale } from "./scripts/hoverScale.js";
 import { initModalSystem } from "./scripts/modal.js";
 import { initImageOverlay } from "./scripts/fadeOverlayImage.js";
 
+import { initInnerWeb } from "./scripts/innerWeb.js";
+
 /**
  * START OF THREE.JS CODE
  * ---------------------------------------------------------------
@@ -217,6 +219,22 @@ const {
   textureLoader,
   gltfLoader,
 } = initThreeJS(canvas, sizes);
+
+const innerWeb = initInnerWeb(
+  scene,
+  camera,
+  document.body, // or the div that wraps your canvas
+  sizes,
+  {
+    html: `<iframe
+             src="https://inner-portfolio-js.vercel.app/"
+             style="width:100%;height:100%;border:0;border-radius:8px;"
+           ></iframe>`,
+    position: new THREE.Vector3(-2.5, 2.5, -1),
+    rotation: new THREE.Euler(0, Math.PI / 2, 0),
+    scale: new THREE.Vector3(0.002, 0.002, 0.002), // because iframes are big
+  }
+);
 
 const { composer, outlinePass } = setupHoverOutline(
   renderer,
@@ -522,6 +540,8 @@ function render() {
     //steamMesh.lookAt(camera.position);
   }
 
+  innerWeb.cssRenderer.render(scene, camera);
+
   composer.render();
   window.requestAnimationFrame(render);
 }
@@ -541,6 +561,8 @@ window.addEventListener("resize", () => {
 
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  innerWeb.onResize();
 
   composer.setSize(sizes.width, sizes.height);
 });
@@ -673,3 +695,9 @@ function clearHoverEffects() {
   updateHoverScale([], animatedObjects.scale);
   mailbox.updateMailboxHover([]);
 }
+
+window.addEventListener("keydown", (e) => {
+  if (e.key.toLowerCase() === "i") {
+    innerWeb.toggleIframe();
+  }
+});
