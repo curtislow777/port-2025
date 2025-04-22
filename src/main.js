@@ -223,11 +223,11 @@ const {
 const innerWeb = initInnerWeb(scene, camera, document.body, sizes, {
   html: `<iframe
              src="https://inner-portfolio-js.vercel.app/"
-             style="width:100%;height:100%;border:0;border-radius:8px;"
+             style="width:1200px;height:800px;border:0;border-radius:8px;"
            ></iframe>`,
-  position: new THREE.Vector3(-2.5, 2.5, -1),
+  position: new THREE.Vector3(-5, 3.1, -0.55),
   rotation: new THREE.Euler(0, Math.PI / 2, 0),
-  scale: new THREE.Vector3(0.002, 0.002, 0.002),
+  scale: new THREE.Vector3(0.0015, 0.0015, 0.0015),
 });
 
 innerWeb.disableIframe();
