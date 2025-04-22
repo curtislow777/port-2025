@@ -2,15 +2,14 @@ import * as THREE from "three";
 import gsap from "gsap";
 import { initThreeJS } from "./scripts/scene.js";
 
-// Add this import at the top with your other imports
 import "./style.scss";
 
 import Whiteboard from "./scripts/utils/whiteboard.js";
 import AudioManager from "./scripts/audio.js";
 import CameraManager from "./scripts/camera.js";
 import ClockManager from "./scripts/clock.js";
-import ThemeManager from "./scripts/themeManager.js"; // Add this import
-import { createSteamEffect } from "./scripts/shaders/steamEffect.js"; // Import the steam effect function
+import ThemeManager from "./scripts/themeManager.js";
+import { createSteamEffect } from "./scripts/shaders/steamEffect.js";
 
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -44,7 +43,7 @@ let isRaycastEnabled = true;
 
 const clockManager = new ClockManager();
 const themeManager = new ThemeManager();
-// object name, so get the blender mesh name.
+
 const imageData = {
   "baby-cyrus-eight-raycast": {
     src: "images/bb-cyrus.webp",
@@ -86,7 +85,6 @@ const imageData = {
     src: "images/cyrus.webp",
     caption: "nimama",
   },
-
   "duck-eight-raycast": {
     src: "images/duck.webp",
     caption: "nimama",
@@ -134,7 +132,6 @@ const { overlay, modals, showModal, hideModal, hideAllModals } =
     },
   });
 
-// Your existing initImageOverlay setup
 const { showImageOverlay, hideImageOverlay } = initImageOverlay({
   overlaySelector: ".fade-overlay",
   contentSelector: ".fade-overlay-content",
@@ -146,11 +143,9 @@ const { showImageOverlay, hideImageOverlay } = initImageOverlay({
   },
 });
 
-// Theme toggle functionality with GSAP animation
 themeToggle.addEventListener("click", () => {
   isDarkMode = !isDarkMode;
 
-  // Update UI
   themeToggle.innerHTML = isDarkMode
     ? '<i class="fas fa-moon"></i>'
     : '<i class="fas fa-sun"></i>';
@@ -184,7 +179,6 @@ const sizes = {
 
 let whiteboard;
 
-// Create a modal system object to pass to the mailbox module
 const modalSystem = {
   showModal: showModal,
   hideModal: hideModal,
@@ -462,17 +456,15 @@ loader.load("/models/room-port-v1.glb", (glb) => {
 whiteboard = new Whiteboard(scene, camera, renderer, cameraManager.controls);
 whiteboard.setPosition(-5.8, 4.12675142288208, 0.121265381);
 whiteboard.setRotation(0, Math.PI / 2, 0);
-// near the top of main.js
 
 function animate() {}
 
-let steamMesh; // Make sure to declare this at top-level so render() can see it
+let steamMesh;
 
 textureLoader.load("/images/perlin.png", (perlinTexture) => {
   perlinTexture.wrapS = THREE.RepeatWrapping;
   perlinTexture.wrapT = THREE.RepeatWrapping;
 
-  // Create the steam effect plane
   steamMesh = createSteamEffect(perlinTexture, {
     width: 0.15,
     height: 0.6,
@@ -487,7 +479,6 @@ textureLoader.load("/images/perlin.png", (perlinTexture) => {
 });
 
 /**  -------------------------- Render and Animations Stuff -------------------------- */
-// Update Three.js theme
 
 const clock = new THREE.Clock();
 
