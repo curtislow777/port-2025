@@ -34,8 +34,9 @@ body {
   font-family: "Blinky Star";
 }
 
-#experience-canvas {
-  position: fixed;
+#experience-canvas,
+#css3d {
+  position: absolute;
   height: 100%;
   width: 100%;
   top: 0;
@@ -43,7 +44,9 @@ body {
   display: block;
   overflow: hidden;
 }
-
+#experience-canvas {
+  z-index: 2;
+}
 .loading-screen {
   position: fixed;
   top: 0;

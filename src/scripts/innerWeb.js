@@ -17,9 +17,12 @@ export function initInnerWeb(
     position = new THREE.Vector3(0, 1.5, 0),
     rotation = new THREE.Euler(0, 0, 0),
     scale = new THREE.Vector3(1, 1, 1),
+    createShadowMesh = true, // optional, to add the shadow mesh from makeElementObject
+    elementWidth = 600, // default width for element
+    elementHeight = 400, // default height for element
   } = {}
 ) {
-  // ——— 1) always let clicks pass through the CSS3D layer
+  // ——— 1) Always let clicks pass through the CSS3D layer
   const cssRenderer = new CSS3DRenderer();
   cssRenderer.setSize(sizes.width, sizes.height);
   cssRenderer.domElement.style.position = "absolute";
@@ -27,43 +30,36 @@ export function initInnerWeb(
   cssRenderer.domElement.style.left = "0";
   cssRenderer.domElement.style.zIndex = "1";
   cssRenderer.domElement.style.pointerEvents = "none";
-  domParent.appendChild(cssRenderer.domElement);
+  document.querySelector("#css3d").appendChild(cssRenderer.domElement);
 
-  // ——— 2) build your iframe *wrapper*
-  const element = typeof html === "string" ? htmlToElement(html) : html;
-  element.style.width ||= "600px";
-  element.style.height ||= "400px";
+  // ——— 2) Create the object with the element and optional shadow
+  const elementObject = makeElementObject("div", elementWidth, elementHeight);
+  elementObject.css3dObject.position.copy(position);
+  elementObject.css3dObject.rotation.copy(rotation);
+  elementObject.css3dObject.scale.copy(scale);
 
-  const wrapper = document.createElement("div");
-  wrapper.style.width = element.style.width;
-  wrapper.style.height = element.style.height;
-  wrapper.style.pointerEvents = "none"; // start *disabled*
-  wrapper.appendChild(element);
-
-  const cssObject = new CSS3DObject(wrapper);
-  cssObject.position.copy(position);
-  cssObject.rotation.copy(rotation);
-  cssObject.scale.copy(scale);
-  scene.add(cssObject);
+  scene.add(elementObject.css3dObject);
 
   // ——— Helpers
   function onResize() {
     cssRenderer.setSize(sizes.width, sizes.height);
   }
   function enableIframe() {
-    wrapper.style.pointerEvents = "auto";
+    elementObject.css3dObject.element.style.pointerEvents = "auto";
   }
   function disableIframe() {
-    wrapper.style.pointerEvents = "none";
+    elementObject.css3dObject.element.style.pointerEvents = "none";
   }
   function toggleIframe() {
-    wrapper.style.pointerEvents =
-      wrapper.style.pointerEvents === "none" ? "auto" : "none";
+    elementObject.css3dObject.element.style.pointerEvents =
+      elementObject.css3dObject.element.style.pointerEvents === "none"
+        ? "auto"
+        : "none";
   }
 
   return {
     cssRenderer,
-    cssObject,
+    cssObject: elementObject.css3dObject,
     onResize,
     enableIframe,
     disableIframe,
@@ -71,9 +67,38 @@ export function initInnerWeb(
   };
 }
 
-// minor util
+// Minor util to convert HTML string to element
 function htmlToElement(html) {
   const t = document.createElement("template");
   t.innerHTML = html.trim();
   return t.content.firstChild;
+}
+
+// Function to create the element object with CSS3DObject and optional shadow mesh
+function makeElementObject(type, width, height) {
+  const obj = new THREE.Object3D();
+  const element = document.createElement(type);
+  element.style.width = width + "px";
+  element.style.height = height + "px";
+  element.style.opacity = 0.999;
+  element.style.boxSizing = "border-box";
+
+  // Create CSS3DObject
+  var css3dObject = new CSS3DObject(element);
+  obj.css3dObject = css3dObject;
+  obj.add(css3dObject);
+
+  // Make an invisible plane for clipping (shadow mesh)
+  var material = new THREE.MeshPhongMaterial({
+    opacity: 0.15,
+    color: new THREE.Color(0x111111),
+    blending: THREE.NoBlending,
+  });
+  var geometry = new THREE.BoxGeometry(width, height, 1);
+  var mesh = new THREE.Mesh(geometry, material);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  obj.add(mesh);
+
+  return obj;
 }
