@@ -37,7 +37,10 @@ export function initThreeJS(canvas, sizes) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
-
+  renderer.domElement.style.position = "absolute";
+  renderer.domElement.style.top = 0;
+  renderer.domElement.style.left = 0;
+  renderer.domElement.style.zIndex = 1; // WebGL ABOVE
   return {
     scene,
     camera,

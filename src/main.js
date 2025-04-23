@@ -219,11 +219,15 @@ const innerWeb = initInnerWeb(scene, camera, document.body, sizes, {
              src="https://inner-portfolio-js.vercel.app/"
              style="width:1200px;height:800px;border:0;border-radius:8px;"
            ></iframe>`,
-  position: new THREE.Vector3(-5, 3.1, -0.55),
+  position: new THREE.Vector3(-4, 3.1, -0.55),
   rotation: new THREE.Euler(0, Math.PI / 2, 0),
   scale: new THREE.Vector3(0.0015, 0.0015, 0.0015),
 });
-
+// Get the div element
+const div = innerWeb.cssObject.element.querySelector("iframe");
+div.addEventListener("click", () => {
+  alert("Div was clicked!");
+});
 innerWeb.disableIframe();
 
 const { composer, outlinePass } = setupHoverOutline(
@@ -527,9 +531,10 @@ function render() {
     //steamMesh.lookAt(camera.position);
   }
 
-  innerWeb.cssRenderer.render(scene, camera);
-
   composer.render();
+
+  innerWeb.render();
+
   window.requestAnimationFrame(render);
 }
 
