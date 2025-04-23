@@ -214,17 +214,17 @@ const {
   gltfLoader,
 } = initThreeJS(canvas, sizes);
 
-// Example usage of the initInnerWeb function
 const innerWeb = initInnerWeb(scene, camera, document.body, sizes, {
   html: `<iframe
-            src="https://inner-portfolio-js.vercel.app/"
-            style="width:1200px;height:800px;border:0;border-radius:8px;">
-          </iframe>`,
+             src="https://inner-portfolio-js.vercel.app/"
+             style="width:1200px;height:800px;border:0;border-radius:8px;"
+           ></iframe>`,
   position: new THREE.Vector3(-5, 3.1, -0.55),
   rotation: new THREE.Euler(0, Math.PI / 2, 0),
   scale: new THREE.Vector3(0.0015, 0.0015, 0.0015),
-  createShadowMesh: true, // Optional: if you want to create the shadow mesh
 });
+
+innerWeb.disableIframe();
 
 const { composer, outlinePass } = setupHoverOutline(
   renderer,
