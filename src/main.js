@@ -525,10 +525,9 @@ function render() {
     steamMesh.material.uniforms.uTime.value = elapsedTime;
     //steamMesh.lookAt(camera.position);
   }
+  innerWeb.render();
 
   composer.render();
-
-  innerWeb.render();
 
   window.requestAnimationFrame(render);
 }
@@ -683,7 +682,7 @@ function clearHoverEffects() {
   mailbox.updateMailboxHover([]);
 }
 
-let iframeEnabled = true; // track state
+let iframeEnabled = false; // track state
 
 window.addEventListener("keydown", (e) => {
   if (e.key.toLowerCase() === "i") {

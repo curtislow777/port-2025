@@ -95,11 +95,16 @@ export function initInnerWeb(
 
   function enableIframe() {
     wrapper.style.pointerEvents = "auto";
+    cssRenderer.domElement.style.pointerEvents = "auto"; // Allow pointer events through this layer
     console.log("enableIframe called - iframe is now interactive");
+    cssRenderer.domElement.style.zIndex = 2; // CSS3D BELOW
   }
 
   function disableIframe() {
     wrapper.style.pointerEvents = "none";
+    cssRenderer.domElement.style.pointerEvents = "none";
+    cssRenderer.domElement.style.zIndex = 0; // CSS3D BELOW
+
     console.log("disableIframe called - iframe is now non-interactive");
   }
 
