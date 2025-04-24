@@ -222,11 +222,7 @@ const innerWeb = initInnerWeb(scene, camera, document.body, sizes, {
   rotation: new THREE.Euler(0, Math.PI / 2, 0),
   scale: new THREE.Vector3(0.0015, 0.0015, 0.0015),
 });
-// Get the div element
-const div = innerWeb.cssObject.element.querySelector("iframe");
-div.addEventListener("click", () => {
-  alert("Div was clicked!");
-});
+
 innerWeb.disableIframe();
 
 const { composer, outlinePass } = setupHoverOutline(
