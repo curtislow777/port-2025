@@ -4,11 +4,13 @@ import { initThreeJS } from "./scripts/scene.js";
 
 import "./style.scss";
 
+// Singleton Patterns
+import themeManager from "./scripts/themeManager.js";
+import audioManager from "./scripts/audio.js";
+import clockManager from "./scripts/clock.js";
+
 import Whiteboard from "./scripts/utils/whiteboard.js";
-import AudioManager from "./scripts/audio.js";
 import CameraManager from "./scripts/camera.js";
-import ClockManager from "./scripts/clock.js";
-import ThemeManager from "./scripts/themeManager.js";
 import { createSteamEffect } from "./scripts/shaders/steamEffect.js";
 
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
@@ -40,9 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {});
 
 let perryCupControls = null;
 let isRaycastEnabled = true;
-
-const clockManager = new ClockManager();
-const themeManager = new ThemeManager();
 
 const imageData = {
   "baby-cyrus-eight-raycast": {
@@ -163,11 +162,11 @@ soundToggle.addEventListener("click", () => {
     soundToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
 
     // Pause BGM
-    AudioManager.pauseBGM();
+    audioManager.pauseBGM();
   } else {
     soundToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
 
-    AudioManager.playBGM(0.25);
+    audioManager.playBGM(0.25);
   }
 });
 
@@ -304,8 +303,8 @@ loadingButton.addEventListener("click", () => {
       loadingScreen.style.display = "none";
     },
   });
-  AudioManager.playClick();
-  AudioManager.playBGM(0); // 20% volume
+  audioManager.playClick();
+  audioManager.playBGM(0); // 20% volume
 });
 
 function handleRaycasterInteraction() {
@@ -314,21 +313,21 @@ function handleRaycasterInteraction() {
     const object = currentIntersects[0].object;
 
     if (object.name.includes("about-raycast")) {
-      AudioManager.playClick();
+      audioManager.playClick();
       showModal(modals.about);
     } else if (object.name.includes("work-raycast")) {
-      AudioManager.playClick();
+      audioManager.playClick();
       showModal(modals.work);
     } else if (object.name.includes("erhu-seven")) {
-      AudioManager.playClick();
+      audioManager.playClick();
       showModal(modals.erhu);
     } else if (object.name.includes("monitor")) {
-      AudioManager.playClick();
+      audioManager.playClick();
       showModal(modals.work);
     }
 
     if (imageData[object.name]) {
-      AudioManager.playClick();
+      audioManager.playClick();
       const { src, caption } = imageData[object.name];
       showImageOverlay(src, caption);
       isRaycastEnabled = false;
@@ -337,7 +336,7 @@ function handleRaycasterInteraction() {
     Object.entries(socialLinks).forEach(([key, url]) => {
       if (object.name.toLowerCase().includes(key.toLowerCase())) {
         console.log(`Opening ${key} link: ${url}`);
-        AudioManager.playClick();
+        audioManager.playClick();
 
         // 👇 Clear hover effects and block raycasting
         clearHoverEffects();
@@ -359,7 +358,7 @@ function handleRaycasterInteraction() {
 
     if (object.name.includes("whiteboard-raycast")) {
       console.log("Whiteboard clicked!");
-      AudioManager.playClick();
+      audioManager.playClick();
       cameraManager.zoomToWhiteboard(whiteboard, 1.5);
       whiteboard.toggleWhiteboardMode(true); // Enable drawing mode
     }
@@ -367,7 +366,7 @@ function handleRaycasterInteraction() {
     // Add this new condition with your other click handlers
     if (object.name.includes("perry-hat")) {
       if (perryCupControls) {
-        AudioManager.playClick();
+        audioManager.playClick();
         perryCupControls.toggleLid();
         toggleSteam(steamMesh, 1);
       }
@@ -377,13 +376,13 @@ function handleRaycasterInteraction() {
     }
 
     if (mailbox.handleRaycastIntersection(object, modals.contact)) {
-      AudioManager.playClick();
+      audioManager.playClick();
       return;
     }
     // Trigger spin animation if the object is in animateSpinObjects
     if (animatedObjects.spin.includes(object)) {
       const didSpin = spinAnimation(object);
-      if (didSpin) AudioManager.playClick();
+      if (didSpin) audioManager.playClick();
     }
   }
 }

@@ -1,12 +1,19 @@
 // clock.js
 import * as THREE from "three";
 
-export default class ClockManager {
+class ClockManager {
   constructor() {
+    // Return existing instance if it exists
+    if (typeof window !== "undefined" && ClockManager._instance) {
+      return ClockManager._instance;
+    }
+    ClockManager._instance = this;
+
     this.hourHand = null;
     this.minuteHand = null;
   }
 
+  // Methods defined in the class body, not within constructor
   setHourHand(mesh) {
     this.hourHand = mesh;
     this.hourHand.userData.initialRotation =
@@ -36,3 +43,5 @@ export default class ClockManager {
     this.minuteHand.rotation.z = -minuteAngle;
   }
 }
+const clockManagerInstance = new ClockManager();
+export default clockManagerInstance;

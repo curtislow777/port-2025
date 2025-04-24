@@ -7,6 +7,11 @@ import {
 
 class ThemeManager {
   constructor() {
+    if (typeof window !== "undefined" && ThemeManager._instance) {
+      return ThemeManager._instance;
+    }
+
+    ThemeManager._instance = this;
     // Initialize state
     this.isDarkMode = false;
     this.uMixRatio = { value: 0 };
@@ -207,4 +212,5 @@ class ThemeManager {
   }
 }
 
-export default ThemeManager;
+const themeManagerInstance = new ThemeManager();
+export default themeManagerInstance;

@@ -1,31 +1,41 @@
 import { Howl } from "howler";
 
-const bgm = new Howl({
-  src: ["audio/moving.ogg"],
-  loop: true,
-  volume: 0.0,
-});
+class AudioManager {
+  constructor() {
+    if (typeof window !== "undefined" && AudioManager._instance) {
+      return AudioManager._instance;
+    }
 
-const click = new Howl({
-  src: ["audio/ui-click.wav"],
-  volume: 1.0,
-});
+    AudioManager._instance = this;
 
-const AudioManager = {
-  playBGM: (volume = 1.0) => {
-    bgm.volume(volume);
-    if (!bgm.playing()) bgm.play();
-  },
-  pauseBGM: (volume = 1.0) => {
-    bgm.volume(volume);
-    if (bgm.playing()) bgm.pause();
-  },
+    this.bgm = new Howl({
+      src: ["audio/moving.ogg"],
+      loop: true,
+      volume: 0.0,
+    });
 
-  playClick: (volume = 0.1) => {
-    click.volume(volume);
-    click.play();
+    this.click = new Howl({
+      src: ["audio/ui-click.wav"],
+      volume: 1.0,
+    });
+  }
+
+  playBGM(volume = 1.0) {
+    this.bgm.volume(volume);
+    if (!this.bgm.playing()) this.bgm.play();
+  }
+
+  pauseBGM(volume = 1.0) {
+    this.bgm.volume(volume);
+    if (this.bgm.playing()) this.bgm.pause();
+  }
+
+  playClick(volume = 0.1) {
+    this.click.volume(volume);
+    this.click.play();
     console.log("buttonclick");
-  },
-};
+  }
+}
 
-export default AudioManager;
+const audioManagerInstance = new AudioManager();
+export default audioManagerInstance;
