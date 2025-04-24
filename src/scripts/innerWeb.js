@@ -82,6 +82,7 @@ export function initInnerWeb(
 
   // Add the occlusion plane to the main scene
   scene.add(occlusionPlane);
+  disableIframe(); // Disable interaction by default
 
   function render() {
     // Render the WebGL content first (handled outside this function)

@@ -223,8 +223,6 @@ const innerWeb = initInnerWeb(scene, camera, document.body, sizes, {
   scale: new THREE.Vector3(0.0015, 0.0015, 0.0015),
 });
 
-innerWeb.disableIframe();
-
 const { composer, outlinePass } = setupHoverOutline(
   renderer,
   scene,
