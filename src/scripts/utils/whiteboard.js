@@ -57,7 +57,10 @@ export default class Whiteboard {
       map: this.canvasTexture,
     });
 
-    const whiteboardGeom = new THREE.PlaneGeometry(2.6, 2.6 * 0.65);
+    const whiteboardGeom = new THREE.PlaneGeometry(
+      2.6 * 0.725,
+      2.6 * 0.65 * 0.725
+    );
     this.whiteboardMesh = new THREE.Mesh(
       whiteboardGeom,
       this.whiteboardMaterial

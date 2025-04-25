@@ -181,11 +181,11 @@ const {
 const innerWeb = initInnerWeb(scene, camera, document.body, sizes, {
   html: `<iframe
              src="https://inner-portfolio-js.vercel.app/"
-             style="width:1200px;height:800px;border:0;border-radius:8px;"
+             style="width:1200px;height:675px; border:0;border-radius:8px;"
            ></iframe>`,
   position: new THREE.Vector3(-4, 3.1, -0.55),
   rotation: new THREE.Euler(0, Math.PI / 2, 0),
-  scale: new THREE.Vector3(0.0015, 0.0015, 0.0015),
+  scale: new THREE.Vector3(0.00137, 0.00137, 0.00137),
 });
 
 const { composer, outlinePass } = setupHoverOutline(
@@ -458,15 +458,12 @@ function render() {
     clearHoverEffects();
   }
 
-  // Update whiteboard if it exists and is active
   if (whiteboard && whiteboard.isActive) {
     whiteboard.update();
   }
 
-  // If steamMesh is loaded, update time + orientation
   if (steamMesh) {
     steamMesh.material.uniforms.uTime.value = elapsedTime;
-    //steamMesh.lookAt(camera.position);
   }
   innerWeb.render();
 

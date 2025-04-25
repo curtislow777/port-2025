@@ -77,16 +77,12 @@ export function initInnerWeb(
   occlusionPlane.rotation.copy(rotation);
   occlusionPlane.scale.copy(scale);
 
-  // Name it for raycasting identification
   occlusionPlane.name = "iframeInteractionPlane";
 
-  // Add the occlusion plane to the main scene
   scene.add(occlusionPlane);
   disableIframe(); // Disable interaction by default
 
   function render() {
-    // Render the WebGL content first (handled outside this function)
-    // Then render the CSS3D content
     cssRenderer.render(cssScene, camera);
   }
 
@@ -146,7 +142,6 @@ export function initInnerWeb(
   };
 }
 
-// Utility function to create elements from HTML strings
 function htmlToElement(html) {
   const template = document.createElement("template");
   template.innerHTML = html.trim();
