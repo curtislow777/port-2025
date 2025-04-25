@@ -37,11 +37,25 @@ export default class Whiteboard {
     this.drawingContext = this.drawingCanvas.getContext("2d");
 
     // Set up drawing style
-    this.drawingContext.lineWidth = 8;
+    this.drawingContext.lineWidth = 20;
     this.drawingContext.lineJoin = "round";
     this.drawingContext.lineCap = "round";
     this.drawingContext.fillStyle = "white";
     this.drawingContext.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+    // Load from image texture
+    const img = new Image();
+    img.onload = () => {
+      this.drawingContext.drawImage(
+        img,
+        0,
+        0,
+        this.canvasWidth,
+        this.canvasHeight
+      );
+      if (this.canvasTexture) this.canvasTexture.needsUpdate = true;
+    };
+    img.src = "/textures/drawing.png";
   }
 
   createWhiteboardMesh() {
@@ -86,6 +100,10 @@ export default class Whiteboard {
         button.classList.add("whiteboard-selected");
       });
     });
+    const saveBtn = document.getElementById("saveWhiteboard");
+    if (saveBtn) {
+      saveBtn.addEventListener("click", () => this.downloadCanvasAsImage());
+    }
     this.activateControls(); // Call this to set up the bound functions, but they only fire when this.isActive is true.
   }
 
@@ -156,10 +174,10 @@ export default class Whiteboard {
 
   changeWhiteboardColor(key) {
     const config = {
-      "black-marker": { color: "black", lineWidth: 8 },
-      "red-marker": { color: "red", lineWidth: 8 },
-      "green-marker": { color: "darkgreen", lineWidth: 8 },
-      "blue-marker": { color: "blue", lineWidth: 8 },
+      "black-marker": { color: "black", lineWidth: 20 },
+      "red-marker": { color: "red", lineWidth: 20 },
+      "green-marker": { color: "darkgreen", lineWidth: 20 },
+      "blue-marker": { color: "blue", lineWidth: 20 },
       eraser: { color: "white", lineWidth: 50 },
     };
 
@@ -238,5 +256,12 @@ export default class Whiteboard {
 
   setRotation(x, y, z) {
     this.whiteboardMesh.rotation.set(x, y, z);
+  }
+
+  downloadCanvasAsImage() {
+    const link = document.createElement("a");
+    link.download = "whiteboard_drawing.png";
+    link.href = this.drawingCanvas.toDataURL("image/png");
+    link.click();
   }
 }
