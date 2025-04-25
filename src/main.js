@@ -4,6 +4,8 @@ import { initThreeJS } from "./scripts/scene.js";
 
 import "./style.scss";
 
+import EventHandler from "./scripts/core/EventHandler.js";
+
 // Singleton Patterns
 import themeManager from "./scripts/themeManager.js";
 import audioManager from "./scripts/audio.js";
@@ -39,9 +41,6 @@ import { initInnerWeb } from "./scripts/innerWeb.js";
  */
 
 document.addEventListener("DOMContentLoaded", () => {});
-
-let perryCupControls = null;
-let isRaycastEnabled = true;
 
 const imageData = {
   "baby-cyrus-eight-raycast": {
@@ -98,17 +97,11 @@ const imageData = {
   },
 };
 
-// Get the buttons
-const themeToggle = document.getElementById("theme-toggle");
-const soundToggle = document.getElementById("sound-toggle");
-const body = document.body;
-
 let perryHatObject = null;
 let pigObject = null;
+let perryCupControls = null;
+let isRaycastEnabled = true;
 
-// Initialize state
-let isDarkMode = false;
-let isMuted = false;
 /** Initialize modal system */
 const { overlay, modals, showModal, hideModal, hideAllModals } =
   initModalSystem({
@@ -140,34 +133,6 @@ const { showImageOverlay, hideImageOverlay } = initImageOverlay({
   onClose: () => {
     isRaycastEnabled = true;
   },
-});
-
-themeToggle.addEventListener("click", () => {
-  isDarkMode = !isDarkMode;
-
-  themeToggle.innerHTML = isDarkMode
-    ? '<i class="fas fa-moon"></i>'
-    : '<i class="fas fa-sun"></i>';
-
-  body.classList.toggle("dark-theme", isDarkMode);
-  body.classList.toggle("light-theme", !isDarkMode);
-
-  themeManager.updateThreeJSTheme();
-});
-
-soundToggle.addEventListener("click", () => {
-  isMuted = !isMuted;
-
-  if (isMuted) {
-    soundToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
-
-    // Pause BGM
-    audioManager.pauseBGM();
-  } else {
-    soundToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
-
-    audioManager.playBGM(0.25);
-  }
 });
 
 const canvas = document.querySelector("#experience-canvas");
@@ -267,8 +232,6 @@ loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
 
 loadingManager.onLoad = () => {
   gsap.killTweensOf(".loading-bar-fill");
-
-  // Fade out loading bar, show button
   gsap.to(".loading-bar", { opacity: 0, duration: 0.5 });
   gsap.to(".loading-screen-btn", {
     opacity: 1,
@@ -287,19 +250,6 @@ loadingManager.onLoad = () => {
     { scale: 1, duration: 0.5, ease: "bounce.out", delay: 0.5 }
   );
 };
-
-loadingButton.addEventListener("click", () => {
-  if (!loadingButton.classList.contains("ready")) return;
-  gsap.to(".loading-screen", {
-    opacity: 0,
-    duration: 1,
-    onComplete: () => {
-      loadingScreen.style.display = "none";
-    },
-  });
-  audioManager.playClick();
-  audioManager.playBGM(0); // 20% volume
-});
 
 function handleRaycasterInteraction() {
   if (!isRaycastEnabled || currentIntersects.length === 0) return;
@@ -380,11 +330,6 @@ function handleRaycasterInteraction() {
     }
   }
 }
-
-window.addEventListener("mousemove", (event) => {
-  pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-  pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
-});
 
 window.addEventListener("click", handleRaycasterInteraction);
 
@@ -535,22 +480,6 @@ render();
 // Get overlay and close buttons
 const closeButtons = document.querySelectorAll(".modal-close-btn");
 
-// Event Listeners
-window.addEventListener("resize", () => {
-  sizes.width = window.innerWidth;
-  sizes.height = window.innerHeight;
-
-  camera.aspect = sizes.width / sizes.height;
-  camera.updateProjectionMatrix();
-
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-  innerWeb.onResize();
-
-  composer.setSize(sizes.width, sizes.height);
-});
-
 // Handle modal close on overlay click
 overlay.addEventListener("click", () => {
   Object.values(modals).forEach((modal) => {
@@ -623,20 +552,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-document.addEventListener("keydown", (event) => {
-  switch (event.key.toLowerCase()) {
-    case "o":
-      // Zoom to whiteboard, enabling drawing mode
-      cameraManager.zoomToWhiteboard(whiteboard, 1.5);
-      break;
-
-    case "p":
-      // Reset to default camera, disabling drawing
-      cameraManager.leaveWhiteboard(whiteboard, 1.5);
-      break;
-  }
-});
-
 /**
  * Toggles the steam mesh's visibility by fading its alpha in or out.
  * If the mesh is currently invisible, it fades in.
@@ -663,7 +578,7 @@ function toggleSteam(steamMesh, duration) {
   gsap.to(mat.uniforms.uGlobalAlpha, {
     value: target,
     duration: duration,
-    ease: "none", // true linear interpolation
+    ease: "none",
     onStart: () => {
       if (fadeIn) steamMesh.visible = true;
     },
@@ -680,15 +595,26 @@ function clearHoverEffects() {
   mailbox.updateMailboxHover([]);
 }
 
-let iframeEnabled = false; // track state
-
-window.addEventListener("keydown", (e) => {
-  if (e.key.toLowerCase() === "i") {
-    if (iframeEnabled) {
-      innerWeb.disableIframe();
-    } else {
-      innerWeb.enableIframe();
-    }
-    iframeEnabled = !iframeEnabled;
-  }
+const handlers = new EventHandler({
+  themeButton: document.getElementById("theme-toggle"),
+  soundButton: document.getElementById("sound-toggle"),
+  themeManager,
+  audioManager,
+  body: document.body,
+  camera,
+  renderer,
+  innerWeb,
+  composer,
+  sizes,
+  cameraManager,
+  whiteboard,
+  loadingButton,
+  pointer,
 });
+
+handlers.registerThemeToggle();
+handlers.registerSoundToggle();
+handlers.registerResize();
+handlers.registerKeyboard();
+handlers.registerLoadingButton();
+handlers.registerPointerMove();

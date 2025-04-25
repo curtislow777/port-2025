@@ -24,7 +24,6 @@ export function randomOink(mesh) {
   canPlayOink = false;
   const index = Math.floor(Math.random() * sounds.length);
   playOink(index);
-  console.log("oinked");
 
   if (mesh) {
     gsap.fromTo(
