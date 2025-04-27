@@ -23,6 +23,11 @@
       </button>
     </div>
 
+    <!-- Back Button (hidden by default) -->
+    <button id="back-button" class="control-btn">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+
     <div class="loading-screen">
       <div class="loading-content">
         <lottie-player
@@ -373,21 +378,6 @@
       </div>
     </div>
 
-    <!-- Example clickable images -->
-    <img
-      src="duck1.jpg"
-      data-full="images/caspuh1.JPEG"
-      data-caption="Caption for duck one"
-      class="clickable-image"
-    />
-
-    <img
-      src="thumbs/duck2.jpg"
-      data-full="images/caspuh2.JPEG"
-      data-caption="Some interesting text for the second photo."
-      class="clickable-image"
-    />
-
     <div id="css3d"></div>
     <canvas id="experience-canvas" class="experience-canvas"></canvas>
 
@@ -398,19 +388,26 @@
         id="black-marker"
         class="circular-button-whiteboard whiteboard-selected"
       >
-        Black
+        <i class="fa-solid fa-paintbrush"></i>
       </button>
-      <button id="red-marker" class="circular-button-whiteboard">Red</button>
+      <button id="red-marker" class="circular-button-whiteboard">
+        <i class="fa-solid fa-paintbrush"></i>
+      </button>
       <button id="green-marker" class="circular-button-whiteboard">
-        Green
+        <i class="fa-solid fa-paintbrush"></i>
       </button>
-      <button id="blue-marker" class="circular-button-whiteboard">Blue</button>
-      <button id="eraser" class="circular-button-whiteboard">Eraser</button>
+      <button id="blue-marker" class="circular-button-whiteboard">
+        <i class="fa-solid fa-paintbrush"></i>
+      </button>
+      <button id="eraser" class="circular-button-whiteboard">
+        <i class="fa-solid fa-eraser"></i>
+      </button>
       <button id="clear-whiteboard" class="whiteboard-btn">Clear</button>
       <button id="saveWhiteboard" class="circular-button-whiteboard">
-        💾 Save Drawing
+        <i class="fa-solid fa-floppy-disk"></i>
       </button>
     </div>
+
     <!-- Hamburger Button -->
     <button class="hamburger-btn" aria-label="Open menu">
       <span class="hamburger-line"></span>

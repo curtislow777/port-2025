@@ -39,14 +39,19 @@ export function initModalSystem({
     // Reset scale and opacity before animating
     gsap.fromTo(
       modal,
-      { scale: 0, opacity: 0 },
       {
-        scale: 1,
+        scaleY: 0, // start squashed
+        scaleX: 1, // keep width unchanged
+        opacity: 0,
+      },
+      {
+        scaleY: 1, // full height
+        scaleX: 1,
         opacity: 1,
         duration: 0.5,
         ease: "back.out(2)",
         onComplete: () => {
-          isAnimating = false; // Reset animation flag when complete
+          isAnimating = false;
         },
       }
     );
@@ -56,7 +61,7 @@ export function initModalSystem({
 
   // Hide modal with GSAP
   function hideModal(modal) {
-    if (!modal || isAnimating) return; // Don't proceed if animation is in progress
+    if (!modal || isAnimating) return;
     isAnimating = true;
     isModalOpen = false;
     onModalClose();
@@ -67,7 +72,8 @@ export function initModalSystem({
     });
     gsap.to(modal, {
       opacity: 0,
-      scale: 0,
+      scaleY: 0, // squash back to zero height
+      scaleX: 1,
       duration: 0.5,
       ease: "back.in(2)",
       onComplete: () => {

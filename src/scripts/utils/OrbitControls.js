@@ -81,8 +81,9 @@ class OrbitControls extends Controls {
 
     // How far you can orbit horizontally, upper and lower limits.
     // If set, the interval [ min, max ] must be a sub-interval of [ - 2 PI, 2 PI ], with ( max - min < 2 PI )
-    this.minAzimuthAngle = -Infinity; // radians
-    this.maxAzimuthAngle = Infinity; // radians
+    // Remove any potential X-axis constraints
+    this.minAzimuthAngle = -Infinity;
+    this.maxAzimuthAngle = Infinity;
 
     // Set to true to enable damping (inertia)
     // If damping is enabled, you must call controls.update() in your animation loop

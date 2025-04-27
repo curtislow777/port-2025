@@ -42,6 +42,8 @@ import { initInnerWeb } from "./scripts/innerWeb.js";
 
 document.addEventListener("DOMContentLoaded", () => {});
 
+const backButton = document.getElementById("back-button");
+
 const imageData = {
   "baby-cyrus-eight-raycast": {
     src: "images/bb-cyrus.webp",
@@ -183,7 +185,7 @@ const innerWeb = initInnerWeb(scene, camera, document.body, sizes, {
              src="https://inner-portfolio-js.vercel.app/"
              style="width:1200px;height:675px; border:0;border-radius:8px;"
            ></iframe>`,
-  position: new THREE.Vector3(-4, 3.1, -0.55),
+  position: new THREE.Vector3(-4.9, 3.225, -0.55),
   rotation: new THREE.Euler(0, Math.PI / 2, 0),
   scale: new THREE.Vector3(0.00137, 0.00137, 0.00137),
 });
@@ -265,7 +267,7 @@ function handleRaycasterInteraction() {
     } else if (object.name.includes("erhu-seven")) {
       audioManager.playClick();
       showModal(modals.erhu);
-    } else if (object.name.includes("monitor")) {
+    } else if (object.name.includes("TV-seven")) {
       audioManager.playClick();
       showModal(modals.work);
     }
@@ -300,11 +302,18 @@ function handleRaycasterInteraction() {
       });
     });
 
-    if (object.name.includes("whiteboard-raycast")) {
+    if (object.name.includes("whiteboard-seven")) {
       console.log("Whiteboard clicked!");
       audioManager.playClick();
       cameraManager.zoomToWhiteboard(whiteboard, 1.5);
-      whiteboard.toggleWhiteboardMode(true); // Enable drawing mode
+      whiteboard.toggleWhiteboardMode(true);
+    }
+
+    if (object.name.includes("monitor")) {
+      audioManager.playClick();
+      cameraManager.zoomToMonitor();
+      innerWeb.enableIframe();
+      backButton.style.display = "block";
     }
 
     // Add this new condition with your other click handlers
@@ -469,6 +478,7 @@ function render() {
 
   composer.render();
 
+  // console.log(camera.position);
   window.requestAnimationFrame(render);
 }
 
@@ -615,3 +625,13 @@ handlers.registerResize();
 handlers.registerKeyboard();
 handlers.registerLoadingButton();
 handlers.registerPointerMove();
+
+const backBtn = document.getElementById("back-button");
+
+backBtn.addEventListener("click", () => {
+  whiteboard.toggleWhiteboardMode(false);
+  // 1) Zoom the camera out (back to default)
+  cameraManager.resetToDefault();
+
+  // (leaveWhiteboard’s callback will call whiteboard.toggleWhiteboardMode(false) for you)
+});

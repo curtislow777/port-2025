@@ -20,7 +20,6 @@ export function initInnerWeb(
     interactiveByDefault = false,
   } = {}
 ) {
-  // Create a separate scene for CSS3D objects
   const cssScene = new THREE.Scene();
 
   // Setup CSS3D renderer
@@ -45,7 +44,6 @@ export function initInnerWeb(
   wrapper.style.width = `${elementWidth}px`;
   wrapper.style.height = `${elementHeight}px`;
 
-  // Set initial interaction state - important difference
   wrapper.style.pointerEvents = interactiveByDefault ? "auto" : "none";
 
   wrapper.appendChild(element);

@@ -121,7 +121,7 @@ lottie-player {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0);
-  transform-origin: center center;
+  transform-origin: center top;
   transition: none;
   opacity: 0;
   display: none;
@@ -130,6 +130,8 @@ lottie-player {
   max-width: 1400px;
   min-width: 300px;
   background: #f0fff4;
+  max-height: 85vh;
+  overflow-y: auto;
 
   border-radius: 8px;
   padding: 2rem;
@@ -474,6 +476,16 @@ lottie-player {
 .hamburger-btn:hover .hamburger-line {
   background-color: vars.$colour-blue;
 }
+
+#back-button {
+  display: none;
+  position: fixed;
+  top: 110px;
+  left: 20px;
+  z-index: 1000;
+  font-size: 30px;
+}
+
 .whiteboard-controls {
   position: fixed;
   bottom: 20px;

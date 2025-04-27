@@ -18,6 +18,7 @@ export default class Whiteboard {
     this.whiteboardModeOn = false; // Renamed for clarity:  true = drawing/active, false = inactive
     this.whiteboardVisible = true;
     this.whiteboardGroup = new THREE.Group();
+    this.backButton = document.getElementById("back-button");
 
     // Initialize the whiteboard
     this.init();
@@ -59,7 +60,6 @@ export default class Whiteboard {
   }
 
   createWhiteboardMesh() {
-    // Create material with canvas texture
     this.canvasTexture = new THREE.CanvasTexture(this.drawingCanvas);
     this.canvasTexture.anisotropy =
       this.renderer.capabilities.getMaxAnisotropy();
@@ -87,7 +87,6 @@ export default class Whiteboard {
   }
 
   setupEventListeners() {
-    // Add button click events for tools
     this.whiteboardButtons = document.querySelectorAll(
       ".circular-button-whiteboard"
     );
@@ -235,7 +234,7 @@ export default class Whiteboard {
     if (this.controls) {
       this.controls.enabled = !enable; // Disable controls when whiteboard mode is on
     }
-
+    this.backButton.style.display = enable ? "block" : "none";
     // Activate or deactivate drawing event listeners based on mode.  Use the this.isActive flag.
     if (enable) {
       this.activateControls(); // Ensure controls are set up

@@ -11,6 +11,8 @@ class CameraManager {
     this.positions = {
       default: initialPosition || new THREE.Vector3(15.53, 11.14, 20.73),
       whiteboard: new THREE.Vector3(0.25, 4.38, -0.069),
+      monitor: new THREE.Vector3(-2, 4, -0.069),
+      // monitor: new THREE.Vector3(-5, 3.23, -0.53),
     };
 
     this.targets = {
@@ -19,6 +21,12 @@ class CameraManager {
 
     this.rotations = {
       whiteboard: new THREE.Euler(
+        0, // x-axis (0 degrees)
+        Math.PI / 2, // y-axis (90 degrees)
+        0, // z-axis (0 degrees)
+        "XYZ" // rotation order
+      ),
+      monitor: new THREE.Euler(
         0, // x-axis (0 degrees)
         Math.PI / 2, // y-axis (90 degrees)
         0, // z-axis (0 degrees)
@@ -42,12 +50,17 @@ class CameraManager {
     this.controls.maxDistance = 50;
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.05;
+    // Remove any potential X-axis constraints
+    this.controls.minAzimuthAngle = -Infinity;
+    this.controls.maxAzimuthAngle = Infinity;
     this.controls.target.copy(this.targets.default);
     this.controls.update();
   }
 
   update() {
-    this.controls.update();
+    if (this.controls.enabled) {
+      this.controls.update();
+    }
   }
 
   setSize(width, height) {
@@ -68,6 +81,8 @@ class CameraManager {
   }
 
   zoomToPosition(positionName, duration = 2, callback = null) {
+    this.controls.enabled = false;
+
     if (!this.positions[positionName]) {
       console.error(`Position '${positionName}' not defined`);
       return null;
@@ -115,7 +130,7 @@ class CameraManager {
         0
       );
 
-      if (positionName === "whiteboard") {
+      if (positionName === "whiteboard" || positionName === "monitor") {
         const direction = new THREE.Vector3(0, 0, -1);
         direction.applyEuler(this.rotations[positionName]);
 
@@ -176,12 +191,23 @@ class CameraManager {
       whiteboard.toggleWhiteboardMode(true);
     });
   }
+  zoomToMonitor(duration = 2) {
+    // Use the built-in zoomToPosition for “whiteboard”
+    this.zoomToPosition("monitor", duration, () => {
+      // Once camera is at whiteboard, enable drawing mode:
+    });
+  }
 
   leaveWhiteboard(whiteboard, duration = 2) {
     // Return the camera to default
     this.resetToDefault(duration, () => {
       whiteboard.toggleWhiteboardMode(false);
     });
+  }
+
+  leaveMonitor(duration = 2, callback = null) {
+    // Return the camera to default position
+    return this.resetToDefault(duration, callback);
   }
 
   resetToDefault(duration = 2, callback = null) {
