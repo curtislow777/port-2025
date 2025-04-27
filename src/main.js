@@ -631,6 +631,7 @@ const backBtn = document.getElementById("back-button");
 backBtn.addEventListener("click", () => {
   whiteboard.toggleWhiteboardMode(false);
   // 1) Zoom the camera out (back to default)
+  innerWeb.disableIframe();
   cameraManager.resetToDefault();
 
   // (leaveWhiteboard’s callback will call whiteboard.toggleWhiteboardMode(false) for you)

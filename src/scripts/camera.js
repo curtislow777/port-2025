@@ -220,6 +220,7 @@ class CameraManager {
     const timeline = gsap.timeline({
       onComplete: () => {
         // Re-enable controls
+        console.log("controls re-enabled");
         this.controls.enabled = true;
         if (callback && typeof callback === "function") callback();
       },
