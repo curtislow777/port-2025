@@ -306,6 +306,7 @@ function handleRaycasterInteraction() {
       console.log("Whiteboard clicked!");
       audioManager.playClick();
       cameraManager.zoomToWhiteboard(whiteboard, 1.5);
+      controls.enabled = false; // Disable controls while whiteboard is active
       whiteboard.toggleWhiteboardMode(true);
     }
 
