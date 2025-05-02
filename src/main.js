@@ -212,7 +212,6 @@ const loader = new GLTFLoader(loadingManager);
 loader.setDRACOLoader(dracoLoader);
 dracoLoader.setDecoderPath("/draco/");
 
-const loadingScreen = document.querySelector(".loading-screen");
 const loadingButton = document.querySelector(".loading-screen-btn");
 
 loadingManager.onStart = () => {
@@ -306,7 +305,6 @@ function handleRaycasterInteraction() {
       console.log("Whiteboard clicked!");
       audioManager.playClick();
       cameraManager.zoomToWhiteboard(whiteboard, 1.5);
-      controls.enabled = false; // Disable controls while whiteboard is active
       whiteboard.toggleWhiteboardMode(true);
     }
 

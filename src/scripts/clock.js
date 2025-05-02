@@ -13,7 +13,6 @@ class ClockManager {
     this.minuteHand = null;
   }
 
-  // Methods defined in the class body, not within constructor
   setHourHand(mesh) {
     this.hourHand = mesh;
     this.hourHand.userData.initialRotation =

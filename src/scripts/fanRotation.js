@@ -23,17 +23,12 @@ function processFanObject(mesh) {
 }
 
 function updateFans() {
-  // Rotate fans on X axis
   fans.xAxis.forEach((fan) => {
     fan.rotation.x -= rotationSpeed;
   });
-
-  // Rotate fans on Y axis
   fans.yAxis.forEach((fan) => {
     fan.rotation.y -= rotationSpeed;
   });
-
-  // Rotate fans on Z axis
   fans.zAxis.forEach((fan) => {
     fan.rotation.z -= rotationSpeed;
   });
