@@ -185,7 +185,7 @@ export default class EventHandler {
 
     // sounds
     this.audioManager.playClick();
-    this.audioManager.playBGM(0.2);
+    this.audioManager.playBGM(0);
   }
   // ─── Pointer Move ───────────────────────────────────────────────
 
