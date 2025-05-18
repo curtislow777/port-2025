@@ -45,55 +45,55 @@ document.addEventListener("DOMContentLoaded", () => {});
 const backButton = document.getElementById("back-button");
 
 const imageData = {
-  "baby-cyrus-eight-raycast": {
+  "baby-cyrus-twelve-raycast": {
     src: "images/bb-cyrus.webp",
     caption: "nimama",
   },
-  "ded-casper-eight-raycast": {
+  "ded-casper-twelve-raycast": {
     src: "images/casper-buh.webp",
     caption: "nimama",
   },
-  "casper-pawty-five": {
+  "casper-pawty-twelve-raycast": {
     src: "images/caspuh_party.webp",
     caption: "nimama",
   },
-  "caspuh-frame-eight-raycast": {
+  "caspuh-frame-twelve-raycast": {
     src: "images/caspuh2.webp",
     caption: "nimama",
   },
-  "baby-casper-eight-raycast": {
+  "baby-casper-twelve-raycast": {
     src: "images/caspuh.webp",
     caption: "nimama",
   },
-  "cat-eight-raycast": {
+  "cat-twelve-raycast": {
     src: "images/cat.webp",
     caption: "nimama",
   },
-  "casp-cyrus-eight-raycast": {
+  "casp-cyrus-twelve-raycast": {
     src: "images/cc.webp",
     caption: "nimama",
   },
-  "collection-eight-raycast": {
+  "collection-twelve-raycast": {
     src: "images/collection.webp",
     caption: "nimama",
   },
-  "cyrus-eating-0-eight-raycast": {
+  "cyrus-eating-0-twelve-raycast": {
     src: "images/cyrus-eating-0.webp",
     caption: "nimama",
   },
-  "cyrus-frame-eight-raycast": {
+  "cyrus-frame-twelve-raycast": {
     src: "images/cyrus.webp",
     caption: "nimama",
   },
-  "duck-eight-raycast": {
-    src: "images/duck.webp",
+  "ac-card-twelve-raycast": {
+    src: "images/ac-2.webp",
     caption: "nimama",
   },
-  "goofy-casper-eight-raycast": {
+  "goofy-casper-twelve-raycast": {
     src: "images/lmao.webp",
     caption: "nimama",
   },
-  "shoes-eight-raycast": {
+  "shoes-twelve-raycast": {
     src: "images/shoes.webp",
     caption: "nimama",
   },
