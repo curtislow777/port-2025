@@ -59,14 +59,15 @@ class ThemeManager {
     if (meshName.includes("-one")) return "one";
     if (meshName.includes("-two")) return "two";
     if (meshName.includes("-three")) return "three";
-    if (meshName.includes("-fourA")) return "fourA";
-    if (meshName.includes("-fourB")) return "fourB";
+    if (meshName.includes("-four")) return "four";
     if (meshName.includes("-five")) return "five";
-    if (meshName.includes("-sixA")) return "sixA";
-    if (meshName.includes("-sixB")) return "sixB";
+    if (meshName.includes("-six")) return "six";
     if (meshName.includes("-seven")) return "seven";
     if (meshName.includes("-eight")) return "eight";
     if (meshName.includes("-nine")) return "nine";
+    if (meshName.includes("-ten")) return "ten";
+    if (meshName.includes("-eleven")) return "eleven";
+    if (meshName.includes("-twelve")) return "twelve";
     if (meshName.includes("-emissive")) return "emissive";
 
     return null;
@@ -96,25 +97,17 @@ class ThemeManager {
         day: "/textures/day/Day-Texture3.webp",
         night: "/textures/night/Night-Texture3.webp",
       },
-      fourA: {
-        day: "/textures/day/Day-Texture4A.webp",
-        night: "/textures/night/Night-Texture4A.webp",
-      },
-      fourB: {
-        day: "/textures/day/Day-Texture4B.webp",
-        night: "/textures/night/Night-Texture4B.webp",
+      four: {
+        day: "/textures/day/Day-Texture4.webp",
+        night: "/textures/night/Night-Texture4.webp",
       },
       five: {
         day: "/textures/day/Day-Texture5.webp",
         night: "/textures/night/Night-Texture5.webp",
       },
-      sixA: {
-        day: "/textures/day/Day-Texture6A.webp",
-        night: "/textures/night/Night-Texture6A.webp",
-      },
-      sixB: {
-        day: "/textures/day/Day-Texture6B.webp",
-        night: "/textures/night/Night-Texture6B.webp",
+      six: {
+        day: "/textures/day/Day-Texture6.webp",
+        night: "/textures/night/Night-Texture6.webp",
       },
       seven: {
         day: "/textures/day/Day-Texture7.webp",
@@ -128,6 +121,19 @@ class ThemeManager {
         day: "/textures/day/Day-Texture9.webp",
         night: "/textures/night/Night-Texture9.webp",
       },
+      ten: {
+        day: "/textures/day/Day-Texture10.webp",
+        night: "/textures/night/Night-Texture10.webp",
+      },
+      eleven: {
+        day: "/textures/day/Day-Texture11.webp",
+        night: "/textures/night/Night-Texture11.webp",
+      },
+      twelve: {
+        day: "/textures/day/Day-Texture12.webp",
+        night: "/textures/night/Night-Texture12.webp",
+      },
+
       emissive: {
         day: "/textures/day/Day-Emissive.webp",
         night: "/textures/night/NightEmissive.webp",
