@@ -185,7 +185,7 @@ const innerWeb = initInnerWeb(scene, camera, document.body, sizes, {
              src="https://inner-portfolio-js.vercel.app/"
              style="width:1200px;height:675px; border:0;border-radius:8px;"
            ></iframe>`,
-  position: new THREE.Vector3(-4.9, 3.225, -0.55),
+  position: new THREE.Vector3(-4.85, 3.2133445739746094, 0.14998430013656616),
   rotation: new THREE.Euler(0, Math.PI / 2, 0),
   scale: new THREE.Vector3(0.00137, 0.00137, 0.00137),
 });
@@ -347,6 +347,12 @@ const mailbox = setupMailbox(scene, modalSystem);
 loader.load("/models/room-port-v1.glb", (glb) => {
   glb.scene.traverse((child) => {
     if (child.isMesh) {
+      if (child.name === "monitor-pos") {
+        console.log("whiteboard-pos local position:", child.position);
+        const worldPos = new THREE.Vector3();
+        child.getWorldPosition(worldPos);
+        console.log("whiteboard-pos world position:", worldPos);
+      }
       // Try to process as themed mesh first
       const isThemedMesh = themeManager.processThemedMesh(
         child,
@@ -404,7 +410,7 @@ loader.load("/models/room-port-v1.glb", (glb) => {
 });
 
 whiteboard = new Whiteboard(scene, camera, renderer, cameraManager.controls);
-whiteboard.setPosition(-5.8, 4.12675142288208, 0.121265381);
+whiteboard.setPosition(-5.75, 4.337178707122803, 0.6635734438896179);
 whiteboard.setRotation(0, Math.PI / 2, 0);
 
 function animate() {}
@@ -450,7 +456,8 @@ function render() {
 
   if (isRaycastEnabled) {
     raycaster.setFromCamera(pointer, camera);
-    currentIntersects = raycaster.intersectObjects(raycasterObjects);
+
+    // 1) generic outline-pass resets and outlines the pole
     currentIntersects = updateOutlineHover(
       raycaster,
       pointer,
@@ -458,11 +465,15 @@ function render() {
       raycasterObjects,
       outlinePass
     );
+
+    // 2) generic scale-hover
     updateHoverScale(currentIntersects, animatedObjects.scale);
-    mailbox.updateMailboxHover(currentIntersects);
+
+    // 3) mailbox: swing cover & re-add it to outlinePass every frame while hovering
+    mailbox.updateMailboxHover(currentIntersects, outlinePass);
   } else {
     currentIntersects = [];
-    mailbox.updateMailboxHover([]);
+    mailbox.updateMailboxHover([], outlinePass);
     clearHoverEffects();
   }
 

@@ -1,3 +1,4 @@
+// mailbox.js
 import gsap from "gsap";
 
 /**
@@ -8,53 +9,62 @@ export function setupMailbox(scene, modalSystem) {
   let mailboxHovered = false;
   let isMailboxOpen = false;
 
-  // Function to toggle the mailbox cover animation
+  // Animate cover open/close
   function toggleMailboxCover(open) {
     if (!mailboxCover || open === isMailboxOpen) return;
-
     isMailboxOpen = open;
-
     gsap.to(mailboxCover.rotation, {
-      x: open ? Math.PI / 2 : 0, // Adjust axis & angle if needed
+      x: open ? Math.PI / 2 : 0, // rotate 90° when opening
       duration: 0.8,
       ease: "power2.out",
     });
   }
 
-  // Process mailbox objects when loading the scene
+  // Find & store the cover mesh when scene loads
   function processMailboxObject(child) {
-    if (child.name.includes("mailbox-cover")) {
+    if (child.name.includes("mailboxCover")) {
       mailboxCover = child;
       return true;
     }
     return false;
   }
 
-  // Handle raycast interactions with the mailbox
+  // Show contact modal when clicking pole
   function handleRaycastIntersection(intersectedObject, contactModal) {
-    if (intersectedObject.name.includes("mailbox-raycast")) {
+    if (intersectedObject.name.includes("mailbox-pole")) {
       modalSystem.showModal(contactModal);
       return true;
     }
     return false;
   }
 
-  // Update mailbox hover state
-  function updateMailboxHover(currentIntersects) {
-    const mailboxRaycastObj = currentIntersects.find((hit) =>
-      hit.object.name.includes("mailbox-raycast")
+  /**
+   * Called every frame after updateOutlineHover has run.
+   * @param {Array}  currentIntersects  Array of raycast hits
+   * @param {OutlinePass} outlinePass   Three.js post-processing outline pass
+   */
+  function updateMailboxHover(currentIntersects, outlinePass) {
+    // Check if the mailbox pole is under the pointer
+    const hitPole = currentIntersects.find((hit) =>
+      hit.object.name.includes("mailbox-pole")
     );
 
-    if (mailboxRaycastObj) {
+    if (hitPole) {
+      // On first frame of hover, open the cover
       if (!mailboxHovered) {
         mailboxHovered = true;
-        toggleMailboxCover(true); // Animate open
+        toggleMailboxCover(true);
       }
+      // Every frame the pole is hovered, add the cover to the outline
+      outlinePass.selectedObjects.push(mailboxCover);
     } else {
+      // On pointer leave, close the cover
       if (mailboxHovered) {
         mailboxHovered = false;
-        toggleMailboxCover(false); // Animate close
+        toggleMailboxCover(false);
       }
+      // No need to explicitly remove the cover from selectedObjects —
+      // updateOutlineHover() cleared it already.
     }
   }
 
