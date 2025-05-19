@@ -35,69 +35,29 @@ import { initImageOverlay } from "./scripts/fadeOverlayImage.js";
 
 import { initInnerWeb } from "./scripts/innerWeb.js";
 
+import {
+  imageData,
+  socialLinks,
+  CANVAS_CONFIG,
+  CAMERA_CONFIG,
+  WHITEBOARD_CONFIG,
+  INNER_WEB_CONFIG,
+  STEAM_CONFIG,
+  MODAL_SELECTORS,
+  IMAGE_OVERLAY_SELECTORS,
+  LOADING_SELECTORS,
+  SIDE_PANEL_SELECTORS,
+  ANIMATION_DURATIONS,
+  MODEL_PATHS,
+  BUTTON_IDS,
+} from "./scripts/config/constants.js";
+
 /**
  * START OF THREE.JS CODE
  * ---------------------------------------------------------------
  */
 
 document.addEventListener("DOMContentLoaded", () => {});
-
-const backButton = document.getElementById("back-button");
-
-const imageData = {
-  "baby-cyrus-twelve-raycast": {
-    src: "images/bb-cyrus.webp",
-    caption: "nimama",
-  },
-  "ded-casper-twelve-raycast": {
-    src: "images/casper-buh.webp",
-    caption: "nimama",
-  },
-  "casper-pawty-twelve-raycast": {
-    src: "images/caspuh_party.webp",
-    caption: "nimama",
-  },
-  "caspuh-frame-twelve-raycast": {
-    src: "images/caspuh2.webp",
-    caption: "nimama",
-  },
-  "baby-casper-twelve-raycast": {
-    src: "images/caspuh.webp",
-    caption: "nimama",
-  },
-  "cat-twelve-raycast": {
-    src: "images/cat.webp",
-    caption: "nimama",
-  },
-  "casp-cyrus-twelve-raycast": {
-    src: "images/cc.webp",
-    caption: "nimama",
-  },
-  "collection-twelve-raycast": {
-    src: "images/collection.webp",
-    caption: "nimama",
-  },
-  "cyrus-eating-0-twelve-raycast": {
-    src: "images/cyrus-eating-0.webp",
-    caption: "nimama",
-  },
-  "cyrus-frame-twelve-raycast": {
-    src: "images/cyrus.webp",
-    caption: "nimama",
-  },
-  "ac-card-twelve-raycast": {
-    src: "images/ac-2.webp",
-    caption: "nimama",
-  },
-  "goofy-casper-twelve-raycast": {
-    src: "images/lmao.webp",
-    caption: "nimama",
-  },
-  "shoes-twelve-raycast": {
-    src: "images/shoes.webp",
-    caption: "nimama",
-  },
-};
 
 let perryHatObject = null;
 let pigObject = null;
@@ -107,14 +67,9 @@ let isRaycastEnabled = true;
 /** Initialize modal system */
 const { overlay, modals, showModal, hideModal, hideAllModals } =
   initModalSystem({
-    overlaySelector: ".overlay",
-    modalSelectors: {
-      work: ".work-modal",
-      about: ".about-modal",
-      contact: ".contact-modal",
-      erhu: ".erhu-modal",
-    },
-    closeButtonSelector: ".modal-close-btn",
+    overlaySelector: MODAL_SELECTORS.overlay,
+    modalSelectors: MODAL_SELECTORS.modals,
+    closeButtonSelector: MODAL_SELECTORS.closeButton,
     onModalOpen: () => {
       isRaycastEnabled = false;
       clearHoverEffects();
@@ -127,32 +82,24 @@ const { overlay, modals, showModal, hideModal, hideAllModals } =
   });
 
 const { showImageOverlay, hideImageOverlay } = initImageOverlay({
-  overlaySelector: ".fade-overlay",
-  contentSelector: ".fade-overlay-content",
-  closeBtnSelector: ".fade-overlay-close-btn",
-  imgSelector: ".fade-overlay-img",
-  textSelector: ".fade-overlay-text",
+  overlaySelector: IMAGE_OVERLAY_SELECTORS.overlay,
+  contentSelector: IMAGE_OVERLAY_SELECTORS.content,
+  closeBtnSelector: IMAGE_OVERLAY_SELECTORS.closeBtn,
+  imgSelector: IMAGE_OVERLAY_SELECTORS.img,
+  textSelector: IMAGE_OVERLAY_SELECTORS.text,
   onClose: () => {
     isRaycastEnabled = true;
   },
 });
 
-const canvas = document.querySelector("#experience-canvas");
-const sizes = {
-  width: window.innerWidth,
-  height: window.innerHeight,
-};
+const canvas = document.querySelector(CANVAS_CONFIG.selector);
+const sizes = { width: window.innerWidth, height: window.innerHeight };
 
 let whiteboard;
 
 const modalSystem = {
   showModal: showModal,
   hideModal: hideModal,
-};
-
-const socialLinks = {
-  Github: "https://github.com/curtislow777",
-  LinkedIn: "https://www.linkedin.com/in/curtis-low/",
 };
 
 const animatedObjects = {
@@ -181,13 +128,10 @@ const {
 } = initThreeJS(canvas, sizes);
 
 const innerWeb = initInnerWeb(scene, camera, document.body, sizes, {
-  html: `<iframe
-             src="https://inner-portfolio-js.vercel.app/"
-             style="width:1200px;height:675px; border:0;border-radius:8px;"
-           ></iframe>`,
-  position: new THREE.Vector3(-4.85, 3.2133445739746094, 0.14998430013656616),
-  rotation: new THREE.Euler(0, Math.PI / 2, 0),
-  scale: new THREE.Vector3(0.00137, 0.00137, 0.00137),
+  html: INNER_WEB_CONFIG.html,
+  position: INNER_WEB_CONFIG.position,
+  rotation: INNER_WEB_CONFIG.rotation,
+  scale: INNER_WEB_CONFIG.scale,
 });
 
 const { composer, outlinePass } = setupHoverOutline(
@@ -208,9 +152,9 @@ const cameraManager = new CameraManager(
 );
 
 const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath(MODEL_PATHS.draco);
 const loader = new GLTFLoader(loadingManager);
 loader.setDRACOLoader(dracoLoader);
-dracoLoader.setDecoderPath("/draco/");
 
 const loadingButton = document.querySelector(".loading-screen-btn");
 
@@ -410,27 +354,22 @@ loader.load("/models/room-port-v1.glb", (glb) => {
 });
 
 whiteboard = new Whiteboard(scene, camera, renderer, cameraManager.controls);
-whiteboard.setPosition(-5.75, 4.337178707122803, 0.6635734438896179);
-whiteboard.setRotation(0, Math.PI / 2, 0);
+whiteboard.setPosition(WHITEBOARD_CONFIG.position);
+whiteboard.setRotation(
+  WHITEBOARD_CONFIG.rotation.x,
+  WHITEBOARD_CONFIG.rotation.y,
+  WHITEBOARD_CONFIG.rotation.z
+);
 
 function animate() {}
 
+// Steam effect
 let steamMesh;
-
-textureLoader.load("/images/perlin.png", (perlinTexture) => {
-  perlinTexture.wrapS = THREE.RepeatWrapping;
-  perlinTexture.wrapT = THREE.RepeatWrapping;
-
-  steamMesh = createSteamEffect(perlinTexture, {
-    width: 0.15,
-    height: 0.6,
-    segments: 16,
-  });
-  steamMesh.material.uniforms.uGlobalAlpha.value = 0.0;
-  steamMesh.visible = false;
-
-  steamMesh.position.set(-4.177665710449219, 2.85, 1.0796866416931152);
-
+textureLoader.load(STEAM_CONFIG.texture.src, (tex) => {
+  tex.wrapS = STEAM_CONFIG.texture.wrapS;
+  tex.wrapT = STEAM_CONFIG.texture.wrapT;
+  steamMesh = createSteamEffect(tex, STEAM_CONFIG.geometry);
+  steamMesh.position.copy(STEAM_CONFIG.position);
   scene.add(steamMesh);
 });
 
@@ -613,8 +552,9 @@ function clearHoverEffects() {
 }
 
 const handlers = new EventHandler({
-  themeButton: document.getElementById("theme-toggle"),
-  soundButton: document.getElementById("sound-toggle"),
+  themeButton: document.getElementById(BUTTON_IDS.themeToggle),
+  soundButton: document.getElementById(BUTTON_IDS.soundToggle),
+  backButton: document.getElementById(BUTTON_IDS.backButton),
   themeManager,
   audioManager,
   body: document.body,

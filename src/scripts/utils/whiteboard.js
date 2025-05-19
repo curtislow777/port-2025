@@ -249,8 +249,8 @@ export default class Whiteboard {
   }
 
   // Optional: Method to set whiteboard position and rotation
-  setPosition(x, y, z) {
-    this.whiteboardMesh.position.set(x, y, z);
+  setPosition(position) {
+    this.whiteboardMesh.position.copy(position);
   }
 
   setRotation(x, y, z) {
