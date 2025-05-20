@@ -369,14 +369,6 @@ function processSceneObjects(sceneObject) {
   sceneObject.traverse((child) => {
     if (!child.isMesh) return;
 
-    // Debug monitor position
-    if (child.name === "monitor-pos") {
-      console.log("monitor-pos local position:", child.position);
-      const worldPos = new THREE.Vector3();
-      child.getWorldPosition(worldPos);
-      console.log("monitor-pos world position:", worldPos);
-    }
-
     // Process themed mesh
     const isThemedMesh = themeManager.processThemedMesh(
       child,
@@ -621,6 +613,7 @@ function render() {
 
   // Update whiteboard
   if (whiteboard && whiteboard.isActive) {
+    console.log("Whiteboard is active");
     whiteboard.update();
   }
 

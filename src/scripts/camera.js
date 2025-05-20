@@ -284,10 +284,12 @@ class CameraManager {
 
   enableControls() {
     this.controls.enabled = true;
+    console.log("camera controls enabled from camera.js");
   }
 
   disableControls() {
     this.controls.enabled = false;
+    console.log("camera controls disabled from camera.js");
   }
 
   // Method to handle modal state
