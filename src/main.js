@@ -329,7 +329,7 @@ function handleSocialLinkInteractions(object) {
  * Handle special object interactions
  */
 function handleSpecialObjectInteractions(object) {
-  if (object.name.includes("whiteboard-seven")) {
+  if (object.name.includes("whiteboard-raycast-one")) {
     console.log("Whiteboard clicked!");
     audioManager.playClick();
     cameraManager.zoomToWhiteboard(whiteboard, 1.5);
