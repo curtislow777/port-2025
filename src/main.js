@@ -147,8 +147,8 @@ const { textureMap, loadedTextures } =
 const cameraManager = new CameraManager(
   camera,
   renderer,
-  new THREE.Vector3(15.53, 11.14, 20.73), // default camera position
-  new THREE.Vector3(-0.35, 3.0, 0.64) // default camera target
+  CAMERA_CONFIG.defaultPosition, // default camera position
+  CAMERA_CONFIG.defaultTarget // default camera target
 );
 
 const dracoLoader = new DRACOLoader();
@@ -156,18 +156,22 @@ dracoLoader.setDecoderPath(MODEL_PATHS.draco);
 const loader = new GLTFLoader(loadingManager);
 loader.setDRACOLoader(dracoLoader);
 
-const loadingButton = document.querySelector(".loading-screen-btn");
+const loadingButton = document.querySelector(LOADING_SELECTORS.button);
 
 loadingManager.onStart = () => {
-  gsap.to(".loading-screen", { opacity: 1, duration: 1, ease: "power2.out" });
+  gsap.to(LOADING_SELECTORS.screen, {
+    opacity: 1,
+    duration: 1,
+    ease: "power2.out",
+  });
 };
 
-const loadingBarFill = document.querySelector(".loading-bar-fill");
+const loadingBarFill = document.querySelector(LOADING_SELECTORS.barFill);
 
 loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
   const percent = Math.floor((itemsLoaded / itemsTotal) * 100);
   loadingBarFill.style.width = `${percent}%`;
-  gsap.to(".loading-bar-fill", {
+  gsap.to(LOADING_SELECTORS.barFill, {
     scaleY: 1.05,
     repeat: -1,
     yoyo: true,
@@ -176,9 +180,9 @@ loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
 };
 
 loadingManager.onLoad = () => {
-  gsap.killTweensOf(".loading-bar-fill");
-  gsap.to(".loading-bar", { opacity: 0, duration: 0.5 });
-  gsap.to(".loading-screen-btn", {
+  gsap.killTweensOf(LOADING_SELECTORS.barFill);
+  gsap.to(LOADING_SELECTORS.bar, { opacity: 0, duration: 0.5 });
+  gsap.to(LOADING_SELECTORS.button, {
     opacity: 1,
     duration: 1,
     ease: "power2.out",
@@ -190,7 +194,7 @@ loadingManager.onLoad = () => {
   });
 
   gsap.fromTo(
-    ".loading-screen-btn",
+    LOADING_SELECTORS.button,
     { scale: 0.9 },
     { scale: 1, duration: 0.5, ease: "bounce.out", delay: 0.5 }
   );
@@ -456,9 +460,11 @@ closeButtons.forEach((btn) => {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  const hamburgerBtn = document.querySelector(".hamburger-btn");
-  const sidePanel = document.querySelector(".side-panel");
-  const panelLinks = document.querySelectorAll(".panel-link");
+  const hamburgerBtn = document.querySelector(
+    SIDE_PANEL_SELECTORS.hamburgerBtn
+  );
+  const sidePanel = document.querySelector(SIDE_PANEL_SELECTORS.sidePanel);
+  const panelLinks = document.querySelectorAll(SIDE_PANEL_SELECTORS.panelLinks);
 
   // Toggle panel and hamburger icon
   hamburgerBtn.addEventListener("click", () => {
