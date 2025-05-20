@@ -3,7 +3,6 @@ import * as THREE from "three";
 
 class ClockManager {
   constructor() {
-    // Return existing instance if it exists
     if (typeof window !== "undefined" && ClockManager._instance) {
       return ClockManager._instance;
     }
@@ -11,6 +10,7 @@ class ClockManager {
 
     this.hourHand = null;
     this.minuteHand = null;
+    this.secondsHand = null; // 👈 NEW
   }
 
   setHourHand(mesh) {
@@ -27,20 +27,34 @@ class ClockManager {
       new THREE.Euler().copy(mesh.rotation);
   }
 
+  setSecondsHand(mesh) {
+    this.secondsHand = mesh;
+    this.secondsHand.userData.initialRotation =
+      this.secondsHand.userData.initialRotation ||
+      new THREE.Euler().copy(mesh.rotation);
+  }
+
   updateClockHands() {
-    if (!this.hourHand || !this.minuteHand) return;
+    if (!this.hourHand || !this.minuteHand || !this.secondsHand) return;
 
     const now = new Date();
     const hours = now.getHours() % 12;
     const minutes = now.getMinutes();
     const seconds = now.getSeconds();
+    const millis = now.getMilliseconds();
 
-    const hourAngle = (hours + minutes / 60) * ((Math.PI * 2) / 12);
-    const minuteAngle = (minutes + seconds / 60) * ((Math.PI * 2) / 60);
+    // ^ If you prefer absolutely smooth motion, fold the milliseconds
+    //   into seconds:  seconds + millis / 1000
+
+    const hourAngle = (hours + minutes / 60) * ((2 * Math.PI) / 12);
+    const minuteAngle = (minutes + seconds / 60) * ((2 * Math.PI) / 60);
+    const secondAngle = (seconds + millis / 1000) * ((2 * Math.PI) / 60);
 
     this.hourHand.rotation.z = -hourAngle;
     this.minuteHand.rotation.z = -minuteAngle;
+    this.secondsHand.rotation.z = -secondAngle;
   }
 }
+
 const clockManagerInstance = new ClockManager();
 export default clockManagerInstance;
