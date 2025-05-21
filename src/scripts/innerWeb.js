@@ -29,7 +29,6 @@ export function initInnerWeb(
   cssRenderer.domElement.style.top = "0";
   cssRenderer.domElement.style.left = "0";
 
-  // This is important! Keep this line to allow clicking through to WebGL objects
   cssRenderer.domElement.style.pointerEvents = "none";
 
   cssRenderer.domElement.style.zIndex = 0; // CSS3D BELOW

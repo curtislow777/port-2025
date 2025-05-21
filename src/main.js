@@ -22,7 +22,10 @@ import { createSteamEffect } from "./scripts/shaders/steamEffect.js";
 import { setupPerryCupAnimation } from "./scripts/perryCup.js";
 import { randomOink } from "./scripts/pig.js";
 import { setupMailbox } from "./scripts/mailbox.js";
-import { processFanObject, updateFans } from "./scripts/fanRotation.js";
+import {
+  processRotatingObject,
+  updateRotatingObjects,
+} from "./scripts/objectRotation.js";
 import { spinAnimation } from "./scripts/spinnyObjects.js";
 import {
   setupHoverOutline,
@@ -152,8 +155,8 @@ function initializeManagers() {
   cameraManager = new CameraManager(
     camera,
     renderer,
-    new THREE.Vector3(15.53, 11.14, 20.73), // default camera position
-    new THREE.Vector3(-0.35, 3.0, 0.64) // default camera target
+    CAMERA_CONFIG.defaultPosition, // default camera position
+    CAMERA_CONFIG.defaultTarget // default camera target
   );
 
   // Whiteboard
@@ -414,7 +417,7 @@ function categorizeAnimatedObject(child) {
     raycasterObjects.push(child);
   }
 
-  processFanObject(child);
+  processRotatingObject(child);
 }
 
 /**
@@ -588,7 +591,7 @@ function render() {
   const elapsedTime = clock.getElapsedTime();
 
   // Update animations
-  updateFans();
+  updateRotatingObjects();
   clockManager.updateClockHands();
 
   // Handle raycasting and hover effects
