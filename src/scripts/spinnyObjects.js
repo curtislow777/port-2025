@@ -1,18 +1,20 @@
 import gsap from "gsap";
 import * as THREE from "three";
 
-// Store cooldowns and spin counts
+// Debounce set to prevent rapid re-triggers
 const cooldownSet = new Set();
-const spinCounts = new Map();
 
 const SPIN_DURATION = 2; // seconds
-const SPIN_AMOUNT = Math.PI * 2;
+const SPIN_AMOUNT = Math.PI * 2; // one full turn
 const COOLDOWN_DURATION = 2; // seconds
 
 // Load the custom sparkle texture
 const textureLoader = new THREE.TextureLoader();
 const sparkleTexture = textureLoader.load("/images/sparkle.png");
 
+/* ------------------------------------------------------------------ */
+/*  Sparkle helper                                                    */
+/* ------------------------------------------------------------------ */
 function addSparkleEffect(object, options = {}) {
   // Default configuration
   const config = {
@@ -53,7 +55,7 @@ function addSparkleEffect(object, options = {}) {
     // Position with offset
     positions[i * 3] =
       centerPos.x + Math.cos(angle) * radius * (Math.random() * 0.5);
-    positions[i * 3 + 1] = centerPos.y + (Math.random() - 0.3) * radius * 0.5; // Slight upward bias
+    positions[i * 3 + 1] = centerPos.y + (Math.random() - 0.3) * radius * 0.5; // slight upward bias
     positions[i * 3 + 2] =
       centerPos.z + Math.sin(angle) * radius * (Math.random() * 0.5);
 
@@ -66,19 +68,19 @@ function addSparkleEffect(object, options = {}) {
     // Initial opacity
     opacities[i] = 0;
 
-    // Slight color variation - keeping white/yellow to preserve texture colors
+    // Slight color variation – mostly white/yellow to preserve texture colors
     colors[i * 3] = 1; // R
     colors[i * 3 + 1] = 0.9 + Math.random() * 0.1; // G
     colors[i * 3 + 2] = 0.8 + Math.random() * 0.2; // B
 
-    // Velocity with upward bias for higher objects
+    // Velocity with upward bias
     velocities.push({
       x: Math.cos(angle) * (0.2 + Math.random() * 0.3),
-      y: Math.random() * 0.5 * 0.8, // More upward movement
+      y: Math.random() * 0.5 * 0.8,
       z: Math.sin(angle) * (0.2 + Math.random() * 0.3),
     });
 
-    // Longer lifetime
+    // Lifetime
     lifetimes.push(1.5 + Math.random() * 1.5);
   }
 
@@ -86,7 +88,7 @@ function addSparkleEffect(object, options = {}) {
   particles.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
   particles.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
-  // Particle material with custom opacity handling
+  // Particle material
   const material = new THREE.PointsMaterial({
     size: config.particleSize,
     map: sparkleTexture,
@@ -97,7 +99,7 @@ function addSparkleEffect(object, options = {}) {
     opacity: 1.0,
   });
 
-  // Create particle system
+  // Create and add particle system
   const particleSystem = new THREE.Points(particles, material);
   object.parent.add(particleSystem);
 
@@ -111,8 +113,7 @@ function addSparkleEffect(object, options = {}) {
     elapsed += delta;
 
     if (elapsed > duration) {
-      // Clean up
-      object.parent.remove(particleSystem);
+      object.parent.remove(particleSystem); // clean-up
       return;
     }
 
@@ -121,103 +122,94 @@ function addSparkleEffect(object, options = {}) {
 
     // Update each particle
     for (let i = 0; i < particleCount; i++) {
-      // Apply velocity - slower movement
+      // Apply velocity
       positionAttr.array[i * 3] += velocities[i].x * delta;
       positionAttr.array[i * 3 + 1] += velocities[i].y * delta;
       positionAttr.array[i * 3 + 2] += velocities[i].z * delta;
 
-      // Calculate particle life progress (0 to 1)
+      // Life progress 0–1
       const particleLife = Math.min(elapsed / lifetimes[i], 1.0);
 
-      // Adjust size based on lifetime - slower transitions
+      // Size / opacity transitions
       if (particleLife < 0.3) {
-        // Fade in
+        // Fade-in
         sizeAttr.array[i] = sizes[i] * (particleLife / 0.3);
         opacities[i] = particleLife / 0.3;
       } else if (particleLife > 0.7) {
-        // Smooth fade out
-        const fadeOutProgress = (particleLife - 0.7) / 0.3;
-        sizeAttr.array[i] = sizes[i] * (1 - fadeOutProgress * 0.5); // Size reduces a bit but not completely
-        opacities[i] = 1 - fadeOutProgress;
+        // Fade-out
+        const fade = (particleLife - 0.7) / 0.3;
+        sizeAttr.array[i] = sizes[i] * (1 - fade * 0.5);
+        opacities[i] = 1 - fade;
       } else {
-        // Full opacity during middle of lifetime
-        opacities[i] = 1.0;
+        // Fully visible
         sizeAttr.array[i] = sizes[i];
+        opacities[i] = 1.0;
       }
 
-      // Reduced gravity effect
+      // Gravity
       velocities[i].y -= 0.1 * delta;
     }
 
-    // Apply opacities to material
+    // Material opacity = avg particle opacity
     let totalOpacity = 0;
-    for (let i = 0; i < particleCount; i++) {
-      totalOpacity += opacities[i];
-    }
-
-    // Update material opacity based on average particle opacity
+    for (let i = 0; i < particleCount; i++) totalOpacity += opacities[i];
     material.opacity =
       totalOpacity > 0 ? Math.min(1.0, (totalOpacity / particleCount) * 2) : 0;
 
     positionAttr.needsUpdate = true;
     sizeAttr.needsUpdate = true;
 
-    // Continue animation
     requestAnimationFrame(updateParticles);
   }
 
-  // Start the animation
   updateParticles();
 }
 
-// This function detects if an object is a globe or chair based on its name
+/* ------------------------------------------------------------------ */
+/*  Sparkle preset selector                                           */
+/* ------------------------------------------------------------------ */
 function getObjectSparkleOptions(object) {
-  const objectName = object.name.toLowerCase();
+  const name = object.name.toLowerCase();
 
-  if (objectName.includes("globe")) {
-    // Globe-specific sparkle options
+  if (name.includes("globe")) {
     return {
       particleSize: 0.4,
       particleSizeVariation: { min: 0.2, max: 0.5 },
       offsetY: 0,
       spread: 1.0,
     };
-  } else if (objectName.includes("chair")) {
-    // Chair-specific sparkle options
+  }
+
+  if (name.includes("chair")) {
     return {
-      particleCount: 12, // More particles for chairs
+      particleCount: 12,
       particleSize: 0.8,
       particleSizeVariation: { min: 0.4, max: 0.8 },
-      offsetY: 0.4, // Higher position
-      spread: 2, // Wider spread
+      offsetY: 0.4,
+      spread: 2,
     };
   }
 
-  // Default options for other objects
+  // default
   return {};
 }
 
+/* ------------------------------------------------------------------ */
+/*  Spin animation                                                    */
+/* ------------------------------------------------------------------ */
 export function spinAnimation(object) {
+  // Prevent spam-clicks
   if (cooldownSet.has(object)) return false;
-
   cooldownSet.add(object);
-  gsap.delayedCall(COOLDOWN_DURATION, () => {
-    cooldownSet.delete(object);
-  });
+  gsap.delayedCall(COOLDOWN_DURATION, () => cooldownSet.delete(object));
 
-  const count = (spinCounts.get(object) ?? 0) + 1;
-  spinCounts.set(object, count);
+  // Target rotation
+  const newRotation = object.rotation.y + SPIN_AMOUNT;
 
-  const isSpecialSpin = count % 3 === 0;
-  const rotationAmount = isSpecialSpin ? SPIN_AMOUNT * 1.5 : SPIN_AMOUNT;
-  const duration = isSpecialSpin ? SPIN_DURATION * 0.7 : SPIN_DURATION;
-  const newRotation = object.rotation.y + rotationAmount;
+  // Emit sparkles every spin
+  addSparkleEffect(object, getObjectSparkleOptions(object));
 
-  if (isSpecialSpin) {
-    const sparkleOptions = getObjectSparkleOptions(object);
-    addSparkleEffect(object, sparkleOptions);
-  }
-
+  // Tiny squash-and-stretch, then spin
   gsap.to(object.scale, {
     x: 1,
     y: 1,
@@ -226,10 +218,11 @@ export function spinAnimation(object) {
     onComplete: () => {
       gsap.to(object.rotation, {
         y: newRotation,
-        duration,
+        duration: SPIN_DURATION,
         ease: "power2.out",
       });
 
+      // pop scale
       gsap.to(object.scale, {
         x: 1.1,
         y: 1.1,
