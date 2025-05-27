@@ -379,9 +379,36 @@ function processSceneObjects(sceneObject) {
     );
 
     if (isThemedMesh) {
-      categorizeAnimatedObject(child);
+      // Categorize animated objects
+      if (child.name.includes("keycapAnimate")) {
+        animatedObjects.keycaps.push(child);
+      }
+      if (child.name.includes("animateScale")) {
+        animatedObjects.scale.push(child);
+      }
+      if (child.name.includes("animateSpin")) {
+        animatedObjects.spin.push(child);
+      }
+      if (child.name.includes("scaleLights")) {
+        animatedObjects.scaleLights.push(child);
+      }
+      if (child.name.includes("raycast")) {
+        raycasterObjects.push(child);
+      }
+
+      processRotatingObject(child);
+
+      // Process mailbox objects
       mailbox.processMailboxObject(child);
-      processSpecialObjects(child);
+
+      // Process special objects
+      if (child.name.includes("pig-head")) {
+        pigObject = child;
+      }
+      if (child.name.includes("perry-hat")) {
+        perryHatObject = child;
+        perryCupControls = setupPerryCupAnimation(perryHatObject);
+      }
     }
 
     // Process materials
@@ -390,60 +417,17 @@ function processSceneObjects(sceneObject) {
     }
 
     // Process clock hands
-    processClockHands(child);
+    if (child.name.includes("four-hour")) {
+      clockManager.setHourHand(child);
+    } else if (child.name.includes("four-minute")) {
+      clockManager.setMinuteHand(child);
+    } else if (child.name.includes("four-second")) {
+      clockManager.setSecondsHand(child);
+    }
 
     // Process glass material
     themeManager.processGlassMesh(child);
   });
-}
-
-/**
- * Categorize animated objects
- */
-function categorizeAnimatedObject(child) {
-  if (child.name.includes("keycapAnimate")) {
-    animatedObjects.keycaps.push(child);
-  }
-  if (child.name.includes("animateScale")) {
-    animatedObjects.scale.push(child);
-  }
-  if (child.name.includes("animateSpin")) {
-    animatedObjects.spin.push(child);
-  }
-  if (child.name.includes("scaleLights")) {
-    animatedObjects.scaleLights.push(child);
-  }
-  if (child.name.includes("raycast")) {
-    raycasterObjects.push(child);
-  }
-
-  processRotatingObject(child);
-}
-
-/**
- * Process special objects
- */
-function processSpecialObjects(child) {
-  if (child.name.includes("pig-head")) {
-    pigObject = child;
-  }
-  if (child.name.includes("perry-hat")) {
-    perryHatObject = child;
-    perryCupControls = setupPerryCupAnimation(perryHatObject);
-  }
-}
-
-/**
- * Process clock hands
- */
-function processClockHands(child) {
-  if (child.name.includes("four-hour")) {
-    clockManager.setHourHand(child);
-  } else if (child.name.includes("four-minute")) {
-    clockManager.setMinuteHand(child);
-  } else if (child.name.includes("four-second")) {
-    clockManager.setSecondsHand(child);
-  }
 }
 
 /**
@@ -616,7 +600,6 @@ function render() {
 
   // Update whiteboard
   if (whiteboard && whiteboard.isActive) {
-    console.log("Whiteboard is active");
     whiteboard.update();
   }
 
