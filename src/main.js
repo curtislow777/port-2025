@@ -8,6 +8,9 @@ import { initThreeJS } from "./scripts/scene.js";
 import EventHandler from "./scripts/core/EventHandler.js";
 import "./style.scss";
 
+// Application State
+import appState from "./scripts/core/AppState.js";
+
 // Singleton Managers
 import themeManager from "./scripts/themeManager.js";
 import audioManager from "./scripts/audio.js";
@@ -56,58 +59,6 @@ import {
 
 /**
  * ===================================================================
- * GLOBAL VARIABLES & STATE
- * ===================================================================
- */
-
-// Application state
-let isRaycastEnabled = true;
-let currentIntersects = [];
-
-// Scene objects
-let perryHatObject = null;
-let pigObject = null;
-let perryCupControls = null;
-let steamMesh = null;
-let whiteboard = null;
-
-// Collections
-const animatedObjects = {
-  spin: [],
-  scale: [],
-  scaleLights: [],
-  keycaps: [],
-  lights: [],
-};
-const raycasterObjects = [];
-
-// Core Three.js components
-let scene,
-  camera,
-  renderer,
-  pointer,
-  raycaster,
-  loadingManager,
-  textureLoader,
-  gltfLoader;
-let composer, outlinePass;
-
-// Managers
-let cameraManager;
-let innerWeb;
-let mailbox;
-
-// UI components
-let overlay, modals, showModal, hideModal;
-let showImageOverlay, hideImageOverlay;
-
-// Other
-const canvas = document.querySelector(CANVAS_CONFIG.selector);
-const sizes = { width: window.innerWidth, height: window.innerHeight };
-const clock = new THREE.Clock();
-
-/**
- * ===================================================================
  * INITIALIZATION FUNCTIONS
  * ===================================================================
  */
@@ -116,20 +67,20 @@ const clock = new THREE.Clock();
  * Initialize Three.js core components
  */
 function initializeThreeJS() {
-  const threeJSComponents = initThreeJS(canvas, sizes);
-  scene = threeJSComponents.scene;
-  camera = threeJSComponents.camera;
-  renderer = threeJSComponents.renderer;
-  pointer = threeJSComponents.pointer;
-  raycaster = threeJSComponents.raycaster;
-  loadingManager = threeJSComponents.loadingManager;
-  textureLoader = threeJSComponents.textureLoader;
-  gltfLoader = threeJSComponents.gltfLoader;
+  const canvas = document.querySelector(CANVAS_CONFIG.selector);
+  appState.setCanvas(canvas);
+
+  const threeJSComponents = initThreeJS(canvas, appState.sizes);
+  appState.setThreeJSComponents(threeJSComponents);
 
   // Setup hover outline
-  const hoverSetup = setupHoverOutline(renderer, scene, camera, sizes);
-  composer = hoverSetup.composer;
-  outlinePass = hoverSetup.outlinePass;
+  const hoverSetup = setupHoverOutline(
+    appState.renderer,
+    appState.scene,
+    appState.camera,
+    appState.sizes
+  );
+  appState.setPostProcessing(hoverSetup.composer, hoverSetup.outlinePass);
 }
 
 /**
@@ -138,9 +89,9 @@ function initializeThreeJS() {
 function initializeLoaders() {
   const dracoLoader = new DRACOLoader();
   dracoLoader.setDecoderPath(MODEL_PATHS.draco);
-  const loader = new GLTFLoader(loadingManager);
+  const loader = new GLTFLoader(appState.loadingManager);
   loader.setDRACOLoader(dracoLoader);
-  gltfLoader = loader;
+  appState.gltfLoader = loader;
 }
 
 /**
@@ -148,33 +99,48 @@ function initializeLoaders() {
  */
 function initializeManagers() {
   // Load textures
-  const { textureMap, loadedTextures } =
-    themeManager.loadAllTextures(textureLoader);
-
-  // Camera manager
-  cameraManager = new CameraManager(
-    camera,
-    renderer,
-    CAMERA_CONFIG.defaultPosition, // default camera position
-    CAMERA_CONFIG.defaultTarget // default camera target
+  const { textureMap, loadedTextures } = themeManager.loadAllTextures(
+    appState.textureLoader
   );
 
+  // Camera manager
+  const cameraManager = new CameraManager(
+    appState.camera,
+    appState.renderer,
+    CAMERA_CONFIG.defaultPosition,
+    CAMERA_CONFIG.defaultTarget
+  );
+  appState.setCameraManager(cameraManager);
+
   // Whiteboard
-  whiteboard = new Whiteboard(scene, camera, renderer, cameraManager.controls);
+  const whiteboard = new Whiteboard(
+    appState.scene,
+    appState.camera,
+    appState.renderer,
+    cameraManager.controls
+  );
   whiteboard.setPosition(WHITEBOARD_CONFIG.position);
   whiteboard.setRotation(
     WHITEBOARD_CONFIG.rotation.x,
     WHITEBOARD_CONFIG.rotation.y,
     WHITEBOARD_CONFIG.rotation.z
   );
+  appState.setWhiteboard(whiteboard);
 
   // Inner web
-  innerWeb = initInnerWeb(scene, camera, document.body, sizes, {
-    html: INNER_WEB_CONFIG.html,
-    position: INNER_WEB_CONFIG.position,
-    rotation: INNER_WEB_CONFIG.rotation,
-    scale: INNER_WEB_CONFIG.scale,
-  });
+  const innerWeb = initInnerWeb(
+    appState.scene,
+    appState.camera,
+    document.body,
+    appState.sizes,
+    {
+      html: INNER_WEB_CONFIG.html,
+      position: INNER_WEB_CONFIG.position,
+      rotation: INNER_WEB_CONFIG.rotation,
+      scale: INNER_WEB_CONFIG.scale,
+    }
+  );
+  appState.setInnerWeb(innerWeb);
 
   // Store loaded textures for later use
   window.loadedTextures = loadedTextures;
@@ -193,10 +159,12 @@ function initializeUI() {
     onModalClose: handleModalClose,
   });
 
-  overlay = modalSystem.overlay;
-  modals = modalSystem.modals;
-  showModal = modalSystem.showModal;
-  hideModal = modalSystem.hideModal;
+  appState.setModalSystem(
+    modalSystem.overlay,
+    modalSystem.modals,
+    modalSystem.showModal,
+    modalSystem.hideModal
+  );
 
   // Image overlay
   const imageOverlaySystem = initImageOverlay({
@@ -206,16 +174,22 @@ function initializeUI() {
     imgSelector: IMAGE_OVERLAY_SELECTORS.img,
     textSelector: IMAGE_OVERLAY_SELECTORS.text,
     onClose: () => {
-      isRaycastEnabled = true;
+      appState.enableRaycast();
     },
   });
 
-  showImageOverlay = imageOverlaySystem.showImageOverlay;
-  hideImageOverlay = imageOverlaySystem.hideImageOverlay;
+  appState.setImageOverlay(
+    imageOverlaySystem.showImageOverlay,
+    imageOverlaySystem.hideImageOverlay
+  );
 
   // Mailbox
-  const modalSystemForMailbox = { showModal, hideModal };
-  mailbox = setupMailbox(scene, modalSystemForMailbox);
+  const modalSystemForMailbox = {
+    showModal: appState.showModal,
+    hideModal: appState.hideModal,
+  };
+  const mailbox = setupMailbox(appState.scene, modalSystemForMailbox);
+  appState.setMailbox(mailbox);
 }
 
 /**
@@ -228,26 +202,27 @@ function initializeUI() {
  * Handle modal open state
  */
 function handleModalOpen() {
-  isRaycastEnabled = false;
+  appState.disableRaycast();
   clearHoverEffects();
-  cameraManager.handleModalState(true);
+  appState.cameraManager.handleModalState(true);
 }
 
 /**
  * Handle modal close state
  */
 function handleModalClose() {
-  isRaycastEnabled = true;
-  cameraManager.handleModalState(false);
+  appState.enableRaycast();
+  appState.cameraManager.handleModalState(false);
 }
 
 /**
  * Main raycaster interaction handler
  */
 function handleRaycasterInteraction() {
-  if (!isRaycastEnabled || currentIntersects.length === 0) return;
+  if (!appState.isRaycastEnabled || appState.currentIntersects.length === 0)
+    return;
 
-  const object = currentIntersects[0].object;
+  const object = appState.currentIntersects[0].object;
 
   // Handle different types of interactions
   handleModalInteractions(object);
@@ -256,13 +231,15 @@ function handleRaycasterInteraction() {
   handleSpecialObjectInteractions(object);
 
   // Mailbox interactions
-  if (mailbox.handleRaycastIntersection(object, modals.contact)) {
+  if (
+    appState.mailbox.handleRaycastIntersection(object, appState.modals.contact)
+  ) {
     audioManager.playClick();
     return;
   }
 
   // Spin animations
-  if (animatedObjects.spin.includes(object)) {
+  if (appState.animatedObjects.spin.includes(object)) {
     const didSpin = spinAnimation(object);
     if (didSpin) audioManager.playClick();
   }
@@ -274,16 +251,16 @@ function handleRaycasterInteraction() {
 function handleModalInteractions(object) {
   if (object.name.includes("about-raycast")) {
     audioManager.playClick();
-    showModal(modals.about);
+    appState.showModal(appState.modals.about);
   } else if (object.name.includes("work-raycast")) {
     audioManager.playClick();
-    showModal(modals.work);
+    appState.showModal(appState.modals.work);
   } else if (object.name.includes("erhu-seven")) {
     audioManager.playClick();
-    showModal(modals.erhu);
+    appState.showModal(appState.modals.erhu);
   } else if (object.name.includes("TV-seven")) {
     audioManager.playClick();
-    showModal(modals.work);
+    appState.showModal(appState.modals.work);
   }
 }
 
@@ -294,8 +271,8 @@ function handleImageInteractions(object) {
   if (imageData[object.name]) {
     audioManager.playClick();
     const { src, caption } = imageData[object.name];
-    showImageOverlay(src, caption);
-    isRaycastEnabled = false;
+    appState.showImageOverlay(src, caption);
+    appState.disableRaycast();
   }
 }
 
@@ -310,8 +287,8 @@ function handleSocialLinkInteractions(object) {
 
       // Clear hover effects and block raycasting
       clearHoverEffects();
-      isRaycastEnabled = false;
-      currentIntersects = [];
+      appState.disableRaycast();
+      appState.clearIntersects();
 
       // Open link with slight delay
       setTimeout(() => {
@@ -321,7 +298,7 @@ function handleSocialLinkInteractions(object) {
       // Re-enable raycasting when window regains focus
       window.addEventListener("focus", () => {
         setTimeout(() => {
-          isRaycastEnabled = true;
+          appState.enableRaycast();
         }, 500);
       });
     }
@@ -335,27 +312,27 @@ function handleSpecialObjectInteractions(object) {
   if (object.name.includes("whiteboard-raycast-one")) {
     console.log("Whiteboard clicked!");
     audioManager.playClick();
-    cameraManager.zoomToWhiteboard(whiteboard, 1.5);
-    whiteboard.toggleWhiteboardMode(true);
+    appState.cameraManager.zoomToWhiteboard(appState.whiteboard, 1.5);
+    appState.whiteboard.toggleWhiteboardMode(true);
   }
 
   if (object.name.includes("monitor")) {
     audioManager.playClick();
-    cameraManager.zoomToMonitor();
-    innerWeb.enableIframe();
+    appState.cameraManager.zoomToMonitor();
+    appState.innerWeb.enableIframe();
     document.getElementById(BUTTON_IDS.backButton).style.display = "block";
   }
 
   if (object.name.includes("perry-hat")) {
-    if (perryCupControls) {
+    if (appState.perryCupControls) {
       audioManager.playClick();
-      perryCupControls.toggleLid();
-      toggleSteam(steamMesh, 1);
+      appState.perryCupControls.toggleLid();
+      toggleSteam(appState.steamMesh, 1);
     }
   }
 
   if (object.name.includes("pig-head")) {
-    randomOink(pigObject);
+    randomOink(appState.pigObject);
   }
 }
 
@@ -381,33 +358,33 @@ function processSceneObjects(sceneObject) {
     if (isThemedMesh) {
       // Categorize animated objects
       if (child.name.includes("keycapAnimate")) {
-        animatedObjects.keycaps.push(child);
+        appState.addAnimatedObject("keycaps", child);
       }
       if (child.name.includes("animateScale")) {
-        animatedObjects.scale.push(child);
+        appState.addAnimatedObject("scale", child);
       }
       if (child.name.includes("animateSpin")) {
-        animatedObjects.spin.push(child);
+        appState.addAnimatedObject("spin", child);
       }
       if (child.name.includes("scaleLights")) {
-        animatedObjects.scaleLights.push(child);
+        appState.addAnimatedObject("scaleLights", child);
       }
       if (child.name.includes("raycast")) {
-        raycasterObjects.push(child);
+        appState.addRaycasterObject(child);
       }
 
       processRotatingObject(child);
 
       // Process mailbox objects
-      mailbox.processMailboxObject(child);
+      appState.mailbox.processMailboxObject(child);
 
       // Process special objects
       if (child.name.includes("pig-head")) {
-        pigObject = child;
+        appState.setPigObject(child);
       }
       if (child.name.includes("perry-hat")) {
-        perryHatObject = child;
-        perryCupControls = setupPerryCupAnimation(perryHatObject);
+        appState.setPerryHatObject(child);
+        appState.setPerryCupControls(setupPerryCupAnimation(child));
       }
     }
 
@@ -440,7 +417,7 @@ function setupLoadingManager() {
   const loadingButton = document.querySelector(LOADING_SELECTORS.button);
   const loadingBarFill = document.querySelector(LOADING_SELECTORS.barFill);
 
-  loadingManager.onStart = () => {
+  appState.loadingManager.onStart = () => {
     gsap.to(LOADING_SELECTORS.screen, {
       opacity: 1,
       duration: 1,
@@ -448,7 +425,7 @@ function setupLoadingManager() {
     });
   };
 
-  loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+  appState.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
     const percent = Math.floor((itemsLoaded / itemsTotal) * 100);
     loadingBarFill.style.width = `${percent}%`;
     gsap.to(LOADING_SELECTORS.barFill, {
@@ -459,7 +436,7 @@ function setupLoadingManager() {
     });
   };
 
-  loadingManager.onLoad = () => {
+  appState.loadingManager.onLoad = () => {
     gsap.killTweensOf(LOADING_SELECTORS.barFill);
     gsap.to(LOADING_SELECTORS.bar, { opacity: 0, duration: 0.5 });
     gsap.to(LOADING_SELECTORS.button, {
@@ -488,9 +465,9 @@ function setupLoadingManager() {
  */
 
 function loadScene() {
-  gltfLoader.load("/models/room-port-v1.glb", (glb) => {
+  appState.gltfLoader.load("/models/room-port-v1.glb", (glb) => {
     processSceneObjects(glb.scene);
-    scene.add(glb.scene);
+    appState.scene.add(glb.scene);
     playIntroAnimation();
   });
 }
@@ -502,12 +479,13 @@ function loadScene() {
  */
 
 function setupSteamEffect() {
-  textureLoader.load(STEAM_CONFIG.texture.src, (tex) => {
+  appState.textureLoader.load(STEAM_CONFIG.texture.src, (tex) => {
     tex.wrapS = STEAM_CONFIG.texture.wrapS;
     tex.wrapT = STEAM_CONFIG.texture.wrapT;
-    steamMesh = createSteamEffect(tex, STEAM_CONFIG.geometry);
+    const steamMesh = createSteamEffect(tex, STEAM_CONFIG.geometry);
     steamMesh.position.copy(STEAM_CONFIG.position);
-    scene.add(steamMesh);
+    appState.setSteamMesh(steamMesh);
+    appState.scene.add(steamMesh);
   });
 }
 
@@ -558,10 +536,9 @@ function playIntroAnimation() {
  * Clear all hover effects
  */
 function clearHoverEffects() {
-  currentIntersects = [];
-  outlinePass.selectedObjects = [];
-  updateHoverScale([], animatedObjects.scale);
-  mailbox.updateMailboxHover([]);
+  appState.clearHoverEffects();
+  updateHoverScale([], appState.animatedObjects.scale);
+  appState.mailbox.updateMailboxHover([]);
 }
 
 /**
@@ -571,46 +548,50 @@ function clearHoverEffects() {
  */
 
 function render() {
-  cameraManager.update();
-  const elapsedTime = clock.getElapsedTime();
+  appState.cameraManager.update();
+  const elapsedTime = appState.getElapsedTime();
 
   // Update animations
   updateRotatingObjects();
   clockManager.updateClockHands();
 
   // Handle raycasting and hover effects
-  if (isRaycastEnabled) {
-    raycaster.setFromCamera(pointer, camera);
+  if (appState.isRaycastEnabled) {
+    appState.raycaster.setFromCamera(appState.pointer, appState.camera);
 
-    currentIntersects = updateOutlineHover(
-      raycaster,
-      pointer,
-      camera,
-      raycasterObjects,
-      outlinePass
+    const currentIntersects = updateOutlineHover(
+      appState.raycaster,
+      appState.pointer,
+      appState.camera,
+      appState.raycasterObjects,
+      appState.outlinePass
     );
+    appState.setCurrentIntersects(currentIntersects);
 
-    updateHoverScale(currentIntersects, animatedObjects.scale);
-    mailbox.updateMailboxHover(currentIntersects, outlinePass);
+    updateHoverScale(currentIntersects, appState.animatedObjects.scale);
+    appState.mailbox.updateMailboxHover(
+      currentIntersects,
+      appState.outlinePass
+    );
   } else {
-    currentIntersects = [];
-    mailbox.updateMailboxHover([], outlinePass);
+    appState.clearIntersects();
+    appState.mailbox.updateMailboxHover([], appState.outlinePass);
     clearHoverEffects();
   }
 
   // Update whiteboard
-  if (whiteboard && whiteboard.isActive) {
-    whiteboard.update();
+  if (appState.whiteboard && appState.whiteboard.isActive) {
+    appState.whiteboard.update();
   }
 
   // Update steam effect
-  if (steamMesh) {
-    steamMesh.material.uniforms.uTime.value = elapsedTime;
+  if (appState.steamMesh) {
+    appState.steamMesh.material.uniforms.uTime.value = elapsedTime;
   }
 
   // Render
-  innerWeb.render();
-  composer.render();
+  appState.innerWeb.render();
+  appState.composer.render();
 
   window.requestAnimationFrame(render);
 }
@@ -633,15 +614,15 @@ function setupEventListeners() {
     themeManager,
     audioManager,
     body: document.body,
-    camera,
-    renderer,
-    innerWeb,
-    composer,
-    sizes,
-    cameraManager,
-    whiteboard,
+    camera: appState.camera,
+    renderer: appState.renderer,
+    innerWeb: appState.innerWeb,
+    composer: appState.composer,
+    sizes: appState.sizes,
+    cameraManager: appState.cameraManager,
+    whiteboard: appState.whiteboard,
     loadingButton: document.querySelector(LOADING_SELECTORS.button),
-    pointer,
+    pointer: appState.pointer,
   });
 
   handlers.registerThemeToggle();
@@ -659,11 +640,11 @@ function setupEventListeners() {
 
 function setupModalHandlers() {
   const closeButtons = document.querySelectorAll(".modal-close-btn");
-  overlay.addEventListener("click", () => {
-    Object.values(modals).forEach((modal) => {
+  appState.overlay.addEventListener("click", () => {
+    Object.values(appState.modals).forEach((modal) => {
       if (modal.style.display === "block") {
-        hideModal(modal);
-        isRaycastEnabled = true;
+        appState.hideModal(modal);
+        appState.enableRaycast();
       }
     });
   });
@@ -672,8 +653,8 @@ function setupModalHandlers() {
   closeButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const modal = btn.closest(".modal");
-      hideModal(modal);
-      isRaycastEnabled = true;
+      appState.hideModal(modal);
+      appState.enableRaycast();
     });
   });
 }
@@ -700,19 +681,19 @@ function setupSidePanelHandlers() {
 
       switch (label) {
         case "reset camera":
-          cameraManager.resetToDefault();
+          appState.cameraManager.resetToDefault();
           break;
         case "work":
-          showModal(modals.work);
+          appState.showModal(appState.modals.work);
           break;
         case "about":
-          showModal(modals.about);
+          appState.showModal(appState.modals.about);
           break;
         case "contact":
-          showModal(modals.contact);
+          appState.showModal(appState.modals.contact);
           break;
         case "whiteboard":
-          cameraManager.zoomToWhiteboard(whiteboard, 1.5);
+          appState.cameraManager.zoomToWhiteboard(appState.whiteboard, 1.5);
           break;
         default:
           console.log(`No action defined for ${label}`);
@@ -738,9 +719,9 @@ function setupBackButtonHandler() {
   const backBtn = document.getElementById("back-button");
 
   backBtn.addEventListener("click", () => {
-    whiteboard.toggleWhiteboardMode(false);
-    innerWeb.disableIframe();
-    cameraManager.resetToDefault();
+    appState.whiteboard.toggleWhiteboardMode(false);
+    appState.innerWeb.disableIframe();
+    appState.cameraManager.resetToDefault();
   });
 }
 
