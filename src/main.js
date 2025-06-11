@@ -1,11 +1,9 @@
 import * as THREE from "three";
 import gsap from "gsap";
-import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 // Core imports
-import { initThreeJS } from "./scripts/scene.js";
 import EventHandler from "./scripts/core/EventHandler.js";
+import initializer from "./scripts/core/Initializer.js"; // NEW: Using the initializer
 import "./style.scss";
 
 // Application State
@@ -15,11 +13,6 @@ import appState from "./scripts/core/AppState.js";
 import themeManager from "./scripts/themeManager.js";
 import audioManager from "./scripts/audio.js";
 import clockManager from "./scripts/clock.js";
-
-// Components
-import Whiteboard from "./scripts/utils/whiteboard.js";
-import CameraManager from "./scripts/camera.js";
-import { createSteamEffect } from "./scripts/shaders/steamEffect.js";
 
 // Features
 import { setupPerryCupAnimation } from "./scripts/perryCup.js";
@@ -37,7 +30,7 @@ import {
 import { updateHoverScale } from "./scripts/hoverScale.js";
 import { initModalSystem } from "./scripts/modal.js";
 import { initImageOverlay } from "./scripts/fadeOverlayImage.js";
-import { initInnerWeb } from "./scripts/innerWeb.js";
+import { createSteamEffect } from "./scripts/shaders/steamEffect.js";
 
 // Configuration
 import {
@@ -59,92 +52,9 @@ import {
 
 /**
  * ===================================================================
- * INITIALIZATION FUNCTIONS
+ * UI INITIALIZATION - NEXT TO BE REFACTORED
  * ===================================================================
  */
-
-/**
- * Initialize Three.js core components
- */
-function initializeThreeJS() {
-  const canvas = document.querySelector(CANVAS_CONFIG.selector);
-  appState.setCanvas(canvas);
-
-  const threeJSComponents = initThreeJS(canvas, appState.sizes);
-  appState.setThreeJSComponents(threeJSComponents);
-
-  // Setup hover outline
-  const hoverSetup = setupHoverOutline(
-    appState.renderer,
-    appState.scene,
-    appState.camera,
-    appState.sizes
-  );
-  appState.setPostProcessing(hoverSetup.composer, hoverSetup.outlinePass);
-}
-
-/**
- * Initialize loaders
- */
-function initializeLoaders() {
-  const dracoLoader = new DRACOLoader();
-  dracoLoader.setDecoderPath(MODEL_PATHS.draco);
-  const loader = new GLTFLoader(appState.loadingManager);
-  loader.setDRACOLoader(dracoLoader);
-  appState.gltfLoader = loader;
-}
-
-/**
- * Initialize managers
- */
-function initializeManagers() {
-  // Load textures
-  const { textureMap, loadedTextures } = themeManager.loadAllTextures(
-    appState.textureLoader
-  );
-
-  // Camera manager
-  const cameraManager = new CameraManager(
-    appState.camera,
-    appState.renderer,
-    CAMERA_CONFIG.defaultPosition,
-    CAMERA_CONFIG.defaultTarget
-  );
-  appState.setCameraManager(cameraManager);
-
-  // Whiteboard
-  const whiteboard = new Whiteboard(
-    appState.scene,
-    appState.camera,
-    appState.renderer,
-    cameraManager.controls
-  );
-  whiteboard.setPosition(WHITEBOARD_CONFIG.position);
-  whiteboard.setRotation(
-    WHITEBOARD_CONFIG.rotation.x,
-    WHITEBOARD_CONFIG.rotation.y,
-    WHITEBOARD_CONFIG.rotation.z
-  );
-  appState.setWhiteboard(whiteboard);
-
-  // Inner web
-  const innerWeb = initInnerWeb(
-    appState.scene,
-    appState.camera,
-    document.body,
-    appState.sizes,
-    {
-      html: INNER_WEB_CONFIG.html,
-      position: INNER_WEB_CONFIG.position,
-      rotation: INNER_WEB_CONFIG.rotation,
-      scale: INNER_WEB_CONFIG.scale,
-    }
-  );
-  appState.setInnerWeb(innerWeb);
-
-  // Store loaded textures for later use
-  window.loadedTextures = loadedTextures;
-}
 
 /**
  * Initialize UI components
@@ -732,10 +642,10 @@ function setupBackButtonHandler() {
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Initialize everything in order
-  initializeThreeJS();
-  initializeLoaders();
-  initializeManagers();
+  // Initialize core components using the new Initializer
+  initializer.initializeAll();
+
+  // Initialize UI and other components
   initializeUI();
   setupLoadingManager();
   setupEventListeners();

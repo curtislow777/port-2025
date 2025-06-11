@@ -54,6 +54,10 @@ export const imageData = {
     src: "images/shoes.webp",
     caption: "nimama",
   },
+  "wolf_card-twelve-raycast": {
+    src: "images/wolf.webp",
+    caption: "nimama",
+  },
 };
 
 // Social media links configuration
