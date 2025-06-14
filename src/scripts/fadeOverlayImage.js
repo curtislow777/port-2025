@@ -14,6 +14,7 @@ export function initImageOverlay({
   closeBtnSelector = ".fade-overlay-close-btn",
   imgSelector = ".fade-overlay-img",
   textSelector = ".fade-overlay-text",
+  onOpen = () => {}, // ① new callback
   onClose = () => {},
 } = {}) {
   // Grab DOM elements
@@ -33,7 +34,7 @@ export function initImageOverlay({
    */
   function showImageOverlay(imageUrl, description) {
     if (!overlay || isAnimating || isOpen) return;
-
+    onOpen();
     isOpen = true;
     isAnimating = true;
 

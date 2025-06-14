@@ -1,26 +1,30 @@
 /**
- * AppState.js - Centralized application state management
- *
- * This module manages all global application state, providing a clean
- * interface for accessing and modifying application-wide variables.
+ * AppState.js – Centralised application state management
  */
 
 import * as THREE from "three";
 
 class AppState {
   constructor() {
-    // Application state
+    /* ───────────────────────────────────
+     *  Ray-casting state
+     * ─────────────────────────────────── */
     this.isRaycastEnabled = true;
     this.currentIntersects = [];
+    this.raycasterController = null; // <-- will be injected from main.js
 
-    // Scene objects
+    /* ───────────────────────────────────
+     *  Scene objects
+     * ─────────────────────────────────── */
     this.perryHatObject = null;
     this.pigObject = null;
     this.perryCupControls = null;
     this.steamMesh = null;
     this.whiteboard = null;
 
-    // Collections
+    /* ───────────────────────────────────
+     *  Collections
+     * ─────────────────────────────────── */
     this.animatedObjects = {
       spin: [],
       scale: [],
@@ -30,24 +34,30 @@ class AppState {
     };
     this.raycasterObjects = [];
 
-    // Core Three.js components
+    /* ───────────────────────────────────
+     *  Three.js core
+     * ─────────────────────────────────── */
     this.scene = null;
     this.camera = null;
     this.renderer = null;
     this.pointer = null;
-    this.raycaster = null;
+    this.raycaster = null; // (legacy – may be removed later)
     this.loadingManager = null;
     this.textureLoader = null;
     this.gltfLoader = null;
     this.composer = null;
     this.outlinePass = null;
 
-    // Managers
+    /* ───────────────────────────────────
+     *  Managers
+     * ─────────────────────────────────── */
     this.cameraManager = null;
     this.innerWeb = null;
     this.mailbox = null;
 
-    // UI components
+    /* ───────────────────────────────────
+     *  UI Hooks
+     * ─────────────────────────────────── */
     this.overlay = null;
     this.modals = null;
     this.showModal = null;
@@ -55,60 +65,79 @@ class AppState {
     this.showImageOverlay = null;
     this.hideImageOverlay = null;
 
-    // Canvas and sizing
+    /* ───────────────────────────────────
+     *  Canvas / sizing
+     * ─────────────────────────────────── */
     this.canvas = null;
     this.sizes = { width: window.innerWidth, height: window.innerHeight };
     this.clock = new THREE.Clock();
   }
 
-  // Raycast state management
+  /* ===== Ray-casting helpers ======================================= */
+
+  /** Inject the RaycasterController instance once created. */
+  setRaycasterController(controller) {
+    this.raycasterController = controller;
+  }
+
   enableRaycast() {
+    console.log("Enabling raycast");
     this.isRaycastEnabled = true;
+    this.raycasterController?.enable();
   }
 
   disableRaycast() {
+    console.log("Disabling raycast");
     this.isRaycastEnabled = false;
+    this.raycasterController?.disable();
+    this.resetCursor();
+    this.clearHoverEffects();
+  }
+  /* AppState.js */
+  resetCursor() {
+    // whichever elements exist in your app:
+    document.body.style.cursor = "default";
+    document.documentElement.style.cursor = "default";
+    if (this.canvas) this.canvas.style.cursor = "default";
+    if (this.overlay) this.overlay.style.cursor = "default"; // <- the full-screen overlay
   }
 
   setCurrentIntersects(intersects) {
     this.currentIntersects = intersects;
   }
-
   clearIntersects() {
     this.currentIntersects = [];
   }
 
-  // Scene objects setters
-  setPerryHatObject(object) {
-    this.perryHatObject = object;
-  }
+  /* ===== Scene-object setters ====================================== */
 
-  setPigObject(object) {
-    this.pigObject = object;
+  setPerryHatObject(obj) {
+    this.perryHatObject = obj;
   }
-
-  setPerryCupControls(controls) {
-    this.perryCupControls = controls;
+  setPigObject(obj) {
+    this.pigObject = obj;
   }
-
+  setPerryCupControls(c) {
+    this.perryCupControls = c;
+  }
   setSteamMesh(mesh) {
     this.steamMesh = mesh;
   }
-
   setWhiteboard(whiteboard) {
     this.whiteboard = whiteboard;
   }
 
-  // Core Three.js components setters
-  setThreeJSComponents(components) {
-    this.scene = components.scene;
-    this.camera = components.camera;
-    this.renderer = components.renderer;
-    this.pointer = components.pointer;
-    this.raycaster = components.raycaster;
-    this.loadingManager = components.loadingManager;
-    this.textureLoader = components.textureLoader;
-    this.gltfLoader = components.gltfLoader;
+  /* ===== Core Three.js components ================================== */
+
+  setThreeJSComponents(c) {
+    this.scene = c.scene;
+    this.camera = c.camera;
+    this.renderer = c.renderer;
+    this.pointer = c.pointer;
+    this.raycaster = c.raycaster;
+    this.loadingManager = c.loadingManager;
+    this.textureLoader = c.textureLoader;
+    this.gltfLoader = c.gltfLoader;
   }
 
   setPostProcessing(composer, outlinePass) {
@@ -116,20 +145,20 @@ class AppState {
     this.outlinePass = outlinePass;
   }
 
-  // Managers setters
-  setCameraManager(manager) {
-    this.cameraManager = manager;
+  /* ===== Managers =================================================== */
+
+  setCameraManager(mgr) {
+    this.cameraManager = mgr;
+  }
+  setInnerWeb(iw) {
+    this.innerWeb = iw;
+  }
+  setMailbox(box) {
+    this.mailbox = box;
   }
 
-  setInnerWeb(innerWeb) {
-    this.innerWeb = innerWeb;
-  }
+  /* ===== UI components ============================================= */
 
-  setMailbox(mailbox) {
-    this.mailbox = mailbox;
-  }
-
-  // UI components setters
   setModalSystem(overlay, modals, showModal, hideModal) {
     this.overlay = overlay;
     this.modals = modals;
@@ -137,38 +166,36 @@ class AppState {
     this.hideModal = hideModal;
   }
 
-  setImageOverlay(showImageOverlay, hideImageOverlay) {
-    this.showImageOverlay = showImageOverlay;
-    this.hideImageOverlay = hideImageOverlay;
+  setImageOverlay(show, hide) {
+    this.showImageOverlay = show;
+    this.hideImageOverlay = hide;
   }
 
-  // Canvas and sizing
+  /* ===== Canvas / sizing =========================================== */
+
   setCanvas(canvas) {
     this.canvas = canvas;
   }
-
-  updateSizes(width, height) {
-    this.sizes.width = width;
-    this.sizes.height = height;
+  updateSizes(w, h) {
+    this.sizes.width = w;
+    this.sizes.height = h;
   }
 
-  // Animated objects management
-  addAnimatedObject(type, object) {
-    if (this.animatedObjects[type]) {
-      this.animatedObjects[type].push(object);
-    }
+  /* ===== Collections ============================================== */
+
+  addAnimatedObject(type, obj) {
+    if (this.animatedObjects[type]) this.animatedObjects[type].push(obj);
   }
 
-  addRaycasterObject(object) {
-    this.raycasterObjects.push(object);
+  addRaycasterObject(obj) {
+    this.raycasterObjects.push(obj);
   }
 
-  // Utility methods
+  /* ===== Utility =================================================== */
+
   clearHoverEffects() {
     this.currentIntersects = [];
-    if (this.outlinePass) {
-      this.outlinePass.selectedObjects = [];
-    }
+    if (this.outlinePass) this.outlinePass.selectedObjects = [];
   }
 
   getElapsedTime() {
@@ -176,6 +203,5 @@ class AppState {
   }
 }
 
-// Create and export singleton instance
-const appState = new AppState();
-export default appState;
+/*  Export a singleton instance  */
+export default new AppState();

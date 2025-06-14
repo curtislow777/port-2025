@@ -33,7 +33,6 @@ class AudioManager {
   playClick(volume = 0.1) {
     this.click.volume(volume);
     this.click.play();
-    console.log("buttonclick");
   }
 }
 

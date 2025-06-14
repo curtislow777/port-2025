@@ -6,7 +6,7 @@ import EventHandler from "./scripts/core/EventHandler.js";
 import { initializeAll } from "./scripts/core/Initializer.js";
 import { initializeUI } from "./scripts/ui/UIInitializer.js";
 import "./style.scss";
-
+import RaycasterController from "./scripts/core/RaycasterController.js";
 // Application State
 import appState from "./scripts/core/AppState.js";
 
@@ -18,18 +18,13 @@ import clockManager from "./scripts/clock.js";
 // Features
 import { setupPerryCupAnimation } from "./scripts/perryCup.js";
 import { randomOink } from "./scripts/pig.js";
-import { setupMailbox } from "./scripts/mailbox.js";
 import {
   processRotatingObject,
   updateRotatingObjects,
 } from "./scripts/objectRotation.js";
 import { spinAnimation } from "./scripts/spinnyObjects.js";
-import {
-  setupHoverOutline,
-  updateOutlineHover,
-} from "./scripts/hoverOutline.js";
+import { updateOutlineHover } from "./scripts/hoverOutline.js";
 import { updateHoverScale } from "./scripts/hoverScale.js";
-import { initModalSystem } from "./scripts/modal.js";
 import { initImageOverlay } from "./scripts/fadeOverlayImage.js";
 import { createSteamEffect } from "./scripts/shaders/steamEffect.js";
 
@@ -50,16 +45,6 @@ import {
   MODEL_PATHS,
   BUTTON_IDS,
 } from "./scripts/config/constants.js";
-
-/**
- * ===================================================================
- * UI INITIALIZATION - NEXT TO BE REFACTORED
- * ===================================================================
- */
-
-/**
- * Initialize UI components
- */
 
 /**
  * ===================================================================
@@ -124,7 +109,6 @@ function handleImageInteractions(object) {
     audioManager.playClick();
     const { src, caption } = imageData[object.name];
     appState.showImageOverlay(src, caption);
-    appState.disableRaycast();
   }
 }
 
@@ -139,7 +123,7 @@ function handleSocialLinkInteractions(object) {
 
       // Clear hover effects and block raycasting
       clearHoverEffects();
-      appState.disableRaycast();
+      appState.raycasterController.disable(); // when disabling
       appState.clearIntersects();
 
       // Open link with slight delay
@@ -150,7 +134,7 @@ function handleSocialLinkInteractions(object) {
       // Re-enable raycasting when window regains focus
       window.addEventListener("focus", () => {
         setTimeout(() => {
-          appState.enableRaycast();
+          appState.raycasterController.enable(); // when enabling
         }, 500);
       });
     }
@@ -406,28 +390,15 @@ function render() {
   // Update animations
   updateRotatingObjects();
   clockManager.updateClockHands();
-
-  // Handle raycasting and hover effects
   if (appState.isRaycastEnabled) {
-    appState.raycaster.setFromCamera(appState.pointer, appState.camera);
-
-    const currentIntersects = updateOutlineHover(
-      appState.raycaster,
-      appState.pointer,
-      appState.camera,
-      appState.raycasterObjects,
-      appState.outlinePass
+    const hits = appState.raycasterController.update(
+      appState.pointer.x,
+      appState.pointer.y
     );
-    appState.setCurrentIntersects(currentIntersects);
-
-    updateHoverScale(currentIntersects, appState.animatedObjects.scale);
-    appState.mailbox.updateMailboxHover(
-      currentIntersects,
-      appState.outlinePass
-    );
+    appState.setCurrentIntersects(hits);
   } else {
     appState.clearIntersects();
-    appState.mailbox.updateMailboxHover([], appState.outlinePass);
+    appState.mailbox.updateMailboxHover([], appState.outlinePass); // keep existing clear
     clearHoverEffects();
   }
 
@@ -496,7 +467,7 @@ function setupModalHandlers() {
     Object.values(appState.modals).forEach((modal) => {
       if (modal.style.display === "block") {
         appState.hideModal(modal);
-        appState.enableRaycast();
+        appState.raycasterController.enable(); // when enabling
       }
     });
   });
@@ -506,7 +477,7 @@ function setupModalHandlers() {
     btn.addEventListener("click", () => {
       const modal = btn.closest(".modal");
       appState.hideModal(modal);
-      appState.enableRaycast();
+      appState.raycasterController.enable(); // when enabling
     });
   });
 }
@@ -586,8 +557,34 @@ function setupBackButtonHandler() {
 document.addEventListener("DOMContentLoaded", () => {
   // Initialize core components using the new Initializer
   initializeAll();
+
   // Initialize UI and other components
   initializeUI();
+
+  /* ──────────────────────────────────────────────
+   Image overlay → toggle the ray-caster
+   ────────────────────────────────────────────── */
+  const { showImageOverlay, hideImageOverlay } = initImageOverlay({
+    onOpen: () => appState.disableRaycast(),
+    onClose: () => appState.enableRaycast(),
+  });
+
+  // Make it available to the rest of the app
+  appState.showImageOverlay = showImageOverlay;
+  appState.hideImageOverlay = hideImageOverlay;
+  // create controller (camera & empty list for now)
+  const rayCtrl = new RaycasterController(
+    appState.camera,
+    appState.raycasterObjects,
+    {
+      outlinePass: appState.outlinePass,
+      scaleTargets: appState.animatedObjects.scale,
+      mailbox: appState.mailbox,
+    }
+  );
+
+  appState.setRaycasterController(rayCtrl);
+
   setupLoadingManager();
   setupEventListeners();
 
