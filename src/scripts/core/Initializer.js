@@ -22,106 +22,83 @@ import {
   MODEL_PATHS,
 } from "../config/constants.js";
 
-/**
- * Initializer class to handle all application initialization
- */
-class Initializer {
-  constructor() {
-    this.canvas = null;
-  }
+function initializeThreeJS() {
+  const canvas = document.querySelector(CANVAS_CONFIG.selector);
+  appState.setCanvas(canvas);
 
-  /**
-   * Initialize Three.js core components
-   */
-  initializeThreeJS() {
-    const canvas = document.querySelector(CANVAS_CONFIG.selector);
-    this.canvas = canvas;
-    appState.setCanvas(canvas);
+  const threeJSComponents = initThreeJS(canvas, appState.sizes);
+  appState.setThreeJSComponents(threeJSComponents);
 
-    const threeJSComponents = initThreeJS(canvas, appState.sizes);
-    appState.setThreeJSComponents(threeJSComponents);
-
-    // Setup hover outline
-    const hoverSetup = setupHoverOutline(
-      appState.renderer,
-      appState.scene,
-      appState.camera,
-      appState.sizes
-    );
-    appState.setPostProcessing(hoverSetup.composer, hoverSetup.outlinePass);
-  }
-
-  /**
-   * Initialize loaders
-   */
-  initializeLoaders() {
-    const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath(MODEL_PATHS.draco);
-    const loader = new GLTFLoader(appState.loadingManager);
-    loader.setDRACOLoader(dracoLoader);
-    appState.gltfLoader = loader;
-  }
-
-  /**
-   * Initialize managers
-   */
-  initializeManagers() {
-    // Load textures
-    const { textureMap, loadedTextures } = themeManager.loadAllTextures(
-      appState.textureLoader
-    );
-
-    // Camera manager
-    const cameraManager = new CameraManager(
-      appState.camera,
-      appState.renderer,
-      CAMERA_CONFIG.defaultPosition,
-      CAMERA_CONFIG.defaultTarget
-    );
-    appState.setCameraManager(cameraManager);
-
-    // Whiteboard
-    const whiteboard = new Whiteboard(
-      appState.scene,
-      appState.camera,
-      appState.renderer,
-      cameraManager.controls
-    );
-    whiteboard.setPosition(WHITEBOARD_CONFIG.position);
-    whiteboard.setRotation(
-      WHITEBOARD_CONFIG.rotation.x,
-      WHITEBOARD_CONFIG.rotation.y,
-      WHITEBOARD_CONFIG.rotation.z
-    );
-    appState.setWhiteboard(whiteboard);
-
-    // Inner web
-    const innerWeb = initInnerWeb(
-      appState.scene,
-      appState.camera,
-      document.body,
-      appState.sizes,
-      {
-        html: INNER_WEB_CONFIG.html,
-        position: INNER_WEB_CONFIG.position,
-        rotation: INNER_WEB_CONFIG.rotation,
-        scale: INNER_WEB_CONFIG.scale,
-      }
-    );
-    appState.setInnerWeb(innerWeb);
-
-    // Store loaded textures for later use
-    window.loadedTextures = loadedTextures;
-  }
-
-  /**
-   * Initialize all core components in order
-   */
-  initializeAll() {
-    this.initializeThreeJS();
-    this.initializeLoaders();
-    this.initializeManagers();
-  }
+  const hoverSetup = setupHoverOutline(
+    appState.renderer,
+    appState.scene,
+    appState.camera,
+    appState.sizes
+  );
+  appState.setPostProcessing(hoverSetup.composer, hoverSetup.outlinePass);
 }
 
-export default new Initializer();
+function initializeLoaders() {
+  const dracoLoader = new DRACOLoader();
+  dracoLoader.setDecoderPath(MODEL_PATHS.draco);
+  const loader = new GLTFLoader(appState.loadingManager);
+  loader.setDRACOLoader(dracoLoader);
+  appState.gltfLoader = loader;
+}
+
+function initializeManagers() {
+  const { textureMap, loadedTextures } = themeManager.loadAllTextures(
+    appState.textureLoader
+  );
+
+  const cameraManager = new CameraManager(
+    appState.camera,
+    appState.renderer,
+    CAMERA_CONFIG.defaultPosition,
+    CAMERA_CONFIG.defaultTarget
+  );
+  appState.setCameraManager(cameraManager);
+
+  const whiteboard = new Whiteboard(
+    appState.scene,
+    appState.camera,
+    appState.renderer,
+    cameraManager.controls
+  );
+  whiteboard.setPosition(WHITEBOARD_CONFIG.position);
+  whiteboard.setRotation(
+    WHITEBOARD_CONFIG.rotation.x,
+    WHITEBOARD_CONFIG.rotation.y,
+    WHITEBOARD_CONFIG.rotation.z
+  );
+  appState.setWhiteboard(whiteboard);
+
+  const innerWeb = initInnerWeb(
+    appState.scene,
+    appState.camera,
+    document.body,
+    appState.sizes,
+    {
+      html: INNER_WEB_CONFIG.html,
+      position: INNER_WEB_CONFIG.position,
+      rotation: INNER_WEB_CONFIG.rotation,
+      scale: INNER_WEB_CONFIG.scale,
+    }
+  );
+  appState.setInnerWeb(innerWeb);
+
+  window.loadedTextures = loadedTextures;
+}
+
+function initializeAll() {
+  initializeThreeJS();
+  initializeLoaders();
+  initializeManagers();
+}
+
+export {
+  initializeThreeJS,
+  initializeLoaders,
+  initializeManagers,
+  initializeAll,
+};

@@ -3,7 +3,8 @@ import gsap from "gsap";
 
 // Core imports
 import EventHandler from "./scripts/core/EventHandler.js";
-import initializer from "./scripts/core/Initializer.js"; // NEW: Using the initializer
+import { initializeAll } from "./scripts/core/Initializer.js";
+import { initializeUI } from "./scripts/ui/UIInitializer.js";
 import "./style.scss";
 
 // Application State
@@ -59,71 +60,12 @@ import {
 /**
  * Initialize UI components
  */
-function initializeUI() {
-  // Modal system
-  const modalSystem = initModalSystem({
-    overlaySelector: MODAL_SELECTORS.overlay,
-    modalSelectors: MODAL_SELECTORS.modals,
-    closeButtonSelector: MODAL_SELECTORS.closeButton,
-    onModalOpen: handleModalOpen,
-    onModalClose: handleModalClose,
-  });
-
-  appState.setModalSystem(
-    modalSystem.overlay,
-    modalSystem.modals,
-    modalSystem.showModal,
-    modalSystem.hideModal
-  );
-
-  // Image overlay
-  const imageOverlaySystem = initImageOverlay({
-    overlaySelector: IMAGE_OVERLAY_SELECTORS.overlay,
-    contentSelector: IMAGE_OVERLAY_SELECTORS.content,
-    closeBtnSelector: IMAGE_OVERLAY_SELECTORS.closeBtn,
-    imgSelector: IMAGE_OVERLAY_SELECTORS.img,
-    textSelector: IMAGE_OVERLAY_SELECTORS.text,
-    onClose: () => {
-      appState.enableRaycast();
-    },
-  });
-
-  appState.setImageOverlay(
-    imageOverlaySystem.showImageOverlay,
-    imageOverlaySystem.hideImageOverlay
-  );
-
-  // Mailbox
-  const modalSystemForMailbox = {
-    showModal: appState.showModal,
-    hideModal: appState.hideModal,
-  };
-  const mailbox = setupMailbox(appState.scene, modalSystemForMailbox);
-  appState.setMailbox(mailbox);
-}
 
 /**
  * ===================================================================
  * EVENT HANDLERS
  * ===================================================================
  */
-
-/**
- * Handle modal open state
- */
-function handleModalOpen() {
-  appState.disableRaycast();
-  clearHoverEffects();
-  appState.cameraManager.handleModalState(true);
-}
-
-/**
- * Handle modal close state
- */
-function handleModalClose() {
-  appState.enableRaycast();
-  appState.cameraManager.handleModalState(false);
-}
 
 /**
  * Main raycaster interaction handler
@@ -643,8 +585,7 @@ function setupBackButtonHandler() {
 
 document.addEventListener("DOMContentLoaded", () => {
   // Initialize core components using the new Initializer
-  initializer.initializeAll();
-
+  initializeAll();
   // Initialize UI and other components
   initializeUI();
   setupLoadingManager();
