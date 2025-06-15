@@ -23,7 +23,6 @@ import {
   updateRotatingObjects,
 } from "./scripts/objectRotation.js";
 import { spinAnimation } from "./scripts/spinnyObjects.js";
-import { updateOutlineHover } from "./scripts/hoverOutline.js";
 import { updateHoverScale } from "./scripts/hoverScale.js";
 import { initImageOverlay } from "./scripts/fadeOverlayImage.js";
 import { createSteamEffect } from "./scripts/shaders/steamEffect.js";
@@ -122,8 +121,8 @@ function handleSocialLinkInteractions(object) {
       audioManager.playClick();
 
       // Clear hover effects and block raycasting
-      clearHoverEffects();
-      appState.raycasterController.disable(); // when disabling
+      appState.raycasterController.clearHover();
+      appState.disableRaycast();
       appState.clearIntersects();
 
       // Open link with slight delay
@@ -134,7 +133,7 @@ function handleSocialLinkInteractions(object) {
       // Re-enable raycasting when window regains focus
       window.addEventListener("focus", () => {
         setTimeout(() => {
-          appState.raycasterController.enable(); // when enabling
+          appState.enableRaycast();
         }, 500);
       });
     }
@@ -369,15 +368,6 @@ function playIntroAnimation() {
 }
 
 /**
- * Clear all hover effects
- */
-function clearHoverEffects() {
-  appState.clearHoverEffects();
-  updateHoverScale([], appState.animatedObjects.scale);
-  appState.mailbox.updateMailboxHover([]);
-}
-
-/**
  * ===================================================================
  * RENDER LOOP
  * ===================================================================
@@ -398,8 +388,7 @@ function render() {
     appState.setCurrentIntersects(hits);
   } else {
     appState.clearIntersects();
-    appState.mailbox.updateMailboxHover([], appState.outlinePass); // keep existing clear
-    clearHoverEffects();
+    appState.raycasterController.clearHover();
   }
 
   // Update whiteboard
@@ -467,7 +456,7 @@ function setupModalHandlers() {
     Object.values(appState.modals).forEach((modal) => {
       if (modal.style.display === "block") {
         appState.hideModal(modal);
-        appState.raycasterController.enable(); // when enabling
+        appState.enableRaycast();
       }
     });
   });
@@ -477,7 +466,7 @@ function setupModalHandlers() {
     btn.addEventListener("click", () => {
       const modal = btn.closest(".modal");
       appState.hideModal(modal);
-      appState.raycasterController.enable(); // when enabling
+      appState.enableRaycast();
     });
   });
 }

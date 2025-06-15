@@ -76,7 +76,12 @@ export default class RaycasterController {
   setObjects(objects = []) {
     this.objects = objects;
   }
-
+  clearHover() {
+    if (this.outlinePass) this.outlinePass.selectedObjects = [];
+    if (this.scaleTargets?.length) updateHoverScale([], this.scaleTargets);
+    if (this.mailbox?.updateMailboxHover)
+      this.mailbox.updateMailboxHover([], this.outlinePass);
+  }
   /** Toggle the entire controller on/off */
   setEnabled(flag) {
     this.enabled = !!flag;

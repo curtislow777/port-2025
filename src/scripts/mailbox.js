@@ -63,8 +63,6 @@ export function setupMailbox(scene, modalSystem) {
         mailboxHovered = false;
         toggleMailboxCover(false);
       }
-      // No need to explicitly remove the cover from selectedObjects —
-      // updateOutlineHover() cleared it already.
     }
   }
 
