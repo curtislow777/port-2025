@@ -2,6 +2,11 @@
 import * as THREE from "three";
 import { updateOutlineHover } from "../hoverOutline.js";
 import { updateHoverScale } from "../hoverScale.js";
+import appState from "../core/AppState.js";
+import audioManager from "../audio.js";
+import { spinAnimation } from "../spinnyObjects.js";
+import { randomOink } from "../pig.js";
+import { imageData, socialLinks, BUTTON_IDS } from "../config/constants.js";
 
 /**
  * Wrapper around THREE.Raycaster with a few built-in “hover helpers”.
@@ -32,6 +37,8 @@ export default class RaycasterController {
     this.outlinePass = outlinePass;
     this.scaleTargets = scaleTargets;
     this.mailbox = mailbox;
+
+    window.addEventListener("click", () => this._handleClick());
   }
 
   /**
@@ -105,5 +112,92 @@ export default class RaycasterController {
     this.scaleTargets = [];
     this.outlinePass = null;
     this.mailbox = null;
+  }
+
+  /* ===================================================================
+   *  CLICK DISPATCH  (formerly handleRaycasterInteraction in main.js)
+   * =================================================================== */
+
+  _handleClick() {
+    if (!appState.isRaycastEnabled || this.intersects.length === 0) return;
+
+    const object = this.intersects[0].object;
+
+    // 1) modals --------------------------------------------------------
+    if (object.name.includes("about-raycast")) return openModal("about");
+    else if (object.name.includes("work-raycast")) return openModal("work");
+    else if (object.name.includes("erhu-seven")) return openModal("erhu");
+    else if (object.name.includes("TV-seven")) return openModal("work");
+
+    // 2) image overlay -------------------------------------------------
+    if (imageData[object.name]) {
+      audioManager.playClick();
+      const { src, caption } = imageData[object.name];
+      return appState.showImageOverlay(src, caption);
+    }
+
+    // 3) social links --------------------------------------------------
+    for (const [key, url] of Object.entries(socialLinks)) {
+      if (object.name.toLowerCase().includes(key.toLowerCase())) {
+        openExternalLink(url);
+        return;
+      }
+    }
+
+    // 4) special objects ----------------------------------------------
+    if (object.name.includes("whiteboard-raycast-one")) {
+      audioManager.playClick();
+      appState.cameraManager.zoomToWhiteboard(appState.whiteboard, 1.5);
+      appState.whiteboard.toggleWhiteboardMode(true);
+      return;
+    }
+
+    if (object.name.includes("monitor")) {
+      audioManager.playClick();
+      appState.cameraManager.zoomToMonitor();
+      appState.innerWeb.enableIframe();
+      document.getElementById(BUTTON_IDS.backButton).style.display = "block";
+      return;
+    }
+
+    if (object.name.includes("perry-hat") && appState.perryCupControls) {
+      audioManager.playClick();
+      appState.perryCupControls.toggleLid();
+      return; // steam toggle handled elsewhere
+    }
+
+    if (object.name.includes("pig-head")) {
+      return randomOink(appState.pigObject);
+    }
+
+    // 5) mailbox & spin objects ---------------------------------------
+    if (
+      this.mailbox?.handleRaycastIntersection(object, appState.modals.contact)
+    ) {
+      audioManager.playClick();
+      return;
+    }
+
+    if (appState.animatedObjects.spin.includes(object)) {
+      if (spinAnimation(object)) audioManager.playClick();
+    }
+
+    /* ----- local helpers -------------------------------------------- */
+    function openModal(which) {
+      audioManager.playClick();
+      appState.showModal(appState.modals[which]);
+    }
+
+    function openExternalLink(url) {
+      audioManager.playClick();
+      appState.raycasterController.clearHover();
+      appState.disableRaycast();
+
+      setTimeout(() => window.open(url, "_blank", "noopener,noreferrer"), 50);
+
+      window.addEventListener("focus", () => {
+        setTimeout(() => appState.enableRaycast(), 500);
+      });
+    }
   }
 }

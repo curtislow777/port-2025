@@ -23,7 +23,6 @@ import {
   updateRotatingObjects,
 } from "./scripts/objectRotation.js";
 import { spinAnimation } from "./scripts/spinnyObjects.js";
-import { updateHoverScale } from "./scripts/hoverScale.js";
 import { initImageOverlay } from "./scripts/fadeOverlayImage.js";
 import { createSteamEffect } from "./scripts/shaders/steamEffect.js";
 
@@ -54,32 +53,6 @@ import {
 /**
  * Main raycaster interaction handler
  */
-function handleRaycasterInteraction() {
-  if (!appState.isRaycastEnabled || appState.currentIntersects.length === 0)
-    return;
-
-  const object = appState.currentIntersects[0].object;
-
-  // Handle different types of interactions
-  handleModalInteractions(object);
-  handleImageInteractions(object);
-  handleSocialLinkInteractions(object);
-  handleSpecialObjectInteractions(object);
-
-  // Mailbox interactions
-  if (
-    appState.mailbox.handleRaycastIntersection(object, appState.modals.contact)
-  ) {
-    audioManager.playClick();
-    return;
-  }
-
-  // Spin animations
-  if (appState.animatedObjects.spin.includes(object)) {
-    const didSpin = spinAnimation(object);
-    if (didSpin) audioManager.playClick();
-  }
-}
 
 /**
  * Handle modal-related interactions
@@ -415,9 +388,6 @@ function render() {
  */
 
 function setupEventListeners() {
-  // Click handler
-  window.addEventListener("click", handleRaycasterInteraction);
-
   // Event handlers
   const handlers = new EventHandler({
     themeButton: document.getElementById(BUTTON_IDS.themeToggle),
