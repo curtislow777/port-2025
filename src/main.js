@@ -8,6 +8,7 @@ import { initializeUI } from "./scripts/ui/UIInitializer.js";
 import "./style.scss";
 import RaycasterController from "./scripts/core/RaycasterController.js";
 import createRenderLoop from "./scripts/core/RenderLoop.js";
+import { setupLoadingScreen } from "./scripts/ui/LoadingManager.js";
 
 // Application State
 import appState from "./scripts/core/AppState.js";
@@ -44,51 +45,6 @@ import {
  * LOADING MANAGER SETUP
  * ===================================================================
  */
-
-function setupLoadingManager() {
-  const loadingButton = document.querySelector(LOADING_SELECTORS.button);
-  const loadingBarFill = document.querySelector(LOADING_SELECTORS.barFill);
-
-  appState.loadingManager.onStart = () => {
-    gsap.to(LOADING_SELECTORS.screen, {
-      opacity: 1,
-      duration: 1,
-      ease: "power2.out",
-    });
-  };
-
-  appState.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-    const percent = Math.floor((itemsLoaded / itemsTotal) * 100);
-    loadingBarFill.style.width = `${percent}%`;
-    gsap.to(LOADING_SELECTORS.barFill, {
-      scaleY: 1.05,
-      repeat: -1,
-      yoyo: true,
-      duration: 0.5,
-    });
-  };
-
-  appState.loadingManager.onLoad = () => {
-    gsap.killTweensOf(LOADING_SELECTORS.barFill);
-    gsap.to(LOADING_SELECTORS.bar, { opacity: 0, duration: 0.5 });
-    gsap.to(LOADING_SELECTORS.button, {
-      opacity: 1,
-      duration: 1,
-      ease: "power2.out",
-      delay: 0.3,
-      onComplete: () => {
-        loadingButton.classList.add("ready");
-        loadingButton.style.pointerEvents = "auto";
-      },
-    });
-
-    gsap.fromTo(
-      LOADING_SELECTORS.button,
-      { scale: 0.9 },
-      { scale: 1, duration: 0.5, ease: "bounce.out", delay: 0.5 }
-    );
-  };
-}
 
 /**
  * ===================================================================
@@ -333,7 +289,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   appState.setRaycasterController(rayCtrl);
 
-  setupLoadingManager();
+  setupLoadingScreen();
   setupEventListeners();
 
   // Load scene and start render loop
