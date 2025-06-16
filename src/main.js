@@ -9,7 +9,11 @@ import "./style.scss";
 import RaycasterController from "./scripts/core/RaycasterController.js";
 import createRenderLoop from "./scripts/core/RenderLoop.js";
 import { setupLoadingScreen } from "./scripts/ui/LoadingManager.js";
-
+import {
+  initModalOverlay,
+  initSidePanel,
+  initBackButton,
+} from "./scripts/ui/UIHandlers.js";
 // Application State
 import appState from "./scripts/core/AppState.js";
 import { processScene } from "./scripts/core/SceneProcessor.js";
@@ -159,97 +163,10 @@ function setupEventListeners() {
   handlers.registerLoadingButton();
   handlers.registerPointerMove();
 
-  setupModalHandlers();
-  setupSidePanelHandlers();
-  setupBackButtonHandler();
+  initModalOverlay();
+  initSidePanel();
+  initBackButton();
   console.log("Event listeners set up");
-}
-
-function setupModalHandlers() {
-  const closeButtons = document.querySelectorAll(".modal-close-btn");
-  appState.overlay.addEventListener("click", () => {
-    Object.values(appState.modals).forEach((modal) => {
-      if (modal.style.display === "block") {
-        appState.hideModal(modal);
-        appState.enableRaycast();
-      }
-    });
-  });
-
-  // Handle close button click
-  closeButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const modal = btn.closest(".modal");
-      appState.hideModal(modal);
-      appState.enableRaycast();
-    });
-  });
-}
-
-function setupSidePanelHandlers() {
-  const hamburgerBtn = document.querySelector(
-    SIDE_PANEL_SELECTORS.hamburgerBtn
-  );
-  const sidePanel = document.querySelector(SIDE_PANEL_SELECTORS.sidePanel);
-  const panelLinks = document.querySelectorAll(SIDE_PANEL_SELECTORS.panelLinks);
-
-  // Toggle panel and hamburger icon
-  hamburgerBtn.addEventListener("click", () => {
-    hamburgerBtn.classList.toggle("active");
-    sidePanel.classList.toggle("active");
-  });
-
-  panelLinks.forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      const label = link.textContent.trim().toLowerCase();
-      hamburgerBtn.classList.remove("active");
-      sidePanel.classList.remove("active");
-
-      switch (label) {
-        case "reset camera":
-          appState.cameraManager.resetToDefault();
-          break;
-        case "work":
-          appState.showModal(appState.modals.work);
-          break;
-        case "about":
-          appState.showModal(appState.modals.about);
-          break;
-        case "contact":
-          appState.showModal(appState.modals.contact);
-          break;
-        case "whiteboard":
-          appState.cameraManager.zoomToWhiteboard(appState.whiteboard, 1.5);
-          break;
-        default:
-          console.log(`No action defined for ${label}`);
-          break;
-      }
-    });
-  });
-
-  // Close panel when clicking outside
-  document.addEventListener("click", (e) => {
-    if (
-      !sidePanel.contains(e.target) &&
-      !hamburgerBtn.contains(e.target) &&
-      sidePanel.classList.contains("active")
-    ) {
-      hamburgerBtn.classList.remove("active");
-      sidePanel.classList.remove("active");
-    }
-  });
-}
-
-function setupBackButtonHandler() {
-  const backBtn = document.getElementById("back-button");
-
-  backBtn.addEventListener("click", () => {
-    appState.whiteboard.toggleWhiteboardMode(false);
-    appState.innerWeb.disableIframe();
-    appState.cameraManager.resetToDefault();
-  });
 }
 
 /**
