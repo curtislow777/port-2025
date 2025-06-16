@@ -7,17 +7,17 @@ import { initializeAll } from "./scripts/core/Initializer.js";
 import { initializeUI } from "./scripts/ui/UIInitializer.js";
 import "./style.scss";
 import RaycasterController from "./scripts/core/RaycasterController.js";
+import createRenderLoop from "./scripts/core/RenderLoop.js";
+
 // Application State
 import appState from "./scripts/core/AppState.js";
 import { processScene } from "./scripts/core/SceneProcessor.js";
 // Singleton Managers
 import themeManager from "./scripts/themeManager.js";
 import audioManager from "./scripts/audio.js";
-import clockManager from "./scripts/clock.js";
 
 // Features
 
-import { updateRotatingObjects } from "./scripts/objectRotation.js";
 import { initImageOverlay } from "./scripts/fadeOverlayImage.js";
 import { createSteamEffect } from "./scripts/shaders/steamEffect.js";
 
@@ -169,41 +169,6 @@ function playIntroAnimation() {
  * RENDER LOOP
  * ===================================================================
  */
-
-function render() {
-  appState.cameraManager.update();
-  const elapsedTime = appState.getElapsedTime();
-
-  // Update animations
-  updateRotatingObjects();
-  clockManager.updateClockHands();
-  if (appState.isRaycastEnabled) {
-    const hits = appState.raycasterController.update(
-      appState.pointer.x,
-      appState.pointer.y
-    );
-    appState.setCurrentIntersects(hits);
-  } else {
-    appState.clearIntersects();
-    appState.raycasterController.clearHover();
-  }
-
-  // Update whiteboard
-  if (appState.whiteboard && appState.whiteboard.isActive) {
-    appState.whiteboard.update();
-  }
-
-  // Update steam effect
-  if (appState.steamMesh) {
-    appState.steamMesh.material.uniforms.uTime.value = elapsedTime;
-  }
-
-  // Render
-  appState.innerWeb.render();
-  appState.composer.render();
-
-  window.requestAnimationFrame(render);
-}
 
 /**
  * ===================================================================
@@ -374,5 +339,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Load scene and start render loop
   loadScene();
   setupSteamEffect();
-  render();
+  // right after setupSteamEffect() or wherever you want the loop to begin
+  const renderLoop = createRenderLoop();
+  renderLoop.start();
 });
