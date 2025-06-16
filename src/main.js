@@ -9,20 +9,15 @@ import "./style.scss";
 import RaycasterController from "./scripts/core/RaycasterController.js";
 // Application State
 import appState from "./scripts/core/AppState.js";
-
+import { processScene } from "./scripts/core/SceneProcessor.js";
 // Singleton Managers
 import themeManager from "./scripts/themeManager.js";
 import audioManager from "./scripts/audio.js";
 import clockManager from "./scripts/clock.js";
 
 // Features
-import { setupPerryCupAnimation } from "./scripts/perryCup.js";
-import { randomOink } from "./scripts/pig.js";
-import {
-  processRotatingObject,
-  updateRotatingObjects,
-} from "./scripts/objectRotation.js";
-import { spinAnimation } from "./scripts/spinnyObjects.js";
+
+import { updateRotatingObjects } from "./scripts/objectRotation.js";
 import { initImageOverlay } from "./scripts/fadeOverlayImage.js";
 import { createSteamEffect } from "./scripts/shaders/steamEffect.js";
 
@@ -43,177 +38,6 @@ import {
   MODEL_PATHS,
   BUTTON_IDS,
 } from "./scripts/config/constants.js";
-
-/**
- * ===================================================================
- * EVENT HANDLERS
- * ===================================================================
- */
-
-/**
- * Main raycaster interaction handler
- */
-
-/**
- * Handle modal-related interactions
- */
-function handleModalInteractions(object) {
-  if (object.name.includes("about-raycast")) {
-    audioManager.playClick();
-    appState.showModal(appState.modals.about);
-  } else if (object.name.includes("work-raycast")) {
-    audioManager.playClick();
-    appState.showModal(appState.modals.work);
-  } else if (object.name.includes("erhu-seven")) {
-    audioManager.playClick();
-    appState.showModal(appState.modals.erhu);
-  } else if (object.name.includes("TV-seven")) {
-    audioManager.playClick();
-    appState.showModal(appState.modals.work);
-  }
-}
-
-/**
- * Handle image overlay interactions
- */
-function handleImageInteractions(object) {
-  if (imageData[object.name]) {
-    audioManager.playClick();
-    const { src, caption } = imageData[object.name];
-    appState.showImageOverlay(src, caption);
-  }
-}
-
-/**
- * Handle social link interactions
- */
-function handleSocialLinkInteractions(object) {
-  Object.entries(socialLinks).forEach(([key, url]) => {
-    if (object.name.toLowerCase().includes(key.toLowerCase())) {
-      console.log(`Opening ${key} link: ${url}`);
-      audioManager.playClick();
-
-      // Clear hover effects and block raycasting
-      appState.raycasterController.clearHover();
-      appState.disableRaycast();
-      appState.clearIntersects();
-
-      // Open link with slight delay
-      setTimeout(() => {
-        window.open(url, "_blank", "noopener,noreferrer");
-      }, 50);
-
-      // Re-enable raycasting when window regains focus
-      window.addEventListener("focus", () => {
-        setTimeout(() => {
-          appState.enableRaycast();
-        }, 500);
-      });
-    }
-  });
-}
-
-/**
- * Handle special object interactions
- */
-function handleSpecialObjectInteractions(object) {
-  if (object.name.includes("whiteboard-raycast-one")) {
-    console.log("Whiteboard clicked!");
-    audioManager.playClick();
-    appState.cameraManager.zoomToWhiteboard(appState.whiteboard, 1.5);
-    appState.whiteboard.toggleWhiteboardMode(true);
-  }
-
-  if (object.name.includes("monitor")) {
-    audioManager.playClick();
-    appState.cameraManager.zoomToMonitor();
-    appState.innerWeb.enableIframe();
-    document.getElementById(BUTTON_IDS.backButton).style.display = "block";
-  }
-
-  if (object.name.includes("perry-hat")) {
-    if (appState.perryCupControls) {
-      audioManager.playClick();
-      appState.perryCupControls.toggleLid();
-      toggleSteam(appState.steamMesh, 1);
-    }
-  }
-
-  if (object.name.includes("pig-head")) {
-    randomOink(appState.pigObject);
-  }
-}
-
-/**
- * ===================================================================
- * SCENE LOADING & PROCESSING
- * ===================================================================
- */
-
-/**
- * Process objects in the loaded scene
- */
-function processSceneObjects(sceneObject) {
-  sceneObject.traverse((child) => {
-    if (!child.isMesh) return;
-
-    // Process themed mesh
-    const isThemedMesh = themeManager.processThemedMesh(
-      child,
-      window.loadedTextures
-    );
-
-    if (isThemedMesh) {
-      // Categorize animated objects
-      if (child.name.includes("keycapAnimate")) {
-        appState.addAnimatedObject("keycaps", child);
-      }
-      if (child.name.includes("animateScale")) {
-        appState.addAnimatedObject("scale", child);
-      }
-      if (child.name.includes("animateSpin")) {
-        appState.addAnimatedObject("spin", child);
-      }
-      if (child.name.includes("scaleLights")) {
-        appState.addAnimatedObject("scaleLights", child);
-      }
-      if (child.name.includes("raycast")) {
-        appState.addRaycasterObject(child);
-      }
-
-      processRotatingObject(child);
-
-      // Process mailbox objects
-      appState.mailbox.processMailboxObject(child);
-
-      // Process special objects
-      if (child.name.includes("pig-head")) {
-        appState.setPigObject(child);
-      }
-      if (child.name.includes("perry-hat")) {
-        appState.setPerryHatObject(child);
-        appState.setPerryCupControls(setupPerryCupAnimation(child));
-      }
-    }
-
-    // Process materials
-    if (child.material?.map) {
-      child.material.map.minFilter = THREE.LinearFilter;
-    }
-
-    // Process clock hands
-    if (child.name.includes("four-hour")) {
-      clockManager.setHourHand(child);
-    } else if (child.name.includes("four-minute")) {
-      clockManager.setMinuteHand(child);
-    } else if (child.name.includes("four-second")) {
-      clockManager.setSecondsHand(child);
-    }
-
-    // Process glass material
-    themeManager.processGlassMesh(child);
-  });
-}
 
 /**
  * ===================================================================
@@ -274,7 +98,7 @@ function setupLoadingManager() {
 
 function loadScene() {
   appState.gltfLoader.load("/models/room-port-v1.glb", (glb) => {
-    processSceneObjects(glb.scene);
+    processScene(glb.scene);
     appState.scene.add(glb.scene);
     playIntroAnimation();
   });
