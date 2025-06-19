@@ -41,6 +41,15 @@ export default function createRenderLoop() {
       appState.steamMesh.material.uniforms.uTime.value = elapsed;
     }
 
+    // ===============================================================
+    //  ADD THIS NEW SECTION
+    // ===============================================================
+    /* --- 7. Intro Tutorial Update --------------------------------- */
+    // Check if the tutorial exists and is active before updating
+    if (appState.introTutorial?.isActive) {
+      appState.introTutorial.update();
+    }
+
     /* --- 7. render passes ----------------------------------------- */
     appState.innerWeb.render();
     appState.composer.render();

@@ -85,6 +85,7 @@ function initializeTutorial() {
     renderer: appState.renderer,
     raycasterController: appState.raycasterController,
   });
+  appState.introTutorial = introTutorial;
 
   // Customize tutorial steps based on your scene objects
   // Update these positions and object names to match your actual scene
@@ -299,6 +300,6 @@ document.addEventListener("DOMContentLoaded", () => {
   loadScene();
   setupSteamEffect();
   // right after setupSteamEffect() or wherever you want the loop to begin
-  const renderLoop = createRenderLoop();
+  const renderLoop = createRenderLoop({ introTutorial });
   renderLoop.start();
 });
