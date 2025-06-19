@@ -44,6 +44,10 @@ import {
   BUTTON_IDS,
 } from "./scripts/config/constants.js";
 
+import { IntroTutorial } from "./scripts/ui/IntroTutorial.js";
+
+// Add to your main initialization (around line where you setup other components)
+let introTutorial = null;
 /**
  * ===================================================================
  * LOADING MANAGER SETUP
@@ -60,10 +64,85 @@ function loadScene() {
   appState.gltfLoader.load("/models/room-port-v1.glb", (glb) => {
     processScene(glb.scene);
     appState.scene.add(glb.scene);
+    initializeTutorial();
+
     playIntroAnimation();
   });
 }
 
+// New function to initialize the tutorial system
+function initializeTutorial() {
+  // Make sure raycaster controller is available
+  if (!appState.raycasterController) {
+    console.warn(
+      "RaycasterController not available yet, tutorial may not work properly"
+    );
+  }
+
+  introTutorial = new IntroTutorial({
+    scene: appState.scene,
+    camera: appState.camera,
+    renderer: appState.renderer,
+    raycasterController: appState.raycasterController,
+  });
+
+  // Customize tutorial steps based on your scene objects
+  // Update these positions and object names to match your actual scene
+  introTutorial.setSteps([
+    {
+      target: "monitor-four-raycast", // Match your object names
+      worldPosition: new THREE.Vector3(1.5, 1.2, -0.8), // Adjust to your computer position
+      message: "Click on the computer to see my portfolio work!",
+      duration: 3500,
+      highlightObject: true,
+    },
+    {
+      target: "about-raycast-emissive-raycast",
+      worldPosition: new THREE.Vector3(-1.8, 1.4, 0.2), // Adjust to your poster/frame position
+      message: "Check out my info on the wall",
+      duration: 3000,
+      highlightObject: true,
+    },
+    {
+      target: "erhu-seven-raycast",
+      worldPosition: new THREE.Vector3(0.5, 0.3, 1.2), // Adjust to your erhu position
+      message: "I play the Erhu! Click to learn more about my musical journey",
+      duration: 3500,
+      highlightObject: true,
+    },
+    {
+      target: "mailbox-pole-seven-contact-raycast",
+      worldPosition: new THREE.Vector3(2.2, 0.8, 0.5), // Adjust to your mailbox position
+      message: "Send me a message! Click the mailbox to get in touch",
+      duration: 3000,
+      highlightObject: true,
+    },
+    {
+      target: null, // General exploration
+      worldPosition: new THREE.Vector3(0, 1, 0), // Center of room
+      message:
+        "Explore the room! Right-click and drag to look around, scroll to zoom",
+      duration: 4000,
+      highlightObject: false,
+    },
+  ]);
+}
+
+// Optional: Add a way to restart tutorial
+function restartTutorial() {
+  if (introTutorial) {
+    introTutorial.start();
+  }
+}
+
+// Optional: Add keyboard shortcut to restart tutorial
+document.addEventListener("keydown", (event) => {
+  if (event.key === "T" && event.ctrlKey) {
+    // Ctrl+T to restart tutorial
+    event.preventDefault();
+    restartTutorial();
+  }
+});
 /**
  * ===================================================================
  * STEAM EFFECT
@@ -116,12 +195,19 @@ function toggleSteam(steamMesh, duration = 0.5) {
  * ===================================================================
  */
 
+// Modify your playIntroAnimation function to include tutorial
 function playIntroAnimation() {
   const t1 = gsap.timeline({
     duration: 0.8,
     ease: "back.out(1.8)",
+    onComplete: () => {
+      // Start tutorial after intro animation completes
+      if (introTutorial) {
+        introTutorial.start();
+      }
+    },
   });
-  // Add your intro animation here
+  // Add your existing intro animation here
 }
 
 /**
