@@ -86,47 +86,6 @@ function initializeTutorial() {
     raycasterController: appState.raycasterController,
   });
   appState.introTutorial = introTutorial;
-
-  // Customize tutorial steps based on your scene objects
-  // Update these positions and object names to match your actual scene
-  introTutorial.setSteps([
-    {
-      target: "monitor-four-raycast", // Match your object names
-      worldPosition: new THREE.Vector3(1.5, 1.2, -0.8), // Adjust to your computer position
-      message: "Click on the computer to see my portfolio work!",
-      duration: 3500,
-      highlightObject: true,
-    },
-    {
-      target: "about-raycast-emissive-raycast",
-      worldPosition: new THREE.Vector3(-1.8, 1.4, 0.2), // Adjust to your poster/frame position
-      message: "Check out my info on the wall",
-      duration: 3000,
-      highlightObject: true,
-    },
-    {
-      target: "erhu-seven-raycast",
-      worldPosition: new THREE.Vector3(0.5, 0.3, 1.2), // Adjust to your erhu position
-      message: "I play the Erhu! Click to learn more about my musical journey",
-      duration: 3500,
-      highlightObject: true,
-    },
-    {
-      target: "mailbox-pole-seven-contact-raycast",
-      worldPosition: new THREE.Vector3(2.2, 0.8, 0.5), // Adjust to your mailbox position
-      message: "Send me a message! Click the mailbox to get in touch",
-      duration: 3000,
-      highlightObject: true,
-    },
-    {
-      target: null, // General exploration
-      worldPosition: new THREE.Vector3(0, 1, 0), // Center of room
-      message:
-        "Explore the room! Right-click and drag to look around, scroll to zoom",
-      duration: 4000,
-      highlightObject: false,
-    },
-  ]);
 }
 
 // Optional: Add a way to restart tutorial
@@ -203,9 +162,17 @@ function playIntroAnimation() {
     ease: "back.out(1.8)",
     onComplete: () => {
       // Start tutorial after intro animation completes
-      if (introTutorial) {
-        introTutorial.start();
-      }
+      const path = [
+        new THREE.Vector3(15.53, 35.0, 60.0), // off-scene start (above & back)
+        new THREE.Vector3(12.0, 18.0, 38.0), // mid-curve
+        new THREE.Vector3(8.0, 12.0, 26.0), // mid-curve
+        appState.cameraManager.positions.default.clone(), // final stop
+      ];
+
+      // 4-second glide, then fire the tutorial
+      appState.cameraManager.playSpline(path, 4, () => {
+        if (introTutorial) introTutorial.start();
+      });
     },
   });
   // Add your existing intro animation here
