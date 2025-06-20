@@ -162,17 +162,9 @@ function playIntroAnimation() {
     ease: "back.out(1.8)",
     onComplete: () => {
       // Start tutorial after intro animation completes
-      const path = [
-        new THREE.Vector3(15.53, 35.0, 60.0), // off-scene start (above & back)
-        new THREE.Vector3(12.0, 18.0, 38.0), // mid-curve
-        new THREE.Vector3(8.0, 12.0, 26.0), // mid-curve
-        appState.cameraManager.positions.default.clone(), // final stop
-      ];
-
-      // 4-second glide, then fire the tutorial
-      appState.cameraManager.playSpline(path, 4, () => {
-        if (introTutorial) introTutorial.start();
-      });
+      if (introTutorial) {
+        introTutorial.start();
+      }
     },
   });
   // Add your existing intro animation here
