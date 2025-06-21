@@ -169,6 +169,13 @@ function playIntroAnimation() {
           introTutorial.start();
         }
       };
+      // If debug mode is on, skip the animation and snap to the final position.
+      if (appState.isInDebugMode()) {
+        console.log("Skipping intro animation due to debug mode.");
+        appState.cameraManager.resetToDefault(0); // Instantly snap to default
+        onIntroComplete();
+        return;
+      }
 
       // --- CHOOSE YOUR ANIMATION HERE ---
       // Simply change the first argument to 'sweep', 'reveal', or 'orbit'

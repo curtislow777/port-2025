@@ -7,6 +7,20 @@ import * as THREE from "three";
 class AppState {
   constructor() {
     /* ───────────────────────────────────
+     * DEBUGGING STATE
+     * - Manually toggle this property to enable/disable debug features.
+     * ─────────────────────────────────── */
+    this.isDebugMode = true; // <-- SET TO `true` to debug, `false` for production
+
+    if (this.isDebugMode) {
+      console.log(
+        "%c 🐛 DEBUG MODE ACTIVATED ",
+        "background: #ff4500; color: #ffffff; font-weight: bold; padding: 4px 8px; border-radius: 4px;"
+      );
+      document.body.classList.add("debug-mode");
+    }
+
+    /* ───────────────────────────────────
      *  Ray-casting state
      * ─────────────────────────────────── */
     this.isRaycastEnabled = true;
@@ -73,6 +87,14 @@ class AppState {
     this.clock = new THREE.Clock();
   }
 
+  /* ===== Debugging Helpers ======================================== */
+  /**
+   * Checks if the application is currently in debug mode.
+   * @returns {boolean}
+   */
+  isInDebugMode() {
+    return this.isDebugMode;
+  }
   /* ===== Ray-casting helpers ======================================= */
 
   /** Inject the RaycasterController instance once created. */
