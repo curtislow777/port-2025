@@ -428,6 +428,27 @@
         </nav>
       </div>
     </div>
+    <template id="tutorial-template">
+      <div class="tutorial-overlay">
+        <div class="tutorial-cursor"><div class="cursor-icon"></div></div>
+        <div class="speech-bubble">
+          <div class="bubble-content"></div>
+          <div class="bubble-controls">
+            <div class="step-indicator">
+              <span class="current-step">1</span> /
+              <span class="total-steps">4</span>
+            </div>
+            <div class="bubble-buttons">
+              <button class="bubble-btn secondary" id="prevBtn">
+                Previous
+              </button>
+              <button class="bubble-btn" id="nextBtn">Next</button>
+            </div>
+          </div>
+        </div>
+        <button class="tutorial-skip">Skip Tutorial</button>
+      </div>
+    </template>
 
     <script type="module" src="/src/main.js"></script>
   </body>

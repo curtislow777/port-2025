@@ -161,10 +161,26 @@ function playIntroAnimation() {
     duration: 0.8,
     ease: "back.out(1.8)",
     onComplete: () => {
-      // Start tutorial after intro animation completes
-      if (introTutorial) {
-        introTutorial.start();
-      }
+      // Define what should happen AFTER the animation finishes
+      const onIntroComplete = () => {
+        console.log("Intro animation complete. Starting tutorial.");
+        // Start tutorial after the camera has settled
+        if (introTutorial) {
+          introTutorial.start();
+        }
+      };
+
+      // --- CHOOSE YOUR ANIMATION HERE ---
+      // Simply change the first argument to 'sweep', 'reveal', or 'orbit'
+
+      const animationStyle = "reveal"; // TRY 'sweep', 'reveal', or 'orbit'
+      const animationDuration = 5.0; // You can also adjust duration
+
+      appState.cameraManager.playIntroAnimation(
+        animationStyle,
+        animationDuration,
+        onIntroComplete
+      );
     },
   });
   // Add your existing intro animation here

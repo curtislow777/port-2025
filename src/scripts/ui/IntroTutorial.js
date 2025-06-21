@@ -42,72 +42,23 @@ export class IntroTutorial {
   }
 
   createUI() {
-    this.ui.overlay = document.createElement("div");
-    this.ui.overlay.className = "tutorial-overlay";
-    this.ui.overlay.innerHTML = `
-      <style>
-        .tutorial-overlay {
-          position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-          z-index: 1000; pointer-events: none; opacity: 0; transition: opacity 0.5s ease;
-        }
-        .tutorial-overlay.active { opacity: 1; }
-        
-        .tutorial-cursor, .speech-bubble {
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            will-change: translate, scale, opacity; /* Use individual properties */
-            transition: opacity 0.3s ease;
-            backface-visibility: hidden;
-        }
-        
-        .tutorial-cursor {
-            width: 32px; height: 32px; z-index: 1001;
-            /* FIX: Use individual translate property with CSS variables */
-            translate: var(--cursor-x, 0px) var(--cursor-y, 0px);
-            /* Centering is now done in the JS logic */
-        }
-        .speech-bubble {
-            min-width: 280px; max-width: 350px;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            border-radius: 25px; padding: 24px; color: #333;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            border: 2px solid rgba(74, 158, 255, 0.3);
-            pointer-events: auto; z-index: 1002;
-            transform-origin: center center;
-            /* FIX: Use individual translate and scale properties */
-            translate: var(--bubble-x, 0px) var(--bubble-y, 0px);
-            scale: var(--bubble-scale, 0.5);
-        }
-        /* Your other styles for cursor-icon, buttons, etc. remain the same */
-        .cursor-icon { width: 100%; height: 100%; background: radial-gradient(circle, #fff 30%, #4a9eff 70%); border-radius: 50%; box-shadow: 0 0 20px rgba(74, 158, 255, 0.6); animation: cursorPulse 1.5s ease-in-out infinite; }
-        .bubble-content { margin-bottom: 20px; font-weight: 500; }
-        .bubble-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(74, 158, 255, 0.2); }
-        .step-indicator { font-size: 12px; color: #666; font-weight: 600; }
-        .bubble-buttons { display: flex; gap: 8px; }
-        .bubble-btn { background: linear-gradient(135deg, #4a9eff 0%, #357abd 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(74, 158, 255, 0.3); }
-        .bubble-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(74, 158, 255, 0.4); }
-        .bubble-btn.secondary { background: linear-gradient(135deg, #6c757d 0%, #495057 100%); box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3); }
-        .tutorial-skip { position: fixed; top: 20px; right: 20px; background: rgba(0, 0, 0, 0.7); color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; z-index: 1003; font-size: 13px; font-weight: 600; opacity: 0; transition: all 0.3s ease; pointer-events: auto; }
-        @keyframes cursorPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-      </style>
-      <div class="tutorial-cursor"><div class="cursor-icon"></div></div>
-      <div class="speech-bubble">
-        <div class="bubble-content"></div>
-        <div class="bubble-controls">
-          <div class="step-indicator"><span class="current-step">1</span> / <span class="total-steps">4</span></div>
-          <div class="bubble-buttons">
-            <button class="bubble-btn secondary" id="prevBtn">Previous</button>
-            <button class="bubble-btn" id="nextBtn">Next</button>
-          </div>
-        </div>
-      </div>
-      <button class="tutorial-skip">Skip Tutorial</button>
-    `;
-    document.body.appendChild(this.ui.overlay);
+    // 1. Find the template in the DOM
+    const template = document.getElementById("tutorial-template");
+    if (!template) {
+      console.error("Tutorial template not found in HTML!");
+      return;
+    }
 
-    // Get UI element references...
+    // 2. Clone the template's content
+    const tutorialFragment = template.content.cloneNode(true);
+
+    // 3. The main element is the first child of the fragment
+    this.ui.overlay = tutorialFragment.querySelector(".tutorial-overlay");
+
+    // 4. Append the cloned element to the body
+    document.body.appendChild(tutorialFragment);
+
+    // 5. Get UI element references from the now-live element
     this.ui.cursor = this.ui.overlay.querySelector(".tutorial-cursor");
     this.ui.bubble = this.ui.overlay.querySelector(".speech-bubble");
     this.ui.bubbleContent = this.ui.overlay.querySelector(".bubble-content");
@@ -118,7 +69,7 @@ export class IntroTutorial {
       this.ui.overlay.querySelector(".current-step");
     this.ui.totalStepsIndicator = this.ui.overlay.querySelector(".total-steps");
 
-    // Add event listeners...
+    // 6. Add event listeners (this part remains the same)
     this.ui.skipButton.addEventListener("click", () => this.skip());
     this.ui.prevButton.addEventListener("click", () => this.previousStep());
     this.ui.nextButton.addEventListener("click", () => this.nextStep());
