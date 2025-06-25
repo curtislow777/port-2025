@@ -8,7 +8,6 @@ export function initModalOverlay() {
     Object.values(appState.modals).forEach((m) => {
       if (m.style.display === "block") {
         appState.hideModal(m);
-        appState.enableRaycast();
       }
     });
   }
