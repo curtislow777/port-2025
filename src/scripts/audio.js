@@ -9,7 +9,11 @@ class AudioManager {
     AudioManager._instance = this;
 
     this.bgm = new Howl({
-      src: ["audio/moving.ogg"],
+      //  src: ["audio/moving.ogg"],
+      src: ["audio/imok.ogg"],
+      // src: ["audio/cotton-candy.ogg"],
+      //  src: ["audio/rainbow.ogg"],
+
       loop: true,
       volume: 0.0,
     });

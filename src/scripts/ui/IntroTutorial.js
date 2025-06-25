@@ -1,4 +1,4 @@
-// IntroTutorial.js - Final corrected version with stable world-space tracking and placement
+// IntroTutorial.js - Final version with support for 3D objects and 2D DOM elements
 import * as THREE from "three";
 import gsap from "gsap";
 
@@ -14,6 +14,9 @@ export class IntroTutorial {
     this.currentStep = 0;
     this.tutorialSteps = [];
 
+    this.cursorSize = options.cursorSize || 32; // Default to 32px
+    this.cursorOffset = this.cursorSize / 2; // Calculate offset automatically
+
     this.ui = {
       overlay: null,
       cursor: null,
@@ -25,6 +28,9 @@ export class IntroTutorial {
       currentStepIndicator: null,
       totalStepsIndicator: null,
     };
+
+    // ADDED: To keep track of the currently highlighted DOM element
+    this.currentHighlightedElement = null;
 
     this.animationSpeed = 1;
     this.glowPulseSpeed = 1.5;
@@ -38,28 +44,40 @@ export class IntroTutorial {
 
   init() {
     this.createUI();
+    this.createAnchorObjects();
     this.setupTutorialSteps();
   }
 
+  createAnchorObjects() {
+    const welcomeAnchor = new THREE.Object3D();
+    welcomeAnchor.name = "tutorial-welcome-anchor";
+    welcomeAnchor.position.set(0, 1.5, 3);
+    this.scene.add(welcomeAnchor);
+
+    const conclusionAnchor = new THREE.Object3D();
+    conclusionAnchor.name = "tutorial-conclusion-anchor";
+    conclusionAnchor.position.set(0, 1.5, 3);
+    this.scene.add(conclusionAnchor);
+  }
+
   createUI() {
-    // 1. Find the template in the DOM
     const template = document.getElementById("tutorial-template");
     if (!template) {
       console.error("Tutorial template not found in HTML!");
       return;
     }
-
-    // 2. Clone the template's content
     const tutorialFragment = template.content.cloneNode(true);
-
-    // 3. The main element is the first child of the fragment
     this.ui.overlay = tutorialFragment.querySelector(".tutorial-overlay");
-
-    // 4. Append the cloned element to the body
     document.body.appendChild(tutorialFragment);
 
-    // 5. Get UI element references from the now-live element
     this.ui.cursor = this.ui.overlay.querySelector(".tutorial-cursor");
+    // ADD THIS:
+    // Dynamically set the cursor size from the constructor option
+    if (this.ui.cursor) {
+      this.ui.cursor.style.width = `${this.cursorSize}px`;
+      this.ui.cursor.style.height = `${this.cursorSize}px`;
+    }
+
     this.ui.bubble = this.ui.overlay.querySelector(".speech-bubble");
     this.ui.bubbleContent = this.ui.overlay.querySelector(".bubble-content");
     this.ui.skipButton = this.ui.overlay.querySelector(".tutorial-skip");
@@ -69,7 +87,6 @@ export class IntroTutorial {
       this.ui.overlay.querySelector(".current-step");
     this.ui.totalStepsIndicator = this.ui.overlay.querySelector(".total-steps");
 
-    // 6. Add event listeners (this part remains the same)
     this.ui.skipButton.addEventListener("click", () => this.skip());
     this.ui.prevButton.addEventListener("click", () => this.previousStep());
     this.ui.nextButton.addEventListener("click", () => this.nextStep());
@@ -78,8 +95,15 @@ export class IntroTutorial {
   setupTutorialSteps() {
     this.tutorialSteps = [
       {
+        target: "tutorial-welcome-anchor",
+        message:
+          "Welcome to my interactive portfolio! Let me give you a quick tour.",
+        highlightObject: false,
+        placement: "top",
+      },
+      {
         target: "monitor-four-raycast",
-        message: "Welcome! Click the monitor to explore my development work.",
+        message: "Click the monitor to explore my development work.",
         highlightObject: true,
         placement: "top",
       },
@@ -101,6 +125,25 @@ export class IntroTutorial {
           "Ready to get in touch? Use this mailbox to send me a message.",
         highlightObject: true,
         placement: "bottom",
+      },
+      // ADDED: Step for the night mode button
+      {
+        domTarget: "#theme-toggle", // Target the button by its ID
+        message: "You can toggle between day and night mode here.",
+        placement: "right",
+      },
+      // ADDED: Step for the mute button
+      {
+        domTarget: "#sound-toggle", // Target the button by its ID
+        message: "And use this to mute or unmute the background music.",
+        placement: "right",
+      },
+      {
+        target: "tutorial-conclusion-anchor",
+        message:
+          "That's the end of the tour! Feel free to explore the room at your own pace.",
+        highlightObject: false,
+        placement: "top",
       },
     ];
 
@@ -139,10 +182,17 @@ export class IntroTutorial {
       stepIndex === this.tutorialSteps.length - 1 ? "Finish" : "Next";
     this.ui.bubbleContent.textContent = step.message;
 
+    // Always remove previous highlights
     this.removeOutlineEffect();
-    if (step.highlightObject) this.highlightObject(step.target);
+    this.removeDomHighlight();
 
-    // FIX: GSAP now animates the --bubble-scale variable, preventing conflicts.
+    // Apply new highlight based on target type
+    if (step.highlightObject) {
+      this.highlightObject(step.target);
+    } else if (step.domTarget) {
+      this.highlightDomElement(step.domTarget);
+    }
+
     gsap.fromTo(
       this.ui.bubble,
       { "--bubble-scale": 0.5 },
@@ -151,17 +201,38 @@ export class IntroTutorial {
     gsap.to(this.ui.cursor, { opacity: 1, duration: 0.4 });
   }
 
+  // UPDATED: Now handles both 2D and 3D targets
   updateUIPositions(step) {
-    const targetObject = this.scene.getObjectByName(step.target);
-    if (!targetObject) {
-      this.ui.bubble.style.opacity = "0";
-      this.ui.cursor.style.opacity = "0";
+    let targetScreenPos;
+
+    if (step.domTarget) {
+      const element = document.querySelector(step.domTarget);
+      if (!element) {
+        this.ui.bubble.style.opacity = "0";
+        this.ui.cursor.style.opacity = "0";
+        return;
+      }
+      const rect = element.getBoundingClientRect();
+      targetScreenPos = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+        isOffScreen: false,
+      };
+    } else if (step.target) {
+      const targetObject = this.scene.getObjectByName(step.target);
+      if (!targetObject) {
+        this.ui.bubble.style.opacity = "0";
+        this.ui.cursor.style.opacity = "0";
+        return;
+      }
+      targetScreenPos = this.worldToScreen(
+        targetObject.getWorldPosition(new THREE.Vector3())
+      );
+    } else {
+      // Should not happen with current setup, but good practice
       return;
     }
 
-    const targetScreenPos = this.worldToScreen(
-      targetObject.getWorldPosition(new THREE.Vector3())
-    );
     const bubbleRect = this.ui.bubble.getBoundingClientRect();
 
     if (targetScreenPos.isOffScreen || bubbleRect.width === 0) {
@@ -171,7 +242,9 @@ export class IntroTutorial {
     }
 
     this.ui.bubble.style.opacity = "1";
-    this.ui.cursor.style.opacity = "1";
+    // Show cursor for DOM targets and highlighted 3D objects
+    this.ui.cursor.style.opacity =
+      step.domTarget || step.highlightObject ? "1" : "0";
 
     const bubblePos = this.getBubblePosition(
       targetScreenPos,
@@ -179,7 +252,6 @@ export class IntroTutorial {
       step.placement || "top"
     );
 
-    // Set the CSS variables for the individual translate properties
     this.ui.bubble.style.setProperty(
       "--bubble-x",
       `${bubblePos.x - bubbleRect.width / 2}px`
@@ -188,13 +260,14 @@ export class IntroTutorial {
       "--bubble-y",
       `${bubblePos.y - bubbleRect.height / 2}px`
     );
+    // In the updateUIPositions method
     this.ui.cursor.style.setProperty(
       "--cursor-x",
-      `${targetScreenPos.x - 16}px`
-    ); // 16 is half cursor width
+      `${targetScreenPos.x - this.cursorOffset}px` // Use dynamic offset
+    );
     this.ui.cursor.style.setProperty(
       "--cursor-y",
-      `${targetScreenPos.y - 16}px`
+      `${targetScreenPos.y - this.cursorOffset}px` // Use dynamic offset
     );
   }
 
@@ -211,18 +284,22 @@ export class IntroTutorial {
     const margin = 40;
     let { x, y } = targetPos;
 
+    const step = this.tutorialSteps[this.currentStep];
+    const cursorVisible = step.highlightObject || step.domTarget;
+    const offset = cursorVisible ? margin : 0;
+
     switch (placement) {
       case "top":
-        y -= bubbleRect.height / 2 + margin;
+        y -= bubbleRect.height / 2 + offset;
         break;
       case "bottom":
-        y += bubbleRect.height / 2 + margin;
+        y += bubbleRect.height / 2 + offset;
         break;
       case "left":
-        x -= bubbleRect.width / 2 + margin;
+        x -= bubbleRect.width / 2 + offset;
         break;
       case "right":
-        x += bubbleRect.width / 2 + margin;
+        x += bubbleRect.width / 2 + offset;
         break;
     }
 
@@ -251,6 +328,7 @@ export class IntroTutorial {
   complete() {
     this.isActive = false;
     this.removeOutlineEffect();
+    this.removeDomHighlight(); // Clean up DOM highlight on complete
     this.enableCameraControls();
 
     const tl = gsap.timeline({
@@ -280,6 +358,23 @@ export class IntroTutorial {
   enableCameraControls() {
     if (this.cameraControls) {
       this.cameraControls.enabled = this.originalCameraControlsEnabled;
+    }
+  }
+
+  // ADDED: New methods to handle highlighting DOM elements
+  highlightDomElement(selector) {
+    this.removeDomHighlight(); // Remove any existing highlight first
+    const element = document.querySelector(selector);
+    if (element) {
+      element.classList.add("tutorial-highlight-dom");
+      this.currentHighlightedElement = element;
+    }
+  }
+
+  removeDomHighlight() {
+    if (this.currentHighlightedElement) {
+      this.currentHighlightedElement.classList.remove("tutorial-highlight-dom");
+      this.currentHighlightedElement = null;
     }
   }
 
@@ -313,7 +408,7 @@ export class IntroTutorial {
     this.pulseAnimation = gsap.to(outlinePass, {
       edgeStrength: this.originalOutlineValues.strength * 2.5,
       edgeThickness: this.originalOutlineValues.thickness * 2.0,
-      duration: this.glowPulseSpeed,
+      duration: 1.25,
       ease: "sine.inOut",
       repeat: -1,
       yoyo: true,
