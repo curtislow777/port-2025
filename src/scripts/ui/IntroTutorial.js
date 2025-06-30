@@ -1,4 +1,4 @@
-// IntroTutorial.js - Final version with support for 3D objects and 2D DOM elements
+// IntroTutorial.js -
 import * as THREE from "three";
 import gsap from "gsap";
 
@@ -29,7 +29,6 @@ export class IntroTutorial {
       totalStepsIndicator: null,
     };
 
-    // ADDED: To keep track of the currently highlighted DOM element
     this.currentHighlightedElement = null;
 
     this.animationSpeed = 1;
@@ -71,8 +70,6 @@ export class IntroTutorial {
     document.body.appendChild(tutorialFragment);
 
     this.ui.cursor = this.ui.overlay.querySelector(".tutorial-cursor");
-    // ADD THIS:
-    // Dynamically set the cursor size from the constructor option
     if (this.ui.cursor) {
       this.ui.cursor.style.width = `${this.cursorSize}px`;
       this.ui.cursor.style.height = `${this.cursorSize}px`;
@@ -97,46 +94,47 @@ export class IntroTutorial {
       {
         target: "tutorial-welcome-anchor",
         message:
-          "Welcome to my interactive portfolio! Let me give you a quick tour.",
+          "Hello! Welcome to my interactive portfolio! This portfolio was created with three.js and is still a work-in-progress. Let me give you a quick tour.",
         highlightObject: false,
         placement: "top",
       },
       {
         target: "monitor-four-raycast",
-        message: "Click the monitor to explore my development work.",
+        message:
+          "Click on the monitor to view my portfolio in a more traditional way.",
         highlightObject: true,
         placement: "top",
       },
       {
         target: "about-raycast-emissive-raycast",
-        message: "Check out this poster to learn more about me.",
+        message: "Click here to learn more about me and my work!",
         highlightObject: true,
         placement: "right",
       },
       {
         target: "erhu-seven-raycast",
-        message: "I play the Erhu! Click here to listen to some music.",
+        message: "One of my hobbies include playing the erhu.",
         highlightObject: true,
         placement: "left",
       },
       {
         target: "mailbox-pole-seven-contact-raycast",
         message:
-          "Ready to get in touch? Use this mailbox to send me a message.",
+          "Feel free to contact me! Click on the mailbox to send me an email.",
         highlightObject: true,
         placement: "bottom",
       },
-      // ADDED: Step for the night mode button
       {
-        domTarget: "#theme-toggle", // Target the button by its ID
+        domTarget: "#theme-toggle",
         message: "You can toggle between day and night mode here.",
         placement: "right",
+        offsetCursor: true,
       },
-      // ADDED: Step for the mute button
       {
-        domTarget: "#sound-toggle", // Target the button by its ID
+        domTarget: "#sound-toggle",
         message: "And use this to mute or unmute the background music.",
         placement: "right",
+        offsetCursor: true,
       },
       {
         target: "tutorial-conclusion-anchor",
@@ -182,11 +180,9 @@ export class IntroTutorial {
       stepIndex === this.tutorialSteps.length - 1 ? "Finish" : "Next";
     this.ui.bubbleContent.textContent = step.message;
 
-    // Always remove previous highlights
     this.removeOutlineEffect();
     this.removeDomHighlight();
 
-    // Apply new highlight based on target type
     if (step.highlightObject) {
       this.highlightObject(step.target);
     } else if (step.domTarget) {
@@ -201,9 +197,9 @@ export class IntroTutorial {
     gsap.to(this.ui.cursor, { opacity: 1, duration: 0.4 });
   }
 
-  // UPDATED: Now handles both 2D and 3D targets
   updateUIPositions(step) {
     let targetScreenPos;
+    let cursorTargetPos;
 
     if (step.domTarget) {
       const element = document.querySelector(step.domTarget);
@@ -218,6 +214,17 @@ export class IntroTutorial {
         y: rect.top + rect.height / 2,
         isOffScreen: false,
       };
+
+      cursorTargetPos = { ...targetScreenPos };
+
+      if (step.offsetCursor) {
+        // Added a vertical offset to move the cursor down slightly.
+        const horizontalOffset = 15; // Moves cursor to the right
+        const verticalOffset = 15; // Moves cursor down
+
+        cursorTargetPos.x += horizontalOffset;
+        cursorTargetPos.y += verticalOffset;
+      }
     } else if (step.target) {
       const targetObject = this.scene.getObjectByName(step.target);
       if (!targetObject) {
@@ -228,13 +235,12 @@ export class IntroTutorial {
       targetScreenPos = this.worldToScreen(
         targetObject.getWorldPosition(new THREE.Vector3())
       );
+      cursorTargetPos = { ...targetScreenPos };
     } else {
-      // Should not happen with current setup, but good practice
       return;
-    }
+    } // The rest of the function remains the same...
 
     const bubbleRect = this.ui.bubble.getBoundingClientRect();
-
     if (targetScreenPos.isOffScreen || bubbleRect.width === 0) {
       this.ui.bubble.style.opacity = "0";
       this.ui.cursor.style.opacity = "0";
@@ -242,7 +248,6 @@ export class IntroTutorial {
     }
 
     this.ui.bubble.style.opacity = "1";
-    // Show cursor for DOM targets and highlighted 3D objects
     this.ui.cursor.style.opacity =
       step.domTarget || step.highlightObject ? "1" : "0";
 
@@ -260,14 +265,13 @@ export class IntroTutorial {
       "--bubble-y",
       `${bubblePos.y - bubbleRect.height / 2}px`
     );
-    // In the updateUIPositions method
     this.ui.cursor.style.setProperty(
       "--cursor-x",
-      `${targetScreenPos.x - this.cursorOffset}px` // Use dynamic offset
+      `${cursorTargetPos.x - this.cursorOffset}px`
     );
     this.ui.cursor.style.setProperty(
       "--cursor-y",
-      `${targetScreenPos.y - this.cursorOffset}px` // Use dynamic offset
+      `${cursorTargetPos.y - this.cursorOffset}px`
     );
   }
 
