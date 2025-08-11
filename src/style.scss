@@ -296,7 +296,11 @@ lottie-player {
   border-radius: 8px;
   cursor: pointer;
   font-size: 1rem;
-  transition: transform .2s ease, color .2s ease, background-color .2s ease, border-color .2s ease;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .work-modal .pp-filter-btn:hover,
@@ -322,14 +326,16 @@ lottie-player {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform .25s ease, box-shadow .25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
   outline: none;
 }
 
 .work-modal .pp-card:hover,
 .work-modal .pp-card:focus {
   transform: translateY(-10px);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, .15);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.15);
   cursor: pointer;
 }
 
@@ -337,7 +343,11 @@ lottie-player {
 .work-modal .pp-card__img {
   width: 100%;
   height: 200px;
-  background-color: color-mix(in srgb, var(--work-modal-bg) 85%, var(--work-modal-text) 15%);
+  background-color: color-mix(
+    in srgb,
+    var(--work-modal-bg) 85%,
+    var(--work-modal-text) 15%
+  );
   overflow: hidden;
 }
 
@@ -353,7 +363,7 @@ lottie-player {
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: .75rem;
+  gap: 0.75rem;
   flex: 1;
 }
 
@@ -365,9 +375,9 @@ lottie-player {
 
 .work-modal .pp-card__desc {
   color: var(--pp-text);
-  opacity: .85;
+  opacity: 0.85;
   font-size: 1rem;
-  margin: 0 0 .5rem;
+  margin: 0 0 0.5rem;
   flex: 1;
 }
 
@@ -375,7 +385,7 @@ lottie-player {
 .work-modal .pp-card__tech {
   display: flex;
   flex-wrap: wrap;
-  gap: .5rem;
+  gap: 0.5rem;
   margin-top: auto;
 }
 
@@ -383,22 +393,22 @@ lottie-player {
   background-color: color-mix(in srgb, var(--work-accent) 10%, transparent);
   border: 1px solid var(--work-accent);
   color: var(--work-accent);
-  padding: .25rem .5rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 4px;
-  font-size: .8rem;
+  font-size: 0.8rem;
 }
 
 /* Links */
 .work-modal .pp-card__links {
   display: flex;
   gap: 1rem;
-  margin-top: .5rem;
+  margin-top: 0.5rem;
 }
 
 .work-modal .pp-card__links a {
   color: var(--pp-text);
   font-size: 1.2rem;
-  transition: color .2s ease;
+  transition: color 0.2s ease;
 }
 
 .work-modal .pp-card__links a:hover {
@@ -414,16 +424,16 @@ lottie-player {
   display: none;
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, .35);
+  background-color: rgba(0, 0, 0, 0.35);
   /* light overlay */
   z-index: 4000;
   /* above .modal */
   opacity: 0;
-  transition: opacity .25s ease;
+  transition: opacity 0.25s ease;
 }
 
 .dark-theme .pp-modal {
-  background-color: rgba(0, 0, 0, .7);
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 /* darker overlay in dark mode */
@@ -441,11 +451,11 @@ lottie-player {
   margin: 5vh auto;
   max-height: 90vh;
   overflow: hidden;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, .35);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
   outline: none;
-  animation: pp-modal-in .3s ease;
+  animation: pp-modal-in 0.3s ease;
 }
 
 @keyframes pp-modal-in {
@@ -466,11 +476,14 @@ lottie-player {
   right: 1.25rem;
   font-size: 2rem;
   color: var(--work-modal-text);
-  opacity: .7;
+  opacity: 0.7;
   background: transparent;
   border: 0;
   cursor: pointer;
-  transition: color .2s ease, transform .2s ease, opacity .2s ease;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .pp-modal__close:hover {
@@ -526,13 +539,13 @@ lottie-player {
 .pp-modal__features h3 {
   color: var(--work-modal-border);
   /* accent uses work border tone */
-  margin: 0 0 .75rem 0;
+  margin: 0 0 0.75rem 0;
   font-size: 1.15rem;
 }
 
 .pp-modal__desc p {
   color: var(--work-modal-text);
-  opacity: .85;
+  opacity: 0.85;
   line-height: 1.8;
   margin: 0;
 }
@@ -540,20 +553,20 @@ lottie-player {
 .pp-modal__tags {
   display: flex;
   flex-wrap: wrap;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .pp-modal__features ul {
   list-style: none;
   color: var(--work-modal-text);
-  opacity: .85;
+  opacity: 0.85;
   padding-left: 1.5rem;
   margin: 0;
 }
 
 .pp-modal__features li {
   position: relative;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
   line-height: 1.6;
 }
 
@@ -569,7 +582,7 @@ lottie-player {
   border-top: 1px solid var(--work-modal-border);
   display: flex;
   justify-content: flex-end;
-  gap: .75rem;
+  gap: 0.75rem;
 }
 
 .pp-modal__links {
@@ -581,8 +594,8 @@ lottie-player {
 .pp-btn {
   display: inline-flex;
   align-items: center;
-  gap: .5rem;
-  padding: .7rem 1.25rem;
+  gap: 0.5rem;
+  padding: 0.7rem 1.25rem;
   border-radius: 6px;
   font-size: 1rem;
   font-weight: 600;
@@ -590,21 +603,35 @@ lottie-player {
   border: 1px solid var(--work-modal-border);
   color: var(--work-modal-border);
   background: transparent;
-  transition: transform .2s ease, background-color .2s ease;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
   text-decoration: none;
 }
 
 .pp-btn:hover {
-  background-color: color-mix(in srgb, var(--work-modal-border) 12%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--work-modal-border) 12%,
+    transparent
+  );
   transform: translateY(-2px);
 }
 
 .pp-btn--primary {
-  background-color: color-mix(in srgb, var(--work-modal-border) 12%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--work-modal-border) 12%,
+    transparent
+  );
 }
 
 .pp-btn--primary:hover {
-  background-color: color-mix(in srgb, var(--work-modal-border) 18%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--work-modal-border) 18%,
+    transparent
+  );
 }
 
 /* Prevent background scroll when a pp-modal is open */
@@ -623,13 +650,12 @@ body.pp-modal-open {
   display: none;
 }
 
-
 .work-modal .pp-detail[hidden] {
   display: none;
 }
 
 .work-modal .ppd-header {
-  padding-bottom: .75rem;
+  padding-bottom: 0.75rem;
   margin-bottom: 1rem;
   border-bottom: 1px solid var(--work-modal-border);
 }
@@ -662,13 +688,13 @@ body.pp-modal-open {
 
 .work-modal .ppd-sections h3 {
   color: var(--work-modal-border);
-  margin: 0 0 .75rem;
+  margin: 0 0 0.75rem;
   font-size: 1.15rem;
 }
 
 .work-modal .ppd-sections p {
   color: var(--work-modal-text);
-  opacity: .85;
+  opacity: 0.85;
   line-height: 1.7;
   margin: 0 0 1rem;
 }
@@ -676,14 +702,14 @@ body.pp-modal-open {
 .work-modal .ppd-features ul {
   list-style: none;
   color: var(--work-modal-text);
-  opacity: .85;
+  opacity: 0.85;
   padding-left: 1.5rem;
   margin: 0;
 }
 
 .work-modal .ppd-features li {
   position: relative;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
   line-height: 1.6;
 }
 
@@ -704,7 +730,6 @@ body.pp-modal-open {
 }
 
 /* In-modal Back button (only visible in detail view) */
-
 
 /* Icon-only back button inside the work modal header */
 /* Icon-only back button inside the work modal header (left side) */
@@ -734,8 +759,6 @@ body.pp-modal-open {
   background: color-mix(in srgb, var(--work-modal-border) 12%, transparent);
 }
 
-
-
 /* Detail view block (already referenced in previous message) */
 .work-modal .pp-detail {
   grid-column: 1 / -1;
@@ -747,7 +770,7 @@ body.pp-modal-open {
 }
 
 .work-modal .ppd-header {
-  padding-bottom: .75rem;
+  padding-bottom: 0.75rem;
   margin-bottom: 1rem;
   border-bottom: 1px solid var(--work-modal-border);
 }
@@ -780,13 +803,13 @@ body.pp-modal-open {
 
 .work-modal .ppd-sections h3 {
   color: var(--work-modal-border);
-  margin: 0 0 .75rem;
+  margin: 0 0 0.75rem;
   font-size: 1.15rem;
 }
 
 .work-modal .ppd-sections p {
   color: var(--work-modal-text);
-  opacity: .85;
+  opacity: 0.85;
   line-height: 1.7;
   margin: 0 0 1rem;
 }
@@ -794,14 +817,14 @@ body.pp-modal-open {
 .work-modal .ppd-features ul {
   list-style: none;
   color: var(--work-modal-text);
-  opacity: .85;
+  opacity: 0.85;
   padding-left: 1.5rem;
   margin: 0;
 }
 
 .work-modal .ppd-features li {
   position: relative;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
   line-height: 1.6;
 }
 
@@ -821,6 +844,23 @@ body.pp-modal-open {
   justify-content: flex-end;
 }
 
+/* One-column layout while viewing a project card */
+.work-modal.pp-detail-active .modal-body {
+  grid-template-columns: 1fr; /* collapse the main 2-col layout */
+}
+
+.work-modal.pp-detail-active .modal-tech-stack {
+  display: none; /* hide the right column */
+}
+
+/* Force the project detail content itself to 1 column (media + text stacked) */
+.work-modal.pp-detail-active .ppd-body {
+  grid-template-columns: 1fr;
+}
+
+.pp-modal.pp-show .pp-modal__body {
+  grid-template-columns: 1fr;
+}
 
 .about-modal {
   background: var(--about-modal-bg);
@@ -862,7 +902,6 @@ body.pp-modal-open {
   justify-items: end;
   text-align: right;
   gap: 0.5rem;
-
 }
 
 /* Icon aligns with the right edge */
@@ -921,7 +960,6 @@ body.pp-modal-open {
     align-self: start;
   }
 }
-
 
 .date {
   font-size: 0.9em;
@@ -1489,7 +1527,6 @@ body.pp-modal-open {
 }
 
 @keyframes cursorPulse {
-
   0%,
   100% {
     transform: scale(1);
@@ -1513,7 +1550,6 @@ body.pp-modal-open {
 }
 
 @keyframes popAndGlow {
-
   /* The state at the beginning and end of the animation */
   0%,
   100% {

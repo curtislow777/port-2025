@@ -1,739 +1,946 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icon.webp" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PORT</title>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script
+      src="https://kit.fontawesome.com/3927294e6b.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/icon.webp" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PORT</title>
-  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-  <script src="https://kit.fontawesome.com/3927294e6b.js" crossorigin="anonymous"></script>
-</head>
-
-<body class="light-theme">
-  <div id="app"></div>
-  <!-- Control Buttons -->
-  <div class="control-buttons">
-    <button id="theme-toggle" class="control-btn">
-      <i class="fas fa-sun"></i>
-    </button>
-    <button id="sound-toggle" class="control-btn">
-      <i class="fas fa-volume-up"></i>
-    </button>
-  </div>
-
-  <!-- Back Button (hidden by default) -->
-  <button id="back-button" class="control-btn">
-    <i class="fas fa-arrow-left"></i>
-  </button>
-
-  <div class="loading-screen">
-    <div class="loading-content">
-      <lottie-player src="https://lottie.host/5901d04d-98ab-4452-ba04-cbf725181d78/WmOx1rW7Wi.json"
-        background="transparent" speed="1" style="width: 200px; height: 200px" loop autoplay></lottie-player>
-
-      <div class="loading-bar">
-        <div class="loading-bar-fill"></div>
-      </div>
-      <button class="loading-screen-btn">Enter</button>
+  <body class="light-theme">
+    <div id="app"></div>
+    <!-- Control Buttons -->
+    <div class="control-buttons">
+      <button id="theme-toggle" class="control-btn">
+        <i class="fas fa-sun"></i>
+      </button>
+      <button id="sound-toggle" class="control-btn">
+        <i class="fas fa-volume-up"></i>
+      </button>
     </div>
-  </div>
 
-  <div class="modal about-modal">
-    <h1 class="modal-title">About Me</h1>
-    <button class="modal-close-btn">X</button>
-    <p class="intro-text">np immersive media graduate</p>
+    <!-- Back Button (hidden by default) -->
+    <button id="back-button" class="control-btn">
+      <i class="fas fa-arrow-left"></i>
+    </button>
 
-    Growing up playing video games, have always captivated me, which sparked
-    my interest in both the artistic and technical aspects of their creation.
-    This interest led me to pursue a diploma in Immersive Media, where I
-    acquired a broad range of skills, from design to programming. Outside of
-    work, I enjoy playing video games, spending time with my pets, and playing
-    the Erhu (二胡)！
+    <div class="loading-screen">
+      <div class="loading-content">
+        <lottie-player
+          src="https://lottie.host/5901d04d-98ab-4452-ba04-cbf725181d78/WmOx1rW7Wi.json"
+          background="transparent"
+          speed="1"
+          style="width: 200px; height: 200px"
+          loop
+          autoplay
+        ></lottie-player>
 
-    <section class="about-section">
-      <div class="section-header">
-        <h2>Skillset</h2>
-        <i class="fas fa-tools icon-inline"></i>
+        <div class="loading-bar">
+          <div class="loading-bar-fill"></div>
+        </div>
+        <button class="loading-screen-btn">Enter</button>
       </div>
+    </div>
 
-      <div class="skills-grid">
-        <div>
-          <h3>Programming</h3>
-          <ul>
-            <li>JavaScript</li>
-            <li>Python</li>
-            <li>C#</li>
-          </ul>
-        </div>
-        <div>
-          <h3>Interactive</h3>
-          <ul>
-            <li>Blender</li>
-            <li>Unity</li>
-            <li>PlayCanvas</li>
-            <li>Three.js</li>
-            <li>Unreal Engine</li>
-            <li>SparkAR (Deprecated)</li>
-          </ul>
-        </div>
-        <div>
-          <h3>Web Dev</h3>
-          <ul>
-            <li>HTML/CSS</li>
-            <li>Javscript</li>
-            <li></li>
-          </ul>
+    <div class="modal about-modal">
+      <h1 class="modal-title">About Me</h1>
+      <button class="modal-close-btn">X</button>
+      <p class="intro-text">np immersive media graduate</p>
+
+      Growing up playing video games, have always captivated me, which sparked
+      my interest in both the artistic and technical aspects of their creation.
+      This interest led me to pursue a diploma in Immersive Media, where I
+      acquired a broad range of skills, from design to programming. Outside of
+      work, I enjoy playing video games, spending time with my pets, and playing
+      the Erhu (二胡)！
+
+      <section class="about-section">
+        <div class="section-header">
+          <h2>Skillset</h2>
+          <i class="fas fa-tools icon-inline"></i>
         </div>
 
-        <div>
-          <h3>Design & Misc</h3>
-          <ul>
-            <li>Maya</li>
-            <li>Figma</li>
-            <li>Photoshop & Illustrator</li>
-            <li>After Effects & Substance Painter</li>
-            <li>UI/UX Design</li>
-          </ul>
+        <div class="skills-grid">
+          <div>
+            <h3>Programming</h3>
+            <ul>
+              <li>JavaScript</li>
+              <li>Python</li>
+              <li>C#</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Interactive</h3>
+            <ul>
+              <li>Blender</li>
+              <li>Unity</li>
+              <li>PlayCanvas</li>
+              <li>Three.js</li>
+              <li>Unreal Engine</li>
+              <li>SparkAR (Deprecated)</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Web Dev</h3>
+            <ul>
+              <li>HTML/CSS</li>
+              <li>Javscript</li>
+              <li></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3>Design & Misc</h3>
+            <ul>
+              <li>Maya</li>
+              <li>Figma</li>
+              <li>Photoshop & Illustrator</li>
+              <li>After Effects & Substance Painter</li>
+              <li>UI/UX Design</li>
+            </ul>
+          </div>
         </div>
-      </div>
 
-      <ul class="skills-list">
-        <li>
-          <strong>Programming:</strong> JavaScript, Three.js, GLSL, Python, C#
-          (Unity)
-        </li>
-        <li><strong>Web Tech:</strong> HTML, CSS, React, Next.js</li>
-        <li>
-          <strong>3D & Design:</strong> Blender, Figma, Adobe Creative Suite
-        </li>
-        <li>
-          <strong>Game Dev:</strong> Unity, Unreal (basic), Game Design
-          Principles
-        </li>
-        <li>
-          <strong>Interactive Media:</strong> Touch/AR experiences, Shader
-          development
-        </li>
-        <li>
-          <strong>Other:</strong> Git, Modular architecture,
-          Cross-disciplinary collaboration
-        </li>
-      </ul>
-    </section>
+        <ul class="skills-list">
+          <li>
+            <strong>Programming:</strong> JavaScript, Three.js, GLSL, Python, C#
+            (Unity)
+          </li>
+          <li><strong>Web Tech:</strong> HTML, CSS, React, Next.js</li>
+          <li>
+            <strong>3D & Design:</strong> Blender, Figma, Adobe Creative Suite
+          </li>
+          <li>
+            <strong>Game Dev:</strong> Unity, Unreal (basic), Game Design
+            Principles
+          </li>
+          <li>
+            <strong>Interactive Media:</strong> Touch/AR experiences, Shader
+            development
+          </li>
+          <li>
+            <strong>Other:</strong> Git, Modular architecture,
+            Cross-disciplinary collaboration
+          </li>
+        </ul>
+      </section>
 
-    <section class="about-section">
-      <div class="section-header">
-        <h2>Education</h2>
-        <i class="fas fa-graduation-cap icon-inline"></i>
-      </div>
-
-      <div class="entry">
-        <div class="entry-content">
-          <strong>Ngee Ann Polytechnic</strong><br />
-          Diploma in Immersive Media
+      <section class="about-section">
+        <div class="section-header">
+          <h2>Education</h2>
+          <i class="fas fa-graduation-cap icon-inline"></i>
         </div>
-        <div class="entry-meta">
-          <img src="images/misc/np_logo.png" alt="NP logo" class="icon" />
-          <span class="date">2022 – 2025</span>
+
+        <div class="entry">
+          <div class="entry-content">
+            <strong>Ngee Ann Polytechnic</strong><br />
+            Diploma in Immersive Media
+          </div>
+          <div class="entry-meta">
+            <img src="images/misc/np_logo.png" alt="NP logo" class="icon" />
+            <span class="date">2022 – 2025</span>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="about-section">
-      <div class="section-header">
-        <h2>Experience</h2>
-        <i class="fas fa-briefcase icon-inline"></i>
-      </div>
+      <section class="about-section">
+        <div class="section-header">
+          <h2>Experience</h2>
+          <i class="fas fa-briefcase icon-inline"></i>
+        </div>
 
-      <div class="entry">
-        <div class="entry-content">
-          <strong>CraveFX</strong><br />
+        <div class="entry">
+          <div class="entry-content">
+            <strong>CraveFX</strong><br />
+            <p>
+              Assisted in developing interactive experiences as an intern, then
+              advanced to a Junior role crafting interactive media, games, and
+              immersive experiences.
+            </p>
+
+            <h4>Projects</h4>
+            <ul>
+              <li>
+                <strong
+                  >Singapore Odyssea — National Museum of Singapore (Glass
+                  Rotunda)</strong
+                >
+                <ul>
+                  <li>
+                    Part of the <em>Spiral Ramp</em>, <em>Drum</em>, and
+                    <em>Transition Zone</em> team
+                  </li>
+                  <li>
+                    Deployed with nDisplay across a multi-node and projector
+                    setup;.
+                  </li>
+                  <li>
+                    Worked with projection/AV teams on warping and blending.
+                  </li>
+                  <li>
+                    Helped automate cluster launch and monitoring for reliable
+                    operations.
+                  </li>
+                </ul>
+                <a
+                  href="https://cravefx.com/blog/cravefx-powers-the-multimedia-vision-behind-singapore-odyssea/"
+                  target="_blank"
+                  rel="noopener"
+                  >Case study: CraveFX Powers the Multimedia Vision Behind
+                  Singapore Odyssea
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="entry-meta">
+            <img
+              src="images/misc/cravefx_logo.jpg"
+              alt="CraveFX logo"
+              class="icon"
+            />
+            <div class="timeline">
+              <div class="timeline-item">
+                <span class="role">Interactive Intern</span>
+                <span class="date">Sept 2024 – May 2025</span>
+              </div>
+              <div class="timeline-item">
+                <span class="role"
+                  >Junior Interactive Media &amp; Game Developer</span
+                >
+                <span class="date">May 2025 – Present</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="modal work-modal">
+      <h1 class="modal-title">Portfolio Projects</h1>
+      <button class="modal-close-btn">X</button>
+      <div class="modal-body">
+        <div class="modal-main-content">
+          <p><strong>🚧 Currently Building:</strong></p>
           <p>
-            Assisted in developing interactive experiences as an intern, then advanced to a Junior role crafting
-            interactive media, games, and immersive experiences.
+            This interactive 3D portfolio is a work in progress, built using
+            <strong>Blender</strong> for modeling and
+            <strong>Three.js</strong> for rendering and interaction.
           </p>
 
-          <h4>Projects</h4>
-          <ul>
-            <li>
-              <strong>Singapore Odyssea — National Museum of Singapore (Glass Rotunda)</strong>
-              <ul>
-                <li>Part of the <em>Spiral Ramp</em>, <em>Drum</em>, and <em>Transition Zone</em> team </li>
-                <li>Deployed with nDisplay across a multi-node and projector setup;.</li>
-                <li>Worked with projection/AV teams on warping and blending.</li>
-                <li>Helped automate cluster launch and monitoring for reliable operations.</li>
-              </ul>
-              <a href="https://cravefx.com/blog/cravefx-powers-the-multimedia-vision-behind-singapore-odyssea/"
-                target="_blank" rel="noopener">Case study: CraveFX Powers the Multimedia Vision Behind Singapore Odyssea
-              </a>
-            </li>
+          <p>
+            Most of the 3D models in this scene are modelled and textured by me
+            in Blender. Assets not modeled by me include: the Erhu, Globe, Ludo
+            board, and Pig.
+          </p>
 
+          <p><strong>🧪 Temporary Controls:</strong></p>
+          <ul>
+            <li>Press <kbd>O</kbd> to toggle Whiteboard Mode</li>
+            <li>Press <kbd>P</kbd> to exit Whiteboard Mode</li>
+          </ul>
+
+          <p><strong>🔧 Work in Progress:</strong></p>
+          <ul>
+            Textures/Lighting/Blender stuff
+          </ul>
+          <ul>
+            Repack UVs/Rebake Textures
+          </ul>
+          <ul>
+            Scene optimization
+          </ul>
+          <ul></ul>
+          <ul></ul>
+
+          <p><strong>📝 To-Do:</strong></p>
+          <ul>
+            Interactive desktop OS
+          </ul>
+          <ul>
+            Interactive TV
+          </ul>
+          <ul>
+            Sound Effects
+          </ul>
+          <ul>
+            Touch Controls/Responsive on mobile devices
+          </ul>
+
+          <p><strong>📝 Credits & Inspirations :</strong></p>
+          <!-- Links for sketchfab models/images/sounds -->
+
+          3D models - https://sketchfab.com/feed audio -
+          https://sonniss.com/gameaudiogdc/ bgm -
+          https://www.youtube.com/watch?v=LnIsdWZ_gkM -
+          https://www.youtube.com/watch?v=qip5nX4Jt6M
+        </div>
+
+        <div class="modal-tech-stack">
+          <h3>🧰 Tech Stack</h3>
+          <ul>
+            <li><strong>JavaScript</strong></li>
+            <li><strong>Three.js</strong></li>
+            <li><strong>Blender</strong></li>
+            <li><strong>GSAP</strong></li>
+            <li><strong>Howler.js</strong></li>
           </ul>
         </div>
+      </div>
+      <!-- Divider between credits and projects -->
+      <hr class="pp-divider" />
 
-        <div class="entry-meta">
-          <img src="images/misc/cravefx_logo.jpg" alt="CraveFX logo" class="icon" />
-          <div class="timeline">
-            <div class="timeline-item">
-              <span class="role">Interactive Intern</span>
-              <span class="date">Sept 2024 – May 2025</span>
-            </div>
-            <div class="timeline-item">
-              <span class="role">Junior Interactive Media &amp; Game Developer</span>
-              <span class="date">May 2025 – Present</span>
-            </div>
-          </div>
+      <!-- Portfolio Projects (namespaced) -->
+      <section class="pp-projects" id="pp-projects">
+        <h2 class="pp-page-title">Projects</h2>
+
+        <div class="pp-filter" role="tablist" aria-label="Project filters">
+          <button
+            class="pp-filter-btn is-active"
+            data-filter="all"
+            role="tab"
+            aria-selected="true"
+          >
+            All
+          </button>
+          <button
+            class="pp-filter-btn"
+            data-filter="web"
+            role="tab"
+            aria-selected="false"
+          >
+            Web Development
+          </button>
+          <button
+            class="pp-filter-btn"
+            data-filter="interactive"
+            role="tab"
+            aria-selected="false"
+          >
+            3D / Interactive
+          </button>
         </div>
-      </div>
 
-    </section>
-  </div>
-
-  <div class="modal work-modal">
-    <h1 class="modal-title">Portfolio Projects</h1>
-    <button class="modal-close-btn">X</button>
-    <div class="modal-body">
-      <div class="modal-main-content">
-        <p><strong>🚧 Currently Building:</strong></p>
-        <p>
-          This interactive 3D portfolio is a work in progress, built using
-          <strong>Blender</strong> for modeling and
-          <strong>Three.js</strong> for rendering and interaction.
-        </p>
-
-        <p>
-          Most of the 3D models in this scene are modelled and textured by me
-          in Blender. Assets not modeled by me include: the Erhu, Globe, Ludo
-          board, and Pig.
-        </p>
-
-        <p><strong>🧪 Temporary Controls:</strong></p>
-        <ul>
-          <li>Press <kbd>O</kbd> to toggle Whiteboard Mode</li>
-          <li>Press <kbd>P</kbd> to exit Whiteboard Mode</li>
-        </ul>
-
-        <p><strong>🔧 Work in Progress:</strong></p>
-        <ul>
-          Textures/Lighting/Blender stuff
-        </ul>
-        <ul>
-          Repack UVs/Rebake Textures
-        </ul>
-        <ul>
-          Scene optimization
-        </ul>
-        <ul></ul>
-        <ul></ul>
-
-        <p><strong>📝 To-Do:</strong></p>
-        <ul>
-          Interactive desktop OS
-        </ul>
-        <ul>
-          Interactive TV
-        </ul>
-        <ul>
-          Sound Effects
-        </ul>
-        <ul>
-          Touch Controls/Responsive on mobile devices
-        </ul>
-
-        <p><strong>📝 Credits & Inspirations :</strong></p>
-        <!-- Links for sketchfab models/images/sounds -->
-
-        3D models - https://sketchfab.com/feed audio -
-        https://sonniss.com/gameaudiogdc/ bgm -
-        https://www.youtube.com/watch?v=LnIsdWZ_gkM -
-        https://www.youtube.com/watch?v=qip5nX4Jt6M
-      </div>
-
-      <div class="modal-tech-stack">
-        <h3>🧰 Tech Stack</h3>
-        <ul>
-          <li><strong>JavaScript</strong></li>
-          <li><strong>Three.js</strong></li>
-          <li><strong>Blender</strong></li>
-          <li><strong>GSAP</strong></li>
-          <li><strong>Howler.js</strong></li>
-        </ul>
-      </div>
-
-    </div>
-    <!-- Divider between credits and projects -->
-    <hr class="pp-divider" />
-
-    <!-- Portfolio Projects (namespaced) -->
-    <section class="pp-projects" id="pp-projects">
-      <h2 class="pp-page-title">Projects</h2>
-
-      <div class="pp-filter" role="tablist" aria-label="Project filters">
-        <button class="pp-filter-btn is-active" data-filter="all" role="tab" aria-selected="true">All</button>
-        <button class="pp-filter-btn" data-filter="web" role="tab" aria-selected="false">Web Development</button>
-        <button class="pp-filter-btn" data-filter="interactive" role="tab" aria-selected="false">3D /
-          Interactive</button>
-      </div>
-
-      <div class="pp-grid">
-        <!-- Project Card: example -->
-        <article class="pp-card" data-category="interactive" data-modal="pp-modal-project-1" tabindex="0"
-          aria-label="Open details: Interactive 3D Portfolio">
-          <div class="pp-card__img">
-            <img src="/images/landscape.png" alt="Interactive 3D Portfolio" />
-          </div>
-          <div class="pp-card__content">
-            <h3 class="pp-card__title">Interactive 3D Portfolio</h3>
-            <p class="pp-card__desc">
-              A portfolio site showcasing web dev and 3D work.
-            </p>
-            <div class="pp-card__tech">
-              <span class="pp-tag">HTML5</span>
-              <span class="pp-tag">CSS3</span>
-              <span class="pp-tag">JavaScript</span>
-              <span class="pp-tag">Three.js</span>
+        <div class="pp-grid">
+          <!-- Project Card: example -->
+          <article
+            class="pp-card"
+            data-category="interactive"
+            data-modal="pp-modal-project-1"
+            tabindex="0"
+            aria-label="Open details: Interactive 3D Portfolio"
+          >
+            <div class="pp-card__img">
+              <img src="/images/landscape.png" alt="Interactive 3D Portfolio" />
             </div>
-            <div class="pp-card__links">
-              <a href="https://github.com/curtislow777/port-2025" target="_blank" rel="noopener"
-                aria-label="Github Repository">
-                <i class="fab fa-github" aria-hidden="true"></i>
-              </a>
-              <a href="https://curt-folio.vercel.app/" target="_blank" rel="noopener" aria-label="Live Preview">
-                <i class="fas fa-external-link-alt" aria-hidden="true"></i>
-              </a>
-            </div>
-          </div>
-        </article>
-
-        <!-- Project Card 2 -->
-        <article class="pp-card" data-category="web" data-modal="pp-modal-project-2" tabindex="0" aria-label="rotunda">
-          <div class="pp-card__img">
-            <img src="/images/misc/singapore-odyssea.webp" alt="Entrance of Singapore Odyssea - Glass Rotunda"
-              loading="lazy" />
-          </div>
-          <div class="pp-card__content">
-            <h3 class="pp-card__title">Singapore Odyssea — National Museum of Singapore (Glass Rotunda)</h3>
-            <p class="pp-card__desc">
-              An immersive multimedia exhibition at the National Museum’s Glass Rotunda, built with Unreal Engine and
-              nDisplay, featuring interactive projections and BLE tracking that guide visitors through 700 years of
-              Singapore’s history.
-            </p>
-
-            <div class="pp-card__tech">
-              <span class="pp-tag">Unreal Engine</span>
-              <span class="pp-tag">nDisplay</span>
-              <span class="pp-tag">MQTT BLE Tracking</span>
-            </div>
-            <div class="pp-card__links">
-              <a href="#" target="_blank" rel="noopener" aria-label="Github Repository">
-                <i class="fab fa-github" aria-hidden="true"></i>
-              </a>
-              <a href="https://cravefx.com/blog/cravefx-powers-the-multimedia-vision-behind-singapore-odyssea/"
-                target="_blank" rel="noopener" aria-label="Live Preview">
-                <i class="fas fa-external-link-alt" aria-hidden="true"></i>
-              </a>
-            </div>
-          </div>
-        </article>
-
-      </div>
-    </section>
-
-    <!-- Namespaced Project Modal(s) — place near end of <body> or right here -->
-    <div class="pp-modal" id="pp-modal-project-1" role="dialog" aria-modal="true" aria-labelledby="pp-modal-title-1"
-      aria-hidden="true">
-      <div class="pp-modal__content" tabindex="-1">
-        <button class="pp-modal__close" aria-label="Close">&times;</button>
-
-        <header class="pp-modal__header">
-          <h2 class="pp-modal__title" id="pp-modal-title-1">Interactive 3D Portfolio</h2>
-        </header>
-
-        <div class="pp-modal__body">
-          <figure class="pp-modal__media">
-            <img src="/images/square.png" alt="Interactive 3D Portfolio preview" />
-          </figure>
-
-          <section class="pp-modal__details">
-            <div class="pp-modal__desc">
-              <h3>Description</h3>
-              <p>
-                A modern portfolio website with interactive 3D (Three.js), animated transitions, and responsive design.
+            <div class="pp-card__content">
+              <h3 class="pp-card__title">Interactive 3D Portfolio</h3>
+              <p class="pp-card__desc">
+                A portfolio site showcasing web dev and 3D work.
               </p>
-            </div>
-
-            <div class="pp-modal__tech">
-              <h3>Technologies</h3>
-              <div class="pp-modal__tags">
+              <div class="pp-card__tech">
                 <span class="pp-tag">HTML5</span>
                 <span class="pp-tag">CSS3</span>
                 <span class="pp-tag">JavaScript</span>
                 <span class="pp-tag">Three.js</span>
               </div>
-            </div>
-
-            <div class="pp-modal__features">
-              <h3>Key Features</h3>
-              <ul>
-                <li>Interactive 3D model responding to mouse</li>
-                <li>Smooth animations with GSAP</li>
-                <li>Fully responsive</li>
-                <li>Dark mode with custom themes</li>
-              </ul>
-            </div>
-          </section>
-        </div>
-
-        <footer class="pp-modal__footer">
-          <div class="pp-modal__links">
-            <a href="https://github.com/curtislow777/port-2025" target="_blank" rel="noopener" class="pp-btn">
-              <i class="fab fa-github" aria-hidden="true"></i> View Code
-            </a>
-            <a href="https://curt-folio.vercel.app/" target="_blank" rel="noopener" class="pp-btn pp-btn--primary">
-              <i class="fas fa-external-link-alt" aria-hidden="true"></i> Live Demo
-            </a>
-          </div>
-        </footer>
-      </div>
-    </div>
-
-    <!-- Modal: Project 2 -->
-    <div class="pp-modal" id="pp-modal-project-2" role="dialog" aria-modal="true" aria-labelledby="pp-modal-title-2"
-      aria-hidden="true">
-      <div class="pp-modal__content" tabindex="-1">
-        <button class="pp-modal__close" aria-label="Close">&times;</button>
-
-        <header class="pp-modal__header">
-          <h2 class="pp-modal__title" id="pp-modal-title-2">Singapore Odyssea — National Museum of Singapore (Glass
-            Rotunda)</h2>
-        </header>
-
-        <div class="pp-modal__body">
-          <figure class="pp-modal__media">
-            <img src="/images/misc/singapore-odyssea.webp" alt="Entrance of Singapore Odyssea - Glass Rotunda"
-              loading="lazy" />
-          </figure>
-
-          <section class="pp-modal__details">
-            <div class="pp-modal__desc">
-              <h3>Description</h3>
-              <p>
-                An immersive, time-travel voyage in the National Museum’s Shaw Foundation Glass Rotunda, where animated
-                panoramas wrap the spiral ramp to guide visitors through 700 years of Singapore’s history. Guests pick
-                up RFID wristbands to awaken a “magical companion” that follows them and triggers interactive moments
-                along the journey, culminating in a dramatic drum-level finale.
-              </p>
-            </div>
-
-            <div class="pp-modal__tech">
-              <h3>Technologies</h3>
-              <div class="pp-modal__tags">
-                <span class="pp-tag">Unreal Engine</span>
-                <span class="pp-tag">nDisplay</span>
-                <span class="pp-tag">Multi-node Projection</span>
-                <span class="pp-tag">Warping & Blending</span>
-                <span class="pp-tag">RFID Wristbands (Companions)</span>
+              <div class="pp-card__links">
+                <a
+                  href="https://github.com/curtislow777/port-2025"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Github Repository"
+                >
+                  <i class="fab fa-github" aria-hidden="true"></i>
+                </a>
+                <a
+                  href="https://curt-folio.vercel.app/"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Live Preview"
+                >
+                  <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+                </a>
               </div>
             </div>
+          </article>
 
-            <div class="pp-modal__features">
-              <h3>Experience Highlights</h3>
-              <ul>
-                <li>Four chapter arc descending the spiral ramp—from present day back to pre-colonial eras.</li>
-                <li>“Magical companions” linked to each visitor via RFID; interactions unlock moments along the route.
-                </li>
-                <li>Drum level features centerpiece media (LED globe / large-scale projections) and a cooperative
-                  finale.</li>
-                <li>Designed as a prelude to the Singapore History Gallery, bridging spectacle with historical context.
-                </li>
-              </ul>
-
-              <h3>My Contributions</h3>
-              <ul>
-                <li>Part of the <em>Spiral Ramp</em>, <em>Drum</em>, and <em>Transition Zone</em> team.</li>
-                <li>nDisplay deployment across multi-node, multi-projector systems.</li>
-                <li>Worked with AV teams on warping, blending, and calibration.</li>
-                <li>Automated cluster launch and monitoring for reliable daily ops.</li>
-              </ul>
-
-              <p>
-                <a href="https://cravefx.com/blog/cravefx-powers-the-multimedia-vision-behind-singapore-odyssea/"
-                  target="_blank" rel="noopener">
-                  Case study: CraveFX Powers the Multimedia Vision Behind Singapore Odyssea
-                </a>
-              </p>
+          <!-- Project Card 2 -->
+          <article
+            class="pp-card"
+            data-category="web"
+            data-modal="pp-modal-project-2"
+            tabindex="0"
+            aria-label="rotunda"
+          >
+            <div class="pp-card__img">
+              <img
+                src="/images/misc/singapore-odyssea.webp"
+                alt="Entrance of Singapore Odyssea - Glass Rotunda"
+                loading="lazy"
+              />
             </div>
+            <div class="pp-card__content">
+              <h3 class="pp-card__title">
+                Singapore Odyssea — National Museum of Singapore (Glass Rotunda)
+              </h3>
+              <p class="pp-card__desc">
+                An immersive multimedia exhibition at the National Museum’s
+                Glass Rotunda, built with Unreal Engine and nDisplay, featuring
+                interactive projections and BLE tracking that guide visitors
+                through 700 years of Singapore’s history.
+              </p>
 
-          </section>
+              <div class="pp-card__tech">
+                <span class="pp-tag">Unreal Engine</span>
+                <span class="pp-tag">nDisplay</span>
+                <span class="pp-tag">MQTT BLE Tracking</span>
+              </div>
+              <div class="pp-card__links">
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Github Repository"
+                >
+                  <i class="fab fa-github" aria-hidden="true"></i>
+                </a>
+                <a
+                  href="https://cravefx.com/blog/cravefx-powers-the-multimedia-vision-behind-singapore-odyssea/"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Live Preview"
+                >
+                  <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+                </a>
+              </div>
+            </div>
+          </article>
         </div>
-
-        <footer class="pp-modal__footer">
-          <div class="pp-modal__links">
-            <a href="https://cravefx.com/blog/cravefx-powers-the-multimedia-vision-behind-singapore-odyssea/"
-              target="_blank" rel="noopener" class="pp-btn pp-btn--primary">
-              <i class="fas fa-external-link-alt" aria-hidden="true"></i> Case Study
-            </a>
-          </div>
-        </footer>
-      </div>
-    </div>
-
-    <!-- Inside .work-modal, near the top -->
-    <button class="ppd-back-btn" type="button" hidden aria-label="Back">
-      <i class="fas fa-arrow-left" aria-hidden="true"></i>
-    </button>
-
-
-    <!-- Detail view mount (content injected on card click) -->
-    <section id="pp-detail" class="pp-detail" hidden aria-live="polite"></section>
-
-
-
-
-  </div>
-
-  <div class="modal erhu-modal">
-    <h1 class="modal-title">Huqin</h1>
-    <button class="modal-close-btn">X</button>
-
-    <div class="erhu-content">
-      <section class="erhu-text">
-        <p>
-          I joined my school's Chinese Orchestra on a whim and unexpectedly
-          found a new hobby: playing the Erhu(二胡). What started as curiosity
-          quickly became one of my favorite creative outlets.
-        </p>
-
-        <p>
-          I'm mostly self-taught, learning the instrument through tutorials on
-          YouTube and Chinese platforms, along with hours of solo practice.
-          Over time, I had the opportunity to perform in several school
-          concerts and even picked up the Zhonghu(中胡) as well.
-        </p>
-
-        <p>
-          I was part of the huqin section in the Ngee Ann Polytechnic Chinese
-          Orchestra (NPCO) from 2022-2025, and met some of my closest friends
-          there!
-        </p>
-
-        <p>My only regret is not starting sooner!!</p>
       </section>
 
-      <!-- portrait goes right of the text -->
-      <img src="/images/hq/zh-me.webp" alt="me playing the erhu" class="erhu-portrait" />
+      <!-- Namespaced Project Modal(s) — place near end of <body> or right here -->
+      <div
+        class="pp-modal"
+        id="pp-modal-project-1"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="pp-modal-title-1"
+        aria-hidden="true"
+      >
+        <div class="pp-modal__content" tabindex="-1">
+          <button class="pp-modal__close" aria-label="Close">&times;</button>
 
-      <!-- stays full‑width underneath -->
-      <section class="erhu-gallery">
-        <img src="/images/hq/huqin.webp" alt="NPCO Huqin Section 2023" class="erhu-img" />
-        <img src="/images/hq/npco.webp" alt="NPCO 2023 Concert" class="erhu-img" />
-        <img src="/images/hq/npco2.webp" alt="NPCO 2024 Concert" class="erhu-img" />
-      </section>
-    </div>
-  </div>
+          <header class="pp-modal__header">
+            <h2 class="pp-modal__title" id="pp-modal-title-1">
+              Interactive 3D Portfolio
+            </h2>
+          </header>
 
-  <div class="modal contact-modal">
-    <!-- Close button (same as before) -->
-    <button class="modal-close-btn">X</button>
+          <div class="pp-modal__body">
+            <figure class="pp-modal__media">
+              <img
+                src="/images/square.png"
+                alt="Interactive 3D Portfolio preview"
+              />
+            </figure>
 
-    <!-- Heading -->
-    <h1 class="modal-title">CONTACT</h1>
+            <section class="pp-modal__details">
+              <div class="pp-modal__desc">
+                <h3>Description</h3>
+                <p>
+                  A modern portfolio website with interactive 3D (Three.js),
+                  animated transitions, and responsive design.
+                </p>
+              </div>
 
-    <!-- Contact links/icons row -->
-    <div class="contact-links">
-      <!-- LinkedIn (FA “fab fa-linkedin-in”) -->
-      <a href="https://www.linkedin.com/in/curtis-low/" target="_blank">
-        <i class="fa-brands fa-linkedin-in"></i>
-      </a>
+              <div class="pp-modal__tech">
+                <h3>Technologies</h3>
+                <div class="pp-modal__tags">
+                  <span class="pp-tag">HTML5</span>
+                  <span class="pp-tag">CSS3</span>
+                  <span class="pp-tag">JavaScript</span>
+                  <span class="pp-tag">Three.js</span>
+                </div>
+              </div>
 
-      <!-- GitHub (FA “fab fa-github”) -->
-      <a href="https://github.com/curtislow777" target="_blank">
-        <i class="fab fa-github"></i>
-      </a>
-
-      <!-- Email (FA “fas fa-envelope”) -->
-      <a href="mailto:curtlow10@gmail.com">
-        <i class="fas fa-envelope"></i>
-        curtlow10@gmail.com
-      </a>
-    </div>
-
-    <!-- Contact form -->
-    <form class="contact-form">
-      <input type="hidden" name="access_key" value="676c98df-119e-4dc2-a818-73f03a89eaf6" />
-
-      <label for="contact-name">Name</label>
-      <input type="text" id="contact-name" name="name" placeholder="Your Name" required />
-
-      <label for="contact-email">Email</label>
-      <input type="email" id="contact-email" name="email" placeholder="Your Email" required />
-
-      <label for="contact-message">Message</label>
-      <textarea id="contact-message" name="message" rows="4" placeholder="Your Message" required></textarea>
-
-      <button type="submit" class="send-button">Send Message</button>
-    </form>
-  </div>
-
-  <!-- Fade Overlay for Image Preview -->
-  <div class="fade-overlay">
-    <div class="fade-overlay-content">
-      <button class="fade-overlay-close-btn">X</button>
-      <img src="" alt="Preview Image" class="fade-overlay-img" />
-      <div class="fade-overlay-text"></div>
-    </div>
-  </div>
-
-  <div id="css3d"></div>
-  <canvas id="experience-canvas" class="experience-canvas"></canvas>
-
-  <!-- Overlay for all modals -->
-  <div class="overlay"></div>
-  <div class="whiteboard-controls" style="display: none">
-    <button id="black-marker" class="circular-button-whiteboard whiteboard-selected">
-      <i class="fa-solid fa-paintbrush"></i>
-    </button>
-    <button id="red-marker" class="circular-button-whiteboard">
-      <i class="fa-solid fa-paintbrush"></i>
-    </button>
-    <button id="green-marker" class="circular-button-whiteboard">
-      <i class="fa-solid fa-paintbrush"></i>
-    </button>
-    <button id="blue-marker" class="circular-button-whiteboard">
-      <i class="fa-solid fa-paintbrush"></i>
-    </button>
-    <button id="eraser" class="circular-button-whiteboard">
-      <i class="fa-solid fa-eraser"></i>
-    </button>
-    <button id="clear-whiteboard" class="whiteboard-btn">Clear</button>
-    <button id="saveWhiteboard" class="circular-button-whiteboard">
-      <i class="fa-solid fa-floppy-disk"></i>
-    </button>
-  </div>
-
-  <!-- Hamburger Button -->
-  <button class="hamburger-btn" aria-label="Open menu">
-    <span class="hamburger-line"></span>
-    <span class="hamburger-line"></span>
-    <span class="hamburger-line"></span>
-  </button>
-
-  <!-- Sliding Panel -->
-  <div class="side-panel">
-    <div class="panel-content">
-      <h2>Menu</h2>
-      <nav class="panel-nav">
-        <a href="#" class="panel-link">Reset Camera</a>
-        <a href="#" class="panel-link">Work</a>
-        <a href="#" class="panel-link">About</a>
-        <a href="#" class="panel-link">Contact</a>
-        <a href="#" class="panel-link">Whiteboard</a>
-      </nav>
-    </div>
-  </div>
-  <template id="tutorial-template">
-    <div class="tutorial-overlay">
-      <div class="tutorial-cursor">
-        <div class="cursor-icon"></div>
-      </div>
-      <div class="speech-bubble">
-        <div class="bubble-content"></div>
-        <div class="bubble-controls">
-          <div class="step-indicator">
-            <span class="current-step">1</span> /
-            <span class="total-steps">4</span>
+              <div class="pp-modal__features">
+                <h3>Key Features</h3>
+                <ul>
+                  <li>Interactive 3D model responding to mouse</li>
+                  <li>Smooth animations with GSAP</li>
+                  <li>Fully responsive</li>
+                  <li>Dark mode with custom themes</li>
+                </ul>
+              </div>
+            </section>
           </div>
-          <div class="bubble-buttons">
-            <button class="bubble-btn secondary" id="prevBtn">
-              Previous
-            </button>
-            <button class="bubble-btn" id="nextBtn">Next</button>
-          </div>
+
+          <footer class="pp-modal__footer">
+            <div class="pp-modal__links">
+              <a
+                href="https://github.com/curtislow777/port-2025"
+                target="_blank"
+                rel="noopener"
+                class="pp-btn"
+              >
+                <i class="fab fa-github" aria-hidden="true"></i> View Code
+              </a>
+              <a
+                href="https://curt-folio.vercel.app/"
+                target="_blank"
+                rel="noopener"
+                class="pp-btn pp-btn--primary"
+              >
+                <i class="fas fa-external-link-alt" aria-hidden="true"></i> Live
+                Demo
+              </a>
+            </div>
+          </footer>
         </div>
       </div>
-      <button class="tutorial-skip">Skip Tutorial</button>
+
+      <!-- Modal: Project 2 -->
+      <div
+        class="pp-modal"
+        id="pp-modal-project-2"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="pp-modal-title-2"
+        aria-hidden="true"
+      >
+        <div class="pp-modal__content" tabindex="-1">
+          <button class="pp-modal__close" aria-label="Close">&times;</button>
+
+          <header class="pp-modal__header">
+            <h2 class="pp-modal__title" id="pp-modal-title-2">
+              Singapore Odyssea — National Museum of Singapore (Glass Rotunda)
+            </h2>
+          </header>
+
+          <div class="pp-modal__body">
+            <figure class="pp-modal__media">
+              <img
+                src="/images/misc/singapore-odyssea.webp"
+                alt="Entrance of Singapore Odyssea - Glass Rotunda"
+                loading="lazy"
+              />
+            </figure>
+
+            <section class="pp-modal__details">
+              <div class="pp-modal__desc">
+                <h3>Description</h3>
+                <p>
+                  An immersive, time-travel voyage in the National Museum’s Shaw
+                  Foundation Glass Rotunda, where animated panoramas wrap the
+                  spiral ramp to guide visitors through 700 years of Singapore’s
+                  history. Guests pick up RFID wristbands to awaken a “magical
+                  companion” that follows them and triggers interactive moments
+                  along the journey, culminating in a dramatic drum-level
+                  finale.
+                </p>
+              </div>
+
+              <div class="pp-modal__tech">
+                <h3>Technologies</h3>
+                <div class="pp-modal__tags">
+                  <span class="pp-tag">Unreal Engine</span>
+                  <span class="pp-tag">nDisplay</span>
+                  <span class="pp-tag">Multi-node Projection</span>
+                  <span class="pp-tag">Warping & Blending</span>
+                  <span class="pp-tag">RFID Wristbands (Companions)</span>
+                </div>
+              </div>
+
+              <div class="pp-modal__features">
+                <h3>Experience Highlights</h3>
+                <ul>
+                  <li>
+                    Four chapter arc descending the spiral ramp—from present day
+                    back to pre-colonial eras.
+                  </li>
+                  <li>
+                    “Magical companions” linked to each visitor via RFID;
+                    interactions unlock moments along the route.
+                  </li>
+                  <li>
+                    Drum level features centerpiece media (LED globe /
+                    large-scale projections) and a cooperative finale.
+                  </li>
+                  <li>
+                    Designed as a prelude to the Singapore History Gallery,
+                    bridging spectacle with historical context.
+                  </li>
+                </ul>
+
+                <h3>My Contributions</h3>
+                <ul>
+                  <li>
+                    Part of the <em>Spiral Ramp</em>, <em>Drum</em>, and
+                    <em>Transition Zone</em> team.
+                  </li>
+                  <li>
+                    nDisplay deployment across multi-node, multi-projector
+                    systems.
+                  </li>
+                  <li>
+                    Worked with AV teams on warping, blending, and calibration.
+                  </li>
+                  <li>
+                    Automated cluster launch and monitoring for reliable daily
+                    ops.
+                  </li>
+                </ul>
+
+                <p>
+                  <a
+                    href="https://cravefx.com/blog/cravefx-powers-the-multimedia-vision-behind-singapore-odyssea/"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    Case study: CraveFX Powers the Multimedia Vision Behind
+                    Singapore Odyssea
+                  </a>
+                </p>
+              </div>
+            </section>
+          </div>
+
+          <footer class="pp-modal__footer">
+            <div class="pp-modal__links">
+              <a
+                href="https://cravefx.com/blog/cravefx-powers-the-multimedia-vision-behind-singapore-odyssea/"
+                target="_blank"
+                rel="noopener"
+                class="pp-btn pp-btn--primary"
+              >
+                <i class="fas fa-external-link-alt" aria-hidden="true"></i> Case
+                Study
+              </a>
+            </div>
+          </footer>
+        </div>
+      </div>
+
+      <!-- Inside .work-modal, near the top -->
+      <button class="ppd-back-btn" type="button" hidden aria-label="Back">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+      </button>
+
+      <!-- Detail view mount (content injected on card click) -->
+      <section
+        id="pp-detail"
+        class="pp-detail"
+        hidden
+        aria-live="polite"
+      ></section>
     </div>
-  </template>
 
-  <script type="module" src="/src/main.js"></script>
-</body>
+    <div class="modal erhu-modal">
+      <h1 class="modal-title">Huqin</h1>
+      <button class="modal-close-btn">X</button>
 
-<script>
-  document
-    .querySelector(".contact-form")
-    .addEventListener("submit", async function (e) {
-      e.preventDefault();
+      <div class="erhu-content">
+        <section class="erhu-text">
+          <p>
+            I joined my school's Chinese Orchestra on a whim and unexpectedly
+            found a new hobby: playing the Erhu(二胡). What started as curiosity
+            quickly became one of my favorite creative outlets.
+          </p>
 
-      const form = e.target;
-      const formData = new FormData(form);
+          <p>
+            I'm mostly self-taught, learning the instrument through tutorials on
+            YouTube and Chinese platforms, along with hours of solo practice.
+            Over time, I had the opportunity to perform in several school
+            concerts and even picked up the Zhonghu(中胡) as well.
+          </p>
 
-      const res = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        body: formData,
+          <p>
+            I was part of the huqin section in the Ngee Ann Polytechnic Chinese
+            Orchestra (NPCO) from 2022-2025, and met some of my closest friends
+            there!
+          </p>
+
+          <p>My only regret is not starting sooner!!</p>
+        </section>
+
+        <!-- portrait goes right of the text -->
+        <img
+          src="/images/hq/zh-me.webp"
+          alt="me playing the erhu"
+          class="erhu-portrait"
+        />
+
+        <!-- stays full‑width underneath -->
+        <section class="erhu-gallery">
+          <img
+            src="/images/hq/huqin.webp"
+            alt="NPCO Huqin Section 2023"
+            class="erhu-img"
+          />
+          <img
+            src="/images/hq/npco.webp"
+            alt="NPCO 2023 Concert"
+            class="erhu-img"
+          />
+          <img
+            src="/images/hq/npco2.webp"
+            alt="NPCO 2024 Concert"
+            class="erhu-img"
+          />
+        </section>
+      </div>
+    </div>
+
+    <div class="modal contact-modal">
+      <!-- Close button (same as before) -->
+      <button class="modal-close-btn">X</button>
+
+      <!-- Heading -->
+      <h1 class="modal-title">CONTACT</h1>
+
+      <!-- Contact links/icons row -->
+      <div class="contact-links">
+        <!-- LinkedIn (FA “fab fa-linkedin-in”) -->
+        <a href="https://www.linkedin.com/in/curtis-low/" target="_blank">
+          <i class="fa-brands fa-linkedin-in"></i>
+        </a>
+
+        <!-- GitHub (FA “fab fa-github”) -->
+        <a href="https://github.com/curtislow777" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+
+        <!-- Email (FA “fas fa-envelope”) -->
+        <a href="mailto:curtlow10@gmail.com">
+          <i class="fas fa-envelope"></i>
+          curtlow10@gmail.com
+        </a>
+      </div>
+
+      <!-- Contact form -->
+      <form class="contact-form">
+        <input
+          type="hidden"
+          name="access_key"
+          value="676c98df-119e-4dc2-a818-73f03a89eaf6"
+        />
+
+        <label for="contact-name">Name</label>
+        <input
+          type="text"
+          id="contact-name"
+          name="name"
+          placeholder="Your Name"
+          required
+        />
+
+        <label for="contact-email">Email</label>
+        <input
+          type="email"
+          id="contact-email"
+          name="email"
+          placeholder="Your Email"
+          required
+        />
+
+        <label for="contact-message">Message</label>
+        <textarea
+          id="contact-message"
+          name="message"
+          rows="4"
+          placeholder="Your Message"
+          required
+        ></textarea>
+
+        <button type="submit" class="send-button">Send Message</button>
+      </form>
+    </div>
+
+    <!-- Fade Overlay for Image Preview -->
+    <div class="fade-overlay">
+      <div class="fade-overlay-content">
+        <button class="fade-overlay-close-btn">X</button>
+        <img src="" alt="Preview Image" class="fade-overlay-img" />
+        <div class="fade-overlay-text"></div>
+      </div>
+    </div>
+
+    <div id="css3d"></div>
+    <canvas id="experience-canvas" class="experience-canvas"></canvas>
+
+    <!-- Overlay for all modals -->
+    <div class="overlay"></div>
+    <div class="whiteboard-controls" style="display: none">
+      <button
+        id="black-marker"
+        class="circular-button-whiteboard whiteboard-selected"
+      >
+        <i class="fa-solid fa-paintbrush"></i>
+      </button>
+      <button id="red-marker" class="circular-button-whiteboard">
+        <i class="fa-solid fa-paintbrush"></i>
+      </button>
+      <button id="green-marker" class="circular-button-whiteboard">
+        <i class="fa-solid fa-paintbrush"></i>
+      </button>
+      <button id="blue-marker" class="circular-button-whiteboard">
+        <i class="fa-solid fa-paintbrush"></i>
+      </button>
+      <button id="eraser" class="circular-button-whiteboard">
+        <i class="fa-solid fa-eraser"></i>
+      </button>
+      <button id="clear-whiteboard" class="whiteboard-btn">Clear</button>
+      <button id="saveWhiteboard" class="circular-button-whiteboard">
+        <i class="fa-solid fa-floppy-disk"></i>
+      </button>
+    </div>
+
+    <!-- Hamburger Button -->
+    <button class="hamburger-btn" aria-label="Open menu">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+
+    <!-- Sliding Panel -->
+    <div class="side-panel">
+      <div class="panel-content">
+        <h2>Menu</h2>
+        <nav class="panel-nav">
+          <a href="#" class="panel-link">Reset Camera</a>
+          <a href="#" class="panel-link">Work</a>
+          <a href="#" class="panel-link">About</a>
+          <a href="#" class="panel-link">Contact</a>
+          <a href="#" class="panel-link">Whiteboard</a>
+        </nav>
+      </div>
+    </div>
+    <template id="tutorial-template">
+      <div class="tutorial-overlay">
+        <div class="tutorial-cursor">
+          <div class="cursor-icon"></div>
+        </div>
+        <div class="speech-bubble">
+          <div class="bubble-content"></div>
+          <div class="bubble-controls">
+            <div class="step-indicator">
+              <span class="current-step">1</span> /
+              <span class="total-steps">4</span>
+            </div>
+            <div class="bubble-buttons">
+              <button class="bubble-btn secondary" id="prevBtn">
+                Previous
+              </button>
+              <button class="bubble-btn" id="nextBtn">Next</button>
+            </div>
+          </div>
+        </div>
+        <button class="tutorial-skip">Skip Tutorial</button>
+      </div>
+    </template>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+
+  <script>
+    document
+      .querySelector(".contact-form")
+      .addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData(form);
+
+        const res = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          body: formData,
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          alert("✅ Message sent!");
+          form.reset();
+        } else {
+          alert("❌ Failed to send: " + result.message);
+        }
       });
+  </script>
+  <script>
+    (() => {
+      const workModal = document.querySelector(".work-modal");
+      if (!workModal) return;
 
-      const result = await res.json();
+      const detail = document.getElementById("pp-detail");
+      const backBtn = workModal.querySelector(".ppd-back-btn");
+      const overlay = document.querySelector(".overlay");
 
-      if (result.success) {
-        alert("✅ Message sent!");
-        form.reset();
-      } else {
-        alert("❌ Failed to send: " + result.message);
-      }
-    });
-</script>
-<script>
-  (() => {
-    const workModal = document.querySelector('.work-modal');
-    if (!workModal) return;
+      // Blocks that make up the overview page inside the work modal
+      const overviewEls = workModal.querySelectorAll(
+        ".modal-main-content, .modal-tech-stack, .pp-divider, .pp-projects"
+      );
 
-    const detail = document.getElementById('pp-detail');
-    const backBtn = workModal.querySelector('.ppd-back-btn');
-    const overlay = document.querySelector('.overlay');
+      // Filter reset helpers (optional — remove if you want to keep the last filter)
+      const resetFiltersToAll = () => {
+        const btns = workModal.querySelectorAll(".pp-filter-btn");
+        const first =
+          workModal.querySelector('.pp-filter-btn[data-filter="all"]') ||
+          btns[0];
+        btns.forEach((b) => {
+          b.classList.remove("is-active");
+          b.setAttribute("aria-selected", "false");
+        });
+        if (first) {
+          first.classList.add("is-active");
+          first.setAttribute("aria-selected", "true");
+        }
+        workModal.querySelectorAll(".pp-card").forEach((card) => {
+          card.style.display = "flex";
+        });
+      };
 
-    // Blocks that make up the overview page inside the work modal
-    const overviewEls = workModal.querySelectorAll(
-      '.modal-main-content, .modal-tech-stack, .pp-divider, .pp-projects'
-    );
+      const isWorkModalOpen = () =>
+        getComputedStyle(workModal).display !== "none";
 
-    // Filter reset helpers (optional — remove if you want to keep the last filter)
-    const resetFiltersToAll = () => {
-      const btns = workModal.querySelectorAll('.pp-filter-btn');
-      const first = workModal.querySelector('.pp-filter-btn[data-filter="all"]') || btns[0];
-      btns.forEach(b => { b.classList.remove('is-active'); b.setAttribute('aria-selected', 'false'); });
-      if (first) {
-        first.classList.add('is-active');
-        first.setAttribute('aria-selected', 'true');
-      }
-      workModal.querySelectorAll('.pp-card').forEach(card => { card.style.display = 'flex'; });
-    };
+      const showOverview = () => {
+        if (!detail) return;
+        detail.hidden = true;
+        detail.innerHTML = "";
+        overviewEls.forEach((el) => (el.style.display = ""));
+        workModal.classList.remove("pp-detail-active"); // <- shows the title again via CSS
+        if (backBtn) backBtn.hidden = true;
+        resetFiltersToAll(); // comment out if you want to preserve the last filter
+      };
 
-    const isWorkModalOpen = () => getComputedStyle(workModal).display !== 'none';
+      const showDetailFromTemplate = (modalId) => {
+        const tpl = document.getElementById(modalId);
+        if (!tpl || !detail) {
+          console.warn("[pp] template not found:", modalId);
+          return;
+        }
 
-    const showOverview = () => {
-      if (!detail) return;
-      detail.hidden = true;
-      detail.innerHTML = '';
-      overviewEls.forEach(el => el.style.display = '');
-      workModal.classList.remove('pp-detail-active'); // <- shows the title again via CSS
-      if (backBtn) backBtn.hidden = true;
-      resetFiltersToAll(); // comment out if you want to preserve the last filter
-    };
+        const title =
+          tpl.querySelector(".pp-modal__title")?.textContent?.trim() || "";
+        const imgEl = tpl.querySelector(".pp-modal__media img");
+        const imgHTML = imgEl
+          ? `<img src="${imgEl.getAttribute("src")}" alt="${imgEl.getAttribute("alt") || ""}" loading="lazy">`
+          : "";
+        const descHTML = tpl.querySelector(".pp-modal__desc")?.innerHTML || "";
+        const techTagsHTML =
+          tpl.querySelector(".pp-modal__tech .pp-modal__tags")?.innerHTML || "";
+        const featuresHTML =
+          tpl.querySelector(".pp-modal__features ul")?.innerHTML || "";
+        const linksHTML =
+          tpl.querySelector(".pp-modal__footer .pp-modal__links")?.innerHTML ||
+          "";
 
-    const showDetailFromTemplate = (modalId) => {
-      const tpl = document.getElementById(modalId);
-      if (!tpl || !detail) { console.warn('[pp] template not found:', modalId); return; }
-
-      const title = tpl.querySelector('.pp-modal__title')?.textContent?.trim() || '';
-      const imgEl = tpl.querySelector('.pp-modal__media img');
-      const imgHTML = imgEl ? `<img src="${imgEl.getAttribute('src')}" alt="${imgEl.getAttribute('alt') || ''}" loading="lazy">` : '';
-      const descHTML = tpl.querySelector('.pp-modal__desc')?.innerHTML || '';
-      const techTagsHTML = tpl.querySelector('.pp-modal__tech .pp-modal__tags')?.innerHTML || '';
-      const featuresHTML = tpl.querySelector('.pp-modal__features ul')?.innerHTML || '';
-      const linksHTML = tpl.querySelector('.pp-modal__footer .pp-modal__links')?.innerHTML || '';
-
-      detail.innerHTML = `
+        detail.innerHTML = `
       <header class="ppd-header">
         <h2 class="ppd-title" tabindex="-1">${title}</h2>
       </header>
@@ -741,63 +948,80 @@
         <div class="ppd-media">${imgHTML}</div>
         <section class="ppd-sections">
           <div class="ppd-desc">${descHTML}</div>
-          ${techTagsHTML ? `<div class="ppd-tech"><h3>Technologies</h3><div class="ppd-tags">${techTagsHTML}</div></div>` : ''}
-          ${featuresHTML ? `<div class="ppd-features"><h3>Key Features</h3><ul>${featuresHTML}</ul></div>` : ''}
+          ${techTagsHTML ? `<div class="ppd-tech"><h3>Technologies</h3><div class="ppd-tags">${techTagsHTML}</div></div>` : ""}
+          ${featuresHTML ? `<div class="ppd-features"><h3>Key Features</h3><ul>${featuresHTML}</ul></div>` : ""}
         </section>
       </div>
-      ${linksHTML ? `<footer class="ppd-footer">${linksHTML}</footer>` : ''}
+      ${linksHTML ? `<footer class="ppd-footer">${linksHTML}</footer>` : ""}
     `;
 
-      // Swap views (title is hidden by CSS via .pp-detail-active)
-      overviewEls.forEach(el => el.style.display = 'none');
+        // Swap views (title is hidden by CSS via .pp-detail-active)
+        overviewEls.forEach((el) => (el.style.display = "none"));
+        detail.hidden = false;
+        workModal.classList.add("pp-detail-active");
+        if (backBtn) backBtn.hidden = false;
+
+        detail.querySelector(".ppd-title")?.focus?.();
+      };
+
+      // Card click -> detail view
+      workModal.addEventListener("click", (e) => {
+        const card = e.target.closest(".pp-card[data-modal]");
+        if (!card || card.closest(".work-modal") !== workModal) return;
+        if (e.target.closest('a, button, [role="button"]')) return; // let links work
+        e.preventDefault();
+        const modalId = card.getAttribute("data-modal");
+        showDetailFromTemplate(modalId);
+      });
+
+      // In-modal Back
+      backBtn?.addEventListener("click", showOverview);
+
+      // Close with X (work modal’s own close)
+      workModal
+        .querySelector(".modal-close-btn")
+        ?.addEventListener("click", showOverview);
+
+      // Close via overlay click (global)
+      overlay?.addEventListener("click", () => {
+        if (isWorkModalOpen()) showOverview();
+      });
+
+      // Esc anywhere -> if work modal is open, ensure we reset to overview
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && isWorkModalOpen()) {
+          showOverview();
+        }
+      });
+
+      // Safety net: if any code hides/shows the work modal, auto-reset on hide
+      const mo = new MutationObserver(() => {
+        const visible = isWorkModalOpen();
+        if (!visible) showOverview();
+      });
+      mo.observe(workModal, {
+        attributes: true,
+        attributeFilter: ["style", "class"],
+      });
+
+      // Ensure initial state is clean
+      showOverview();
+    })();
+
+    const workModal = document.querySelector(".work-modal");
+    const detail = document.getElementById("pp-detail");
+    const backBtn = document.querySelector(".ppd-back-btn");
+
+    function openProject() {
+      workModal.classList.add("pp-detail-active");
       detail.hidden = false;
-      workModal.classList.add('pp-detail-active');
-      if (backBtn) backBtn.hidden = false;
+      backBtn.hidden = false;
+    }
 
-      detail.querySelector('.ppd-title')?.focus?.();
-    };
-
-    // Card click -> detail view
-    workModal.addEventListener('click', (e) => {
-      const card = e.target.closest('.pp-card[data-modal]');
-      if (!card || card.closest('.work-modal') !== workModal) return;
-      if (e.target.closest('a, button, [role="button"]')) return; // let links work
-      e.preventDefault();
-      const modalId = card.getAttribute('data-modal');
-      showDetailFromTemplate(modalId);
-    });
-
-    // In-modal Back
-    backBtn?.addEventListener('click', showOverview);
-
-    // Close with X (work modal’s own close)
-    workModal.querySelector('.modal-close-btn')?.addEventListener('click', showOverview);
-
-    // Close via overlay click (global)
-    overlay?.addEventListener('click', () => {
-      if (isWorkModalOpen()) showOverview();
-    });
-
-    // Esc anywhere -> if work modal is open, ensure we reset to overview
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && isWorkModalOpen()) {
-        showOverview();
-      }
-    });
-
-    // Safety net: if any code hides/shows the work modal, auto-reset on hide
-    const mo = new MutationObserver(() => {
-      const visible = isWorkModalOpen();
-      if (!visible) showOverview();
-    });
-    mo.observe(workModal, { attributes: true, attributeFilter: ['style', 'class'] });
-
-    // Ensure initial state is clean
-    showOverview();
-  })();
-</script>
-
-
-
-
+    function backToList() {
+      workModal.classList.remove("pp-detail-active");
+      detail.hidden = true;
+      backBtn.hidden = true;
+    }
+  </script>
 </html>
