@@ -157,43 +157,462 @@ lottie-player {
   border-radius: 50%;
 }
 
+/* ============================================================
+   WORK MODAL  (scoped to .work-modal only)
+   - Keeps Tech Stack on the right
+   - Places Projects section full-width below credits/stack
+   - Uses your work palette variables
+   ============================================================ */
+
 .work-modal {
   background: var(--work-modal-bg);
   border: 10px solid var(--work-modal-border);
   color: var(--work-modal-text);
 }
 
-.modal-body {
-  display: flex;
+/* Keep your existing title/close styles if you have them elsewhere */
+.work-modal .modal-title {
+  color: var(--work-modal-text);
+}
+
+/* Layout: grid for left/right, then full-width projects */
+.work-modal .modal-body {
+  display: grid;
+  /* override any global flex */
+  grid-template-columns: 1fr minmax(240px, 28ch);
   gap: 2rem;
-  flex-wrap: wrap;
+  align-items: start;
 }
 
-.modal-main-content {
-  flex: 2;
-  min-width: 300px;
+.work-modal .modal-main-content {
+  grid-column: 1;
 }
 
-.modal-tech-stack {
-  flex: 1;
+.work-modal .modal-tech-stack {
+  grid-column: 2;
+}
+
+.work-modal .modal-tech-stack {
   min-width: 200px;
-  border-left: 1px solid #ccc;
+  border-left: 1px solid var(--work-modal-border);
   padding-left: 1rem;
 }
 
-.modal-tech-stack h3 {
+.work-modal .modal-tech-stack h3 {
   margin-top: 0;
 }
 
-.modal-tech-stack ul {
+.work-modal .modal-tech-stack ul {
   list-style: none;
+  margin: 0;
   padding: 0;
+}
+
+.work-modal .modal-tech-stack li {
+  margin-bottom: 0.5rem;
+}
+
+/* Projects area is a new row spanning both columns */
+.work-modal .pp-divider,
+.work-modal .pp-projects {
+  grid-column: 1 / -1;
+}
+
+/* Mobile: stack everything, keep a top border for the stack */
+@media (max-width: 900px) {
+  .work-modal .modal-body {
+    grid-template-columns: 1fr;
+  }
+
+  .work-modal .modal-tech-stack {
+    grid-column: 1;
+    border-left: 0;
+    border-top: 1px solid var(--work-modal-border);
+    padding-left: 0;
+    padding-top: 1rem;
+  }
+}
+
+/* ============================================================
+   PORTFOLIO PROJECTS (pp-) inside WORK MODAL
+   - All colors sourced from work palette (no blue accents)
+   ============================================================ */
+
+/* Local accent for this modal only (avoids blue) */
+.work-modal {
+  --work-accent: var(--work-modal-border);
+}
+
+.work-modal .pp-divider {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 1px solid var(--work-modal-border);
+}
+
+/* Map pp tokens to work palette */
+.work-modal .pp-projects {
+  --pp-text: var(--work-modal-text);
+  --pp-accent: var(--work-accent);
+  --pp-surface: var(--work-modal-bg);
+  --pp-bg-card: var(--card-bg);
+  color: var(--pp-text);
+}
+
+/* Section title */
+.work-modal .pp-page-title {
+  text-align: center;
+  margin: 2rem 0 1rem;
+  font-size: 2.2rem;
+  position: relative;
+  padding-bottom: 1rem;
+  color: var(--pp-text);
+}
+
+.work-modal .pp-page-title::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background-color: var(--pp-accent);
+}
+
+/* Filters */
+.work-modal .pp-filter {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.work-modal .pp-filter-btn {
+  background-color: var(--card-bg);
+  border: 1px solid var(--work-modal-border);
+  color: var(--pp-text);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform .2s ease, color .2s ease, background-color .2s ease, border-color .2s ease;
+}
+
+.work-modal .pp-filter-btn:hover,
+.work-modal .pp-filter-btn.is-active {
+  background-color: color-mix(in srgb, var(--work-accent) 12%, transparent);
+  color: var(--pp-accent);
+  border-color: var(--pp-accent);
+  transform: translateY(-2px);
+}
+
+/* Grid */
+.work-modal .pp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 2rem;
+}
+
+/* Card */
+.work-modal .pp-card {
+  background-color: var(--pp-bg-card);
+  border: 1px solid var(--work-modal-border);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform .25s ease, box-shadow .25s ease;
+  outline: none;
+}
+
+.work-modal .pp-card:hover,
+.work-modal .pp-card:focus {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, .15);
+  cursor: pointer;
+}
+
+/* Image area (no hardcoded blue) */
+.work-modal .pp-card__img {
+  width: 100%;
+  height: 200px;
+  background-color: color-mix(in srgb, var(--work-modal-bg) 85%, var(--work-modal-text) 15%);
+  overflow: hidden;
+}
+
+.work-modal .pp-card__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Content */
+.work-modal .pp-card__content {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  flex: 1;
+}
+
+.work-modal .pp-card__title {
+  font-size: 1.3rem;
+  margin: 0;
+  color: var(--pp-text);
+}
+
+.work-modal .pp-card__desc {
+  color: var(--pp-text);
+  opacity: .85;
+  font-size: 1rem;
+  margin: 0 0 .5rem;
+  flex: 1;
+}
+
+/* Tech tags */
+.work-modal .pp-card__tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: auto;
+}
+
+.work-modal .pp-tag {
+  background-color: color-mix(in srgb, var(--work-accent) 10%, transparent);
+  border: 1px solid var(--work-accent);
+  color: var(--work-accent);
+  padding: .25rem .5rem;
+  border-radius: 4px;
+  font-size: .8rem;
+}
+
+/* Links */
+.work-modal .pp-card__links {
+  display: flex;
+  gap: 1rem;
+  margin-top: .5rem;
+}
+
+.work-modal .pp-card__links a {
+  color: var(--pp-text);
+  font-size: 1.2rem;
+  transition: color .2s ease;
+}
+
+.work-modal .pp-card__links a:hover {
+  color: var(--pp-accent);
+}
+
+/* ============================================================
+   PROJECT DETAIL MODAL (pp-modal)
+   - Appended near <body>, but styled with Work palette
+   ============================================================ */
+
+.pp-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, .35);
+  /* light overlay */
+  z-index: 4000;
+  /* above .modal */
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+
+.dark-theme .pp-modal {
+  background-color: rgba(0, 0, 0, .7);
+}
+
+/* darker overlay in dark mode */
+.pp-modal.pp-show {
+  display: block;
+  opacity: 1;
+}
+
+.pp-modal__content {
+  position: relative;
+  background-color: var(--work-modal-bg);
+  color: var(--work-modal-text);
+  border-radius: 10px;
+  width: min(1000px, 92vw);
+  margin: 5vh auto;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, .35);
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  animation: pp-modal-in .3s ease;
+}
+
+@keyframes pp-modal-in {
+  from {
+    transform: translateY(-24px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.pp-modal__close {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  font-size: 2rem;
+  color: var(--work-modal-text);
+  opacity: .7;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color .2s ease, transform .2s ease, opacity .2s ease;
+}
+
+.pp-modal__close:hover {
+  color: var(--work-modal-border);
+  transform: scale(1.05);
+  opacity: 1;
+}
+
+.pp-modal__header {
+  padding: 1.25rem 1.75rem;
+  border-bottom: 1px solid var(--work-modal-border);
+}
+
+.pp-modal__title {
+  color: var(--work-modal-text);
+  font-size: 1.75rem;
   margin: 0;
 }
 
-.modal-tech-stack li {
-  margin-bottom: 0.5rem;
+.pp-modal__body {
+  padding: 1.75rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  overflow-y: auto;
 }
+
+@media (max-width: 900px) {
+  .pp-modal__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pp-modal__media img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.pp-modal__details {
+  display: contents;
+}
+
+/* let sections flow in the grid */
+.pp-modal__desc {
+  grid-column: 1 / -1;
+}
+
+.pp-modal__desc h3,
+.pp-modal__tech h3,
+.pp-modal__features h3 {
+  color: var(--work-modal-border);
+  /* accent uses work border tone */
+  margin: 0 0 .75rem 0;
+  font-size: 1.15rem;
+}
+
+.pp-modal__desc p {
+  color: var(--work-modal-text);
+  opacity: .85;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.pp-modal__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.pp-modal__features ul {
+  list-style: none;
+  color: var(--work-modal-text);
+  opacity: .85;
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+.pp-modal__features li {
+  position: relative;
+  margin-bottom: .5rem;
+  line-height: 1.6;
+}
+
+.pp-modal__features li::before {
+  content: "▹";
+  position: absolute;
+  left: -1.5rem;
+  color: var(--work-modal-border);
+}
+
+.pp-modal__footer {
+  padding: 1.25rem 1.75rem;
+  border-top: 1px solid var(--work-modal-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: .75rem;
+}
+
+.pp-modal__links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .7rem 1.25rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--work-modal-border);
+  color: var(--work-modal-border);
+  background: transparent;
+  transition: transform .2s ease, background-color .2s ease;
+  text-decoration: none;
+}
+
+.pp-btn:hover {
+  background-color: color-mix(in srgb, var(--work-modal-border) 12%, transparent);
+  transform: translateY(-2px);
+}
+
+.pp-btn--primary {
+  background-color: color-mix(in srgb, var(--work-modal-border) 12%, transparent);
+}
+
+.pp-btn--primary:hover {
+  background-color: color-mix(in srgb, var(--work-modal-border) 18%, transparent);
+}
+
+/* Prevent background scroll when a pp-modal is open */
+body.pp-modal-open {
+  overflow: hidden;
+}
+
+
 
 .about-modal {
   background: var(--about-modal-bg);
@@ -204,6 +623,7 @@ lottie-player {
 .about-section {
   margin-bottom: 20px;
 }
+
 .section-header {
   display: flex;
   align-items: center;
@@ -216,52 +636,106 @@ lottie-player {
 }
 
 .entry {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: minmax(0, 62ch) 1fr;
+  /* content + flexible sidebar */
+  gap: 2rem;
+  align-items: start;
 }
 
+/* Let the text breathe; remove 70% cap */
 .entry-content {
-  flex: 1;
-  max-width: 70%;
+  max-width: unset;
 }
 
-.entry-content p {
-  margin-top: 5px;
-  line-height: 1.5;
-}
-
+/* Right sidebar: no border, compact, right-aligned */
 .entry-meta {
+  display: grid;
+  justify-items: end;
   text-align: right;
-  min-width: 120px;
+  gap: 0.5rem;
+
 }
 
+/* Icon aligns with the right edge */
 .icon {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 10%;
   object-fit: contain;
-  display: block;
-  margin: 0 auto 8px;
+  margin: 0;
+  align-self: start;
 }
+
+/* Timeline: stack role over date for stability */
+.timeline {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.timeline-item {
+  display: grid;
+  justify-items: end;
+}
+
+.timeline-item .role {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.timeline-item .date {
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+/* Small rhythm tweaks */
+.entry-content h4 {
+  margin: 0.75rem 0 0.25rem;
+}
+
+.entry-content ul {
+  margin: 0.25rem 0 0;
+  padding-left: 1.2rem;
+}
+
+/* Mobile: stack and left-align meta */
+@media (max-width: 900px) {
+  .entry {
+    grid-template-columns: 1fr;
+  }
+
+  .entry-meta {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .icon {
+    align-self: start;
+  }
+}
+
 
 .date {
   font-size: 0.9em;
   color: #555;
 }
+
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 2rem;
 }
+
 .skills-grid h3 {
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
 }
+
 .skills-grid ul {
   list-style: none;
   padding-left: 0;
 }
+
 .skills-grid li {
   margin-bottom: 0.3rem;
 }
@@ -285,6 +759,7 @@ lottie-player {
     font-size: 1rem;
     line-height: 1.6;
   }
+
   .erhu-portrait {
     grid-area: portrait;
     width: 100%;
@@ -388,7 +863,8 @@ lottie-player {
 }
 
 .side-panel.active {
-  right: 0; /* Slide in */
+  right: 0;
+  /* Slide in */
 }
 
 .panel-content {
@@ -520,15 +996,19 @@ lottie-player {
 #black-marker {
   background-color: black;
 }
+
 #red-marker {
   background-color: red;
 }
+
 #green-marker {
   background-color: darkgreen;
 }
+
 #blue-marker {
   background-color: blue;
 }
+
 #eraser {
   background-color: white;
 }
@@ -571,6 +1051,7 @@ lottie-player {
   transition: all 0.3s ease;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
+
 .control-btn {
   background-color: var(--button-bg);
   border-color: var(--button-border);
@@ -584,6 +1065,7 @@ lottie-player {
 #sound-toggle i {
   font-size: 2rem;
 }
+
 /* Light theme (day mode) */
 .light-theme .control-btn {
   background-color: vars.$button-bg-day;
@@ -619,7 +1101,8 @@ lottie-player {
   opacity: 0;
 
   background-color: rgba(0, 0, 0, 0.85);
-  z-index: 1200; /* Adjust if needed to sit above other modals */
+  z-index: 1200;
+  /* Adjust if needed to sit above other modals */
 }
 
 /* Position and style your content */
@@ -639,6 +1122,7 @@ lottie-player {
   max-height: 80vh;
   object-fit: contain;
 }
+
 .fade-overlay-text {
   margin-top: 1rem;
   font-size: 1.1rem;
@@ -675,6 +1159,7 @@ lottie-player {
   opacity: 0;
   transition: opacity 0.5s ease;
 }
+
 .tutorial-overlay.active {
   opacity: 1;
 }
@@ -685,7 +1170,8 @@ lottie-player {
   top: 0;
   left: 0;
   opacity: 0;
-  will-change: translate, scale, opacity; /* Use individual properties */
+  will-change: translate, scale, opacity;
+  /* Use individual properties */
   transition: opacity 0.3s ease;
   backface-visibility: hidden;
 }
@@ -698,6 +1184,7 @@ lottie-player {
   translate: var(--cursor-x, 0px) var(--cursor-y, 0px);
   /* Centering is now done in the JS logic */
 }
+
 .speech-bubble {
   min-width: 280px;
   max-width: 350px;
@@ -714,6 +1201,7 @@ lottie-player {
   translate: var(--bubble-x, 0px) var(--bubble-y, 0px);
   scale: var(--bubble-scale, 0.5);
 }
+
 /* Your other styles for cursor-icon, buttons, etc. remain the same */
 .cursor-icon {
   width: 100%;
@@ -723,10 +1211,12 @@ lottie-player {
   box-shadow: 0 0 20px rgba(74, 158, 255, 0.6);
   animation: cursorPulse 2s ease-in-out infinite;
 }
+
 .bubble-content {
   margin-bottom: 20px;
   font-weight: 500;
 }
+
 .bubble-controls {
   display: flex;
   justify-content: space-between;
@@ -735,15 +1225,18 @@ lottie-player {
   padding-top: 16px;
   border-top: 1px solid rgba(74, 158, 255, 0.2);
 }
+
 .step-indicator {
   font-size: 12px;
   color: #666;
   font-weight: 600;
 }
+
 .bubble-buttons {
   display: flex;
   gap: 8px;
 }
+
 .bubble-btn {
   background: linear-gradient(135deg, #4a9eff 0%, #357abd 100%);
   color: white;
@@ -756,10 +1249,12 @@ lottie-player {
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(74, 158, 255, 0.3);
 }
+
 .bubble-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(74, 158, 255, 0.4);
 }
+
 .bubble-btn.secondary {
   background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
   box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
@@ -767,7 +1262,8 @@ lottie-player {
 
 .tutorial-skip {
   position: fixed;
-  top: 2rem; /* Vertically align with the hamburger button */
+  top: 2rem;
+  /* Vertically align with the hamburger button */
   /* The hamburger is at right: 2rem and is 40px wide. Add a 10px gap. */
   right: calc(2rem + 50px);
   background: rgba(0, 0, 0, 0.7);
@@ -783,11 +1279,14 @@ lottie-player {
   transition: all 0.3s ease;
   pointer-events: auto;
 }
+
 @keyframes cursorPulse {
+
   0%,
   100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.1);
   }
@@ -804,7 +1303,9 @@ lottie-player {
   /* Use our new, more powerful animation */
   animation: popAndGlow 2s ease-in-out infinite;
 }
+
 @keyframes popAndGlow {
+
   /* The state at the beginning and end of the animation */
   0%,
   100% {
@@ -819,7 +1320,8 @@ lottie-player {
     transform: scale(1.05);
 
     /* Create a strong, solid blue glow that does not fade to nothing */
-    box-shadow: 0 0 25px 12px #4a9eff; /* Using a solid hex color */
+    box-shadow: 0 0 25px 12px #4a9eff;
+    /* Using a solid hex color */
 
     /* Add a sharper outline for more definition */
     outline: 3px solid rgba(121, 183, 255, 1);
