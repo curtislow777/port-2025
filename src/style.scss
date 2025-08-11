@@ -612,6 +612,214 @@ body.pp-modal-open {
   overflow: hidden;
 }
 
+/* Detail view lives inside the work modal grid and spans full width */
+.work-modal .pp-detail {
+  grid-column: 1 / -1;
+  padding-top: 1rem;
+}
+
+/* When viewing a project inside the work modal, hide the main title */
+.work-modal.pp-detail-active .modal-title {
+  display: none;
+}
+
+
+.work-modal .pp-detail[hidden] {
+  display: none;
+}
+
+.work-modal .ppd-header {
+  padding-bottom: .75rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--work-modal-border);
+}
+
+.work-modal .ppd-title {
+  font-size: 1.8rem;
+  margin: 0;
+  color: var(--work-modal-text);
+  outline: none;
+}
+
+.work-modal .ppd-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .work-modal .ppd-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.work-modal .ppd-media img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.work-modal .ppd-sections h3 {
+  color: var(--work-modal-border);
+  margin: 0 0 .75rem;
+  font-size: 1.15rem;
+}
+
+.work-modal .ppd-sections p {
+  color: var(--work-modal-text);
+  opacity: .85;
+  line-height: 1.7;
+  margin: 0 0 1rem;
+}
+
+.work-modal .ppd-features ul {
+  list-style: none;
+  color: var(--work-modal-text);
+  opacity: .85;
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+.work-modal .ppd-features li {
+  position: relative;
+  margin-bottom: .5rem;
+  line-height: 1.6;
+}
+
+.work-modal .ppd-features li::before {
+  content: "▹";
+  position: absolute;
+  left: -1.5rem;
+  color: var(--work-modal-border);
+}
+
+.work-modal .ppd-footer {
+  padding-top: 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid var(--work-modal-border);
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+/* In-modal Back button (only visible in detail view) */
+
+
+/* Icon-only back button inside the work modal header */
+/* Icon-only back button inside the work modal header (left side) */
+.work-modal .ppd-back-btn[hidden] {
+  display: none;
+}
+
+.work-modal .ppd-back-btn {
+  position: absolute;
+  top: 1rem;
+  /* same vertical height as the close button */
+  left: 1rem;
+  /* left side */
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 1px solid var(--work-modal-border);
+  background: color-mix(in srgb, var(--work-modal-bg) 90%, transparent);
+  color: var(--work-modal-text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.work-modal .ppd-back-btn:hover {
+  background: color-mix(in srgb, var(--work-modal-border) 12%, transparent);
+}
+
+
+
+/* Detail view block (already referenced in previous message) */
+.work-modal .pp-detail {
+  grid-column: 1 / -1;
+  padding-top: 1rem;
+}
+
+.work-modal .pp-detail[hidden] {
+  display: none;
+}
+
+.work-modal .ppd-header {
+  padding-bottom: .75rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--work-modal-border);
+}
+
+.work-modal .ppd-title {
+  font-size: 1.8rem;
+  margin: 0;
+  color: var(--work-modal-text);
+  outline: none;
+}
+
+.work-modal .ppd-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .work-modal .ppd-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.work-modal .ppd-media img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.work-modal .ppd-sections h3 {
+  color: var(--work-modal-border);
+  margin: 0 0 .75rem;
+  font-size: 1.15rem;
+}
+
+.work-modal .ppd-sections p {
+  color: var(--work-modal-text);
+  opacity: .85;
+  line-height: 1.7;
+  margin: 0 0 1rem;
+}
+
+.work-modal .ppd-features ul {
+  list-style: none;
+  color: var(--work-modal-text);
+  opacity: .85;
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+.work-modal .ppd-features li {
+  position: relative;
+  margin-bottom: .5rem;
+  line-height: 1.6;
+}
+
+.work-modal .ppd-features li::before {
+  content: "▹";
+  position: absolute;
+  left: -1.5rem;
+  color: var(--work-modal-border);
+}
+
+.work-modal .ppd-footer {
+  padding-top: 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid var(--work-modal-border);
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
 
 
 .about-modal {

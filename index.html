@@ -261,10 +261,6 @@
         </ul>
       </div>
 
-
-
-
-
     </div>
     <!-- Divider between credits and projects -->
     <hr class="pp-divider" />
@@ -309,36 +305,38 @@
             </div>
           </div>
         </article>
+
         <!-- Project Card 2 -->
-        <article class="pp-card" data-category="web" data-modal="pp-modal-project-2" tabindex="0"
-          aria-label="Open details: Web OS-Style Desktop">
+        <article class="pp-card" data-category="web" data-modal="pp-modal-project-2" tabindex="0" aria-label="rotunda">
           <div class="pp-card__img">
-            <img src="/images/web-os-thumb.png" alt="Web OS-Style Desktop preview" loading="lazy" />
+            <img src="/images/misc/singapore-odyssea.webp" alt="Entrance of Singapore Odyssea - Glass Rotunda"
+              loading="lazy" />
           </div>
           <div class="pp-card__content">
-            <h3 class="pp-card__title">Web OS-Style Desktop</h3>
+            <h3 class="pp-card__title">Singapore Odyssea — National Museum of Singapore (Glass Rotunda)</h3>
             <p class="pp-card__desc">
-              A browser-based desktop with draggable windows, apps, and a taskbar.
+              An immersive multimedia exhibition at the National Museum’s Glass Rotunda, built with Unreal Engine and
+              nDisplay, featuring interactive projections and BLE tracking that guide visitors through 700 years of
+              Singapore’s history.
             </p>
+
             <div class="pp-card__tech">
-              <span class="pp-tag">HTML5</span>
-              <span class="pp-tag">CSS</span>
-              <span class="pp-tag">JavaScript</span>
-              <span class="pp-tag">Next.js</span>
+              <span class="pp-tag">Unreal Engine</span>
+              <span class="pp-tag">nDisplay</span>
+              <span class="pp-tag">MQTT BLE Tracking</span>
             </div>
             <div class="pp-card__links">
               <a href="#" target="_blank" rel="noopener" aria-label="Github Repository">
                 <i class="fab fa-github" aria-hidden="true"></i>
               </a>
-              <a href="#" target="_blank" rel="noopener" aria-label="Live Preview">
+              <a href="https://cravefx.com/blog/cravefx-powers-the-multimedia-vision-behind-singapore-odyssea/"
+                target="_blank" rel="noopener" aria-label="Live Preview">
                 <i class="fas fa-external-link-alt" aria-hidden="true"></i>
               </a>
             </div>
           </div>
         </article>
 
-
-        <!-- Duplicate the <article> block for more projects, changing data-category and data-modal as needed -->
       </div>
     </section>
 
@@ -407,57 +405,89 @@
         <button class="pp-modal__close" aria-label="Close">&times;</button>
 
         <header class="pp-modal__header">
-          <h2 class="pp-modal__title" id="pp-modal-title-2">Web OS-Style Desktop</h2>
+          <h2 class="pp-modal__title" id="pp-modal-title-2">Singapore Odyssea — National Museum of Singapore (Glass
+            Rotunda)</h2>
         </header>
 
         <div class="pp-modal__body">
           <figure class="pp-modal__media">
-            <img src="/images/web-os-hero.png" alt="Web OS-Style Desktop hero" loading="lazy" />
+            <img src="/images/misc/singapore-odyssea.webp" alt="Entrance of Singapore Odyssea - Glass Rotunda"
+              loading="lazy" />
           </figure>
 
           <section class="pp-modal__details">
             <div class="pp-modal__desc">
               <h3>Description</h3>
               <p>
-                A windowed desktop experience in the browser with app launcher, draggable/resizable windows,
-                and persistent state.
+                An immersive, time-travel voyage in the National Museum’s Shaw Foundation Glass Rotunda, where animated
+                panoramas wrap the spiral ramp to guide visitors through 700 years of Singapore’s history. Guests pick
+                up RFID wristbands to awaken a “magical companion” that follows them and triggers interactive moments
+                along the journey, culminating in a dramatic drum-level finale.
               </p>
             </div>
 
             <div class="pp-modal__tech">
               <h3>Technologies</h3>
               <div class="pp-modal__tags">
-                <span class="pp-tag">Next.js</span>
-                <span class="pp-tag">TypeScript</span>
-                <span class="pp-tag">CSS Modules</span>
-                <span class="pp-tag">LocalStorage</span>
+                <span class="pp-tag">Unreal Engine</span>
+                <span class="pp-tag">nDisplay</span>
+                <span class="pp-tag">Multi-node Projection</span>
+                <span class="pp-tag">Warping & Blending</span>
+                <span class="pp-tag">RFID Wristbands (Companions)</span>
               </div>
             </div>
 
             <div class="pp-modal__features">
-              <h3>Key Features</h3>
+              <h3>Experience Highlights</h3>
               <ul>
-                <li>Window manager: drag, resize, focus, minimize</li>
-                <li>Taskbar with running apps and launcher</li>
-                <li>Per-app persistence (positions, sizes, recent files)</li>
-                <li>Keyboard shortcuts (Esc to close, Enter to confirm)</li>
+                <li>Four chapter arc descending the spiral ramp—from present day back to pre-colonial eras.</li>
+                <li>“Magical companions” linked to each visitor via RFID; interactions unlock moments along the route.
+                </li>
+                <li>Drum level features centerpiece media (LED globe / large-scale projections) and a cooperative
+                  finale.</li>
+                <li>Designed as a prelude to the Singapore History Gallery, bridging spectacle with historical context.
+                </li>
               </ul>
+
+              <h3>My Contributions</h3>
+              <ul>
+                <li>Part of the <em>Spiral Ramp</em>, <em>Drum</em>, and <em>Transition Zone</em> team.</li>
+                <li>nDisplay deployment across multi-node, multi-projector systems.</li>
+                <li>Worked with AV teams on warping, blending, and calibration.</li>
+                <li>Automated cluster launch and monitoring for reliable daily ops.</li>
+              </ul>
+
+              <p>
+                <a href="https://cravefx.com/blog/cravefx-powers-the-multimedia-vision-behind-singapore-odyssea/"
+                  target="_blank" rel="noopener">
+                  Case study: CraveFX Powers the Multimedia Vision Behind Singapore Odyssea
+                </a>
+              </p>
             </div>
+
           </section>
         </div>
 
         <footer class="pp-modal__footer">
           <div class="pp-modal__links">
-            <a href="#" target="_blank" rel="noopener" class="pp-btn">
-              <i class="fab fa-github" aria-hidden="true"></i> View Code
-            </a>
-            <a href="#" target="_blank" rel="noopener" class="pp-btn pp-btn--primary">
-              <i class="fas fa-external-link-alt" aria-hidden="true"></i> Live Demo
+            <a href="https://cravefx.com/blog/cravefx-powers-the-multimedia-vision-behind-singapore-odyssea/"
+              target="_blank" rel="noopener" class="pp-btn pp-btn--primary">
+              <i class="fas fa-external-link-alt" aria-hidden="true"></i> Case Study
             </a>
           </div>
         </footer>
       </div>
     </div>
+
+    <!-- Inside .work-modal, near the top -->
+    <button class="ppd-back-btn" type="button" hidden aria-label="Back">
+      <i class="fas fa-arrow-left" aria-hidden="true"></i>
+    </button>
+
+
+    <!-- Detail view mount (content injected on card click) -->
+    <section id="pp-detail" class="pp-detail" hidden aria-live="polite"></section>
+
 
 
 
@@ -655,71 +685,119 @@
 </script>
 <script>
   (() => {
-    const openModal = (id) => {
-      const modal = document.getElementById(id);
-      if (!modal) { console.warn('[pp] Modal not found:', id); return; }
-      modal.classList.add('pp-show');
-      modal.setAttribute('aria-hidden', 'false');
-      document.body.classList.add('pp-modal-open');
-      const focusTarget = modal.querySelector('.pp-modal__content');
-      if (focusTarget) focusTarget.focus();
+    const workModal = document.querySelector('.work-modal');
+    if (!workModal) return;
+
+    const detail = document.getElementById('pp-detail');
+    const backBtn = workModal.querySelector('.ppd-back-btn');
+    const overlay = document.querySelector('.overlay');
+
+    // Blocks that make up the overview page inside the work modal
+    const overviewEls = workModal.querySelectorAll(
+      '.modal-main-content, .modal-tech-stack, .pp-divider, .pp-projects'
+    );
+
+    // Filter reset helpers (optional — remove if you want to keep the last filter)
+    const resetFiltersToAll = () => {
+      const btns = workModal.querySelectorAll('.pp-filter-btn');
+      const first = workModal.querySelector('.pp-filter-btn[data-filter="all"]') || btns[0];
+      btns.forEach(b => { b.classList.remove('is-active'); b.setAttribute('aria-selected', 'false'); });
+      if (first) {
+        first.classList.add('is-active');
+        first.setAttribute('aria-selected', 'true');
+      }
+      workModal.querySelectorAll('.pp-card').forEach(card => { card.style.display = 'flex'; });
     };
 
-    const closeModal = (modal) => {
-      if (!modal) return;
-      modal.classList.remove('pp-show');
-      modal.setAttribute('aria-hidden', 'true');
-      document.body.classList.remove('pp-modal-open');
+    const isWorkModalOpen = () => getComputedStyle(workModal).display !== 'none';
+
+    const showOverview = () => {
+      if (!detail) return;
+      detail.hidden = true;
+      detail.innerHTML = '';
+      overviewEls.forEach(el => el.style.display = '');
+      workModal.classList.remove('pp-detail-active'); // <- shows the title again via CSS
+      if (backBtn) backBtn.hidden = true;
+      resetFiltersToAll(); // comment out if you want to preserve the last filter
     };
 
-    // Click handling (open/close) — ignore clicks on links/buttons inside cards
-    document.addEventListener('click', (e) => {
-      // Open: card click
+    const showDetailFromTemplate = (modalId) => {
+      const tpl = document.getElementById(modalId);
+      if (!tpl || !detail) { console.warn('[pp] template not found:', modalId); return; }
+
+      const title = tpl.querySelector('.pp-modal__title')?.textContent?.trim() || '';
+      const imgEl = tpl.querySelector('.pp-modal__media img');
+      const imgHTML = imgEl ? `<img src="${imgEl.getAttribute('src')}" alt="${imgEl.getAttribute('alt') || ''}" loading="lazy">` : '';
+      const descHTML = tpl.querySelector('.pp-modal__desc')?.innerHTML || '';
+      const techTagsHTML = tpl.querySelector('.pp-modal__tech .pp-modal__tags')?.innerHTML || '';
+      const featuresHTML = tpl.querySelector('.pp-modal__features ul')?.innerHTML || '';
+      const linksHTML = tpl.querySelector('.pp-modal__footer .pp-modal__links')?.innerHTML || '';
+
+      detail.innerHTML = `
+      <header class="ppd-header">
+        <h2 class="ppd-title" tabindex="-1">${title}</h2>
+      </header>
+      <div class="ppd-body">
+        <div class="ppd-media">${imgHTML}</div>
+        <section class="ppd-sections">
+          <div class="ppd-desc">${descHTML}</div>
+          ${techTagsHTML ? `<div class="ppd-tech"><h3>Technologies</h3><div class="ppd-tags">${techTagsHTML}</div></div>` : ''}
+          ${featuresHTML ? `<div class="ppd-features"><h3>Key Features</h3><ul>${featuresHTML}</ul></div>` : ''}
+        </section>
+      </div>
+      ${linksHTML ? `<footer class="ppd-footer">${linksHTML}</footer>` : ''}
+    `;
+
+      // Swap views (title is hidden by CSS via .pp-detail-active)
+      overviewEls.forEach(el => el.style.display = 'none');
+      detail.hidden = false;
+      workModal.classList.add('pp-detail-active');
+      if (backBtn) backBtn.hidden = false;
+
+      detail.querySelector('.ppd-title')?.focus?.();
+    };
+
+    // Card click -> detail view
+    workModal.addEventListener('click', (e) => {
       const card = e.target.closest('.pp-card[data-modal]');
-      if (card && !e.target.closest('a, button, [role="button"]')) {
-        e.preventDefault();
-        openModal(card.getAttribute('data-modal'));
-        return;
-      }
-
-      // Close: overlay or X button
-      if (e.target.classList.contains('pp-modal')) {
-        closeModal(e.target);
-        return;
-      }
-      const closeBtn = e.target.closest('.pp-modal__close');
-      if (closeBtn) {
-        closeModal(closeBtn.closest('.pp-modal'));
-      }
+      if (!card || card.closest('.work-modal') !== workModal) return;
+      if (e.target.closest('a, button, [role="button"]')) return; // let links work
+      e.preventDefault();
+      const modalId = card.getAttribute('data-modal');
+      showDetailFromTemplate(modalId);
     });
 
-    // Keyboard: Enter opens focused card, Esc closes any open pp-modal
+    // In-modal Back
+    backBtn?.addEventListener('click', showOverview);
+
+    // Close with X (work modal’s own close)
+    workModal.querySelector('.modal-close-btn')?.addEventListener('click', showOverview);
+
+    // Close via overlay click (global)
+    overlay?.addEventListener('click', () => {
+      if (isWorkModalOpen()) showOverview();
+    });
+
+    // Esc anywhere -> if work modal is open, ensure we reset to overview
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && document.activeElement?.classList.contains('pp-card')) {
-        const id = document.activeElement.getAttribute('data-modal');
-        if (id) openModal(id);
-      }
-      if (e.key === 'Escape') {
-        document.querySelectorAll('.pp-modal.pp-show').forEach(closeModal);
+      if (e.key === 'Escape' && isWorkModalOpen()) {
+        showOverview();
       }
     });
 
-    // Filters
-    const filterBtns = document.querySelectorAll('.pp-filter-btn');
-    const cards = document.querySelectorAll('.pp-card');
-    filterBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const value = btn.dataset.filter;
-        filterBtns.forEach(b => { b.classList.remove('is-active'); b.setAttribute('aria-selected', 'false'); });
-        btn.classList.add('is-active'); btn.setAttribute('aria-selected', 'true');
-
-        cards.forEach(card => {
-          const show = (value === 'all') || (card.dataset.category === value);
-          card.style.display = show ? 'flex' : 'none';
-        });
-      });
+    // Safety net: if any code hides/shows the work modal, auto-reset on hide
+    const mo = new MutationObserver(() => {
+      const visible = isWorkModalOpen();
+      if (!visible) showOverview();
     });
+    mo.observe(workModal, { attributes: true, attributeFilter: ['style', 'class'] });
+
+    // Ensure initial state is clean
+    showOverview();
   })();
 </script>
+
+
+
 
 </html>
