@@ -1,7 +1,5 @@
 import { initModalSystem } from "../modal.js";
 import { initImageOverlay } from "../fadeOverlayImage.js";
-// FIX PATH: UIInitializer sits in /ui, so just:
-import { initWorkModalAnimations } from "../workModalAnimation.js";
 import { setupMailbox } from "../mailbox.js";
 import appState from "../core/AppState.js";
 import audioManager from "../audio.js";
@@ -9,6 +7,7 @@ import {
   MODAL_SELECTORS,
   IMAGE_OVERLAY_SELECTORS,
 } from "../config/constants.js";
+import { initProjectsDetail } from "./projectDetails.js";
 
 function handleModalOpen() {
   appState.disableRaycast();
@@ -36,13 +35,10 @@ function initializeUI() {
     modalSystem.showModal,
     modalSystem.hideModal
   );
-  // ✅ hook GSAP transitions for the Work modal
-  initWorkModalAnimations({
-    workModalEl: modalSystem.modals.work,               // the actual .work-modal element
-    overlayEl: modalSystem.overlay,                     // shared overlay element
-    onCloseAll: () => modalSystem.hideModal(modalSystem.modals.work), // how to close it
-  });
 
+  // ⬇️ INIT projects list→detail inside the same modal
+  const projectsModalEl = modalSystem.modals.projects;
+  const projectsDetail = initProjectsDetail(projectsModalEl);
 
   const imageOverlaySystem = initImageOverlay({
     overlaySelector: IMAGE_OVERLAY_SELECTORS.overlay,

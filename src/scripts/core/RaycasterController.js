@@ -125,9 +125,9 @@ export default class RaycasterController {
 
     // 1) modals --------------------------------------------------------
     if (object.name.includes("about-raycast")) return openModal("about");
-    else if (object.name.includes("work-raycast")) return openModal("work");
+    else if (object.name.includes("work-raycast")) return openModal("projects");
     else if (object.name.includes("erhu-seven")) return openModal("erhu");
-    else if (object.name.includes("TV-seven")) return openModal("work");
+    else if (object.name.includes("TV-seven")) return openModal("projects");
 
     // 2) image overlay -------------------------------------------------
     if (imageData[object.name]) {

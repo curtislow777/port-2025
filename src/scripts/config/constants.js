@@ -74,7 +74,6 @@ export const socialLinks = {
   LinkedIn: "https://www.linkedin.com/in/curtis-low/",
 };
 
-
 /**
  * Canvas / renderer setup.
  * selector: DOM target for WebGLRenderer
@@ -122,7 +121,6 @@ export const INNER_WEB_CONFIG = {
   scale: new THREE.Vector3(0.00137, 0.00137, 0.00137),
 };
 
-
 /**
  * Steam shader quad parameters.
  * position: world-space anchor (mug)
@@ -149,7 +147,7 @@ export const STEAM_CONFIG = {
 export const MODAL_SELECTORS = {
   overlay: ".overlay",
   modals: {
-    work: ".work-modal",
+    projects: ".projects-modal",
     about: ".about-modal",
     contact: ".contact-modal",
     erhu: ".erhu-modal",
