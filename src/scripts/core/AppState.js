@@ -1,5 +1,6 @@
 /**
- * AppState.js – Centralised application state management
+ * AppState.js – Centralised application state
+ * Holds references to 3D core, UI hooks, shared managers, and feature flags.
  */
 
 import * as THREE from "three";
@@ -21,14 +22,16 @@ class AppState {
     }
 
     /* ───────────────────────────────────
-     *  Ray-casting state
+     * Raycasting state
+     * Use these flags + references to globally freeze input when modals open, etc.
      * ─────────────────────────────────── */
     this.isRaycastEnabled = true;
     this.currentIntersects = [];
-    this.raycasterController = null; // <-- will be injected from main.js
+    this.raycasterController = null;
 
     /* ───────────────────────────────────
-     *  Scene objects
+     * Scene object handles (filled after GLTF load / setup)
+     * Keep them nullable to gate logic.
      * ─────────────────────────────────── */
     this.perryHatObject = null;
     this.pigObject = null;
@@ -37,8 +40,9 @@ class AppState {
     this.whiteboard = null;
 
     /* ───────────────────────────────────
-     *  Collections
-     * ─────────────────────────────────── */
+    * Collections
+    * Group objects by behaviour so systems can loop efficiently.
+    * ─────────────────────────────────── */
     this.animatedObjects = {
       spin: [],
       scale: [],
@@ -49,13 +53,14 @@ class AppState {
     this.raycasterObjects = [];
 
     /* ───────────────────────────────────
-     *  Three.js core
+     * Three.js core references
+     * Set once during bootstrap; used by sub-systems.
      * ─────────────────────────────────── */
     this.scene = null;
     this.camera = null;
     this.renderer = null;
     this.pointer = null;
-    this.raycaster = null; // (legacy – may be removed later)
+    this.raycaster = null;
     this.loadingManager = null;
     this.textureLoader = null;
     this.gltfLoader = null;
@@ -63,14 +68,16 @@ class AppState {
     this.outlinePass = null;
 
     /* ───────────────────────────────────
-     *  Managers
+     * Managers 
+     * e.g. for camera transitions, iFrame/monitor, mailbox, etc.
      * ─────────────────────────────────── */
     this.cameraManager = null;
     this.innerWeb = null;
     this.mailbox = null;
 
     /* ───────────────────────────────────
-     *  UI Hooks
+     * UI hooks (DOM elements / callbacks)
+     * Injected by UI initializer so scene code doesn’t touch DOM.
      * ─────────────────────────────────── */
     this.overlay = null;
     this.modals = null;
@@ -80,7 +87,7 @@ class AppState {
     this.hideImageOverlay = null;
 
     /* ───────────────────────────────────
-     *  Canvas / sizing
+     * Canvas / sizing
      * ─────────────────────────────────── */
     this.canvas = null;
     this.sizes = { width: window.innerWidth, height: window.innerHeight };
@@ -95,19 +102,21 @@ class AppState {
   isInDebugMode() {
     return this.isDebugMode;
   }
-  /* ===== Ray-casting helpers ======================================= */
 
+  /* ===== Ray-casting helpers ======================================= */
   /** Inject the RaycasterController instance once created. */
   setRaycasterController(controller) {
     this.raycasterController = controller;
   }
 
+  /** Globally enable raycast input */
   enableRaycast() {
     console.log("Enabling raycast");
     this.isRaycastEnabled = true;
     this.raycasterController?.enable();
   }
 
+  /** Globally disable raycast input and clear UX affordances */
   disableRaycast() {
     console.log("Disabling raycast");
     this.isRaycastEnabled = false;
@@ -115,13 +124,13 @@ class AppState {
     this.resetCursor();
     this.clearHoverEffects();
   }
-  /* AppState.js */
+
+  /** Reset cursor style across common layers */
   resetCursor() {
-    // whichever elements exist in your app:
     document.body.style.cursor = "default";
     document.documentElement.style.cursor = "default";
     if (this.canvas) this.canvas.style.cursor = "default";
-    if (this.overlay) this.overlay.style.cursor = "default"; // <- the full-screen overlay
+    if (this.overlay) this.overlay.style.cursor = "default";
   }
 
   setCurrentIntersects(intersects) {
@@ -161,6 +170,8 @@ class AppState {
     this.textureLoader = c.textureLoader;
     this.gltfLoader = c.gltfLoader;
   }
+
+  /** Post-processing setup */
 
   setPostProcessing(composer, outlinePass) {
     this.composer = composer;
@@ -214,12 +225,13 @@ class AppState {
   }
 
   /* ===== Utility =================================================== */
-
+  /** Clear hover visuals (e.g., outline pass) and cached hits */
   clearHoverEffects() {
     this.currentIntersects = [];
     if (this.outlinePass) this.outlinePass.selectedObjects = [];
   }
 
+  /** Shared clock – useful for time-based animations */
   getElapsedTime() {
     return this.clock.getElapsedTime();
   }

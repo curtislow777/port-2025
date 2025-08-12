@@ -168,6 +168,7 @@ lottie-player {
   background: var(--work-modal-bg);
   border: 10px solid var(--work-modal-border);
   color: var(--work-modal-text);
+  position: fixed;
 }
 
 /* Keep your existing title/close styles if you have them elsewhere */
@@ -343,11 +344,9 @@ lottie-player {
 .work-modal .pp-card__img {
   width: 100%;
   height: 200px;
-  background-color: color-mix(
-    in srgb,
-    var(--work-modal-bg) 85%,
-    var(--work-modal-text) 15%
-  );
+  background-color: color-mix(in srgb,
+      var(--work-modal-bg) 85%,
+      var(--work-modal-text) 15%);
   overflow: hidden;
 }
 
@@ -414,6 +413,25 @@ lottie-player {
 .work-modal .pp-card__links a:hover {
   color: var(--pp-accent);
 }
+
+
+/* 1) The media area always reserves space, so the header never gets covered */
+.work-modal .ppd-media {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 16 / 9;
+  /* or clamp a height: min(38vh, 420px) */
+}
+
+/* 2) Make sure the title sits above the flying img during the animation */
+.work-modal .ppd-header {
+  position: relative;
+  z-index: 3;
+}
+
+
+
+/* media sits under header */
 
 /* ============================================================
    PROJECT DETAIL MODAL (pp-modal)
@@ -610,28 +628,22 @@ lottie-player {
 }
 
 .pp-btn:hover {
-  background-color: color-mix(
-    in srgb,
-    var(--work-modal-border) 12%,
-    transparent
-  );
+  background-color: color-mix(in srgb,
+      var(--work-modal-border) 12%,
+      transparent);
   transform: translateY(-2px);
 }
 
 .pp-btn--primary {
-  background-color: color-mix(
-    in srgb,
-    var(--work-modal-border) 12%,
-    transparent
-  );
+  background-color: color-mix(in srgb,
+      var(--work-modal-border) 12%,
+      transparent);
 }
 
 .pp-btn--primary:hover {
-  background-color: color-mix(
-    in srgb,
-    var(--work-modal-border) 18%,
-    transparent
-  );
+  background-color: color-mix(in srgb,
+      var(--work-modal-border) 18%,
+      transparent);
 }
 
 /* Prevent background scroll when a pp-modal is open */
@@ -846,11 +858,13 @@ body.pp-modal-open {
 
 /* One-column layout while viewing a project card */
 .work-modal.pp-detail-active .modal-body {
-  grid-template-columns: 1fr; /* collapse the main 2-col layout */
+  grid-template-columns: 1fr;
+  /* collapse the main 2-col layout */
 }
 
 .work-modal.pp-detail-active .modal-tech-stack {
-  display: none; /* hide the right column */
+  display: none;
+  /* hide the right column */
 }
 
 /* Force the project detail content itself to 1 column (media + text stacked) */
@@ -1527,6 +1541,7 @@ body.pp-modal-open {
 }
 
 @keyframes cursorPulse {
+
   0%,
   100% {
     transform: scale(1);
@@ -1550,6 +1565,7 @@ body.pp-modal-open {
 }
 
 @keyframes popAndGlow {
+
   /* The state at the beginning and end of the animation */
   0%,
   100% {

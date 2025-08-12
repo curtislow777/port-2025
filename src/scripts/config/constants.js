@@ -1,6 +1,12 @@
+// Centralised app constants and config.
+
 import * as THREE from "three";
 
-// Interactive content configuration - images and links
+/**
+ * Image assets triggered by raycast hits.
+ * Keys must match your scene object's .name (e.g. 'ded-casper-twelve-raycast').
+ * Each entry feeds the fade-image overlay (src + caption).
+ */
 export const imageData = {
   "baby-cyrus-twelve-raycast": {
     src: "images/bb-cyrus.webp",
@@ -60,19 +66,31 @@ export const imageData = {
   },
 };
 
-// Social media links configuration
+/**
+ * Social links to direct to when clicking on icons.
+ */
 export const socialLinks = {
   Github: "https://github.com/curtislow777",
   LinkedIn: "https://www.linkedin.com/in/curtis-low/",
 };
-// Canvas and sizing configuration
+
+
+/**
+ * Canvas / renderer setup.
+ * selector: DOM target for WebGLRenderer
+ * clearColor/Alpha: renderer background (scene may still render a skybox behind this)
+ */
 export const CANVAS_CONFIG = {
   selector: "#experience-canvas",
   clearColor: 0x000000,
   clearAlpha: 1,
 };
 
-// Default camera configuration
+/**
+ * Default camera placement and look target.
+ * Used by CameraManager for reset/intro positions.
+ * Coordinates are in world space (same units as in blender).
+ */
 export const CAMERA_CONFIG = {
   fov: 75,
   near: 0.1,
@@ -81,13 +99,19 @@ export const CAMERA_CONFIG = {
   defaultTarget: new THREE.Vector3(-0.35, 3.0, 0.64),
 };
 
-// Whiteboard configuration
+/**
+ * Whiteboard placement. Drawing plane should be positioned/rotated to this.
+ */
 export const WHITEBOARD_CONFIG = {
   position: new THREE.Vector3(-5.75, 4.337178707122803, 0.6635734438896179),
   rotation: new THREE.Euler(0, Math.PI / 2, 0),
 };
 
-// Monitor/InnerWeb configuration
+/**
+ * "Inner Web" (monitor) – a CSS3D/HTML overlay iFrame anchored to a 3D screen.
+ * html: embedded app
+ * transform: world placement; scale is chosen to map HTML pixels to world units.
+ */
 export const INNER_WEB_CONFIG = {
   html: `<iframe
          src="https://inner-portfolio-js.vercel.app/"
@@ -98,7 +122,13 @@ export const INNER_WEB_CONFIG = {
   scale: new THREE.Vector3(0.00137, 0.00137, 0.00137),
 };
 
-// Steam effect configuration
+
+/**
+ * Steam shader quad parameters.
+ * position: world-space anchor (mug)
+ * geometry: plane size  (more segments = smoother distortion)
+ * texture: noise texture used in fragment shader
+ */
 export const STEAM_CONFIG = {
   position: new THREE.Vector3(-4.177665710449219, 2.85, 1.0796866416931152),
   geometry: {
@@ -113,7 +143,9 @@ export const STEAM_CONFIG = {
   },
 };
 
-// Modal selectors
+/**
+ * Query selectors for modal system (GSAP/show-hide).
+ */
 export const MODAL_SELECTORS = {
   overlay: ".overlay",
   modals: {
@@ -134,7 +166,9 @@ export const IMAGE_OVERLAY_SELECTORS = {
   text: ".fade-overlay-text",
 };
 
-// Loading screen selectors
+/**
+ * Fade image overlay (for raycast image popups).
+ */
 export const LOADING_SELECTORS = {
   screen: ".loading-screen",
   button: ".loading-screen-btn",
@@ -142,14 +176,19 @@ export const LOADING_SELECTORS = {
   barFill: ".loading-bar-fill",
 };
 
-// Side panel selectors
+/**
+ * Side panel (hamburger) UI.
+ */
 export const SIDE_PANEL_SELECTORS = {
   hamburgerBtn: ".hamburger-btn",
   sidePanel: ".side-panel",
   panelLinks: ".panel-link",
 };
 
-// Animation durations
+/**
+ * Centralised animation timings (seconds).
+ * Tweak here to keep motion consistent across features.
+ */
 export const ANIMATION_DURATIONS = {
   steamToggle: 1.0,
   introAnimation: 0.8,
@@ -158,13 +197,17 @@ export const ANIMATION_DURATIONS = {
   hoverScale: 0.2,
 };
 
-// Model paths
+/**
+ * Asset paths. Loaders pick up automatically.
+ */
 export const MODEL_PATHS = {
   room: "/models/room-port-v1.glb",
   draco: "/draco/",
 };
 
-// Button IDs
+/**
+ * Button element IDs used by misc UI handlers.
+ */
 export const BUTTON_IDS = {
   themeToggle: "theme-toggle",
   soundToggle: "sound-toggle",
