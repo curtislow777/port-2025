@@ -268,6 +268,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setupLoadingScreen();
   setupEventListeners();
+  // ===================================================================
+  // CSS RIPPLE EFFECT LOGIC - ADD THIS SECTION
+  // ===================================================================
+  document.body.addEventListener("click", (event) => {
+    // Check if the click happened directly on the Three.js canvas.
+    // This prevents ripples when clicking on modals, buttons, or other UI.
+    if (event.target === appState.renderer.domElement) {
+      const ripple = document.createElement("div");
+      ripple.className = "ripple";
+      document.body.appendChild(ripple);
+
+      // Position the ripple at the exact click coordinates
+      ripple.style.left = `${event.clientX}px`;
+      ripple.style.top = `${event.clientY}px`;
+
+      // Remove the ripple element after the animation is done (600ms)
+      setTimeout(() => {
+        ripple.remove();
+      }, 600);
+      // To this:
+      // const sparkle = document.createElement("div");
+      // sparkle.className = "sparkle"; // Use the new class name
+
+      // // The rest of the JS logic remains the same
+      // document.body.appendChild(sparkle);
+
+      // sparkle.style.left = `${event.clientX}px`;
+      // sparkle.style.top = `${event.clientY}px`;
+
+      // setTimeout(() => {
+      //   sparkle.remove();
+      // }, 500); // Match the animation duration (500ms)
+    }
+  });
 
   // Load scene and start render loop
   loadScene();
