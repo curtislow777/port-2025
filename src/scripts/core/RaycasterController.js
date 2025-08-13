@@ -7,24 +7,30 @@ import audioManager from "../audio.js";
 import { spinAnimation } from "../spinnyObjects.js";
 import { randomOink } from "../pig.js";
 import { imageData, socialLinks, BUTTON_IDS } from "../config/constants.js";
+import ClickRipple from "../effects/ClickRipple.js"; // <-- IMPORT HERE
 
 /**
  * Wrapper around THREE.Raycaster with a few built-in “hover helpers”.
  */
 export default class RaycasterController {
   /**
-   * @param {THREE.Camera}        camera
-   * @param {THREE.Object3D[]}    sceneObjects
-   * @param {Object}              [opts]
-   * @param {THREE.OutlinePass}   [opts.outlinePass]  - post-proc outline pass to update
-   * @param {THREE.Object3D[]}    [opts.scaleTargets] - meshes that pulse when hovered
-   * @param {Object}              [opts.mailbox]      - custom mailbox w/ updateMailboxHover()
+/**
+   * @param {THREE.Camera}       camera
+   * @param {THREE.Object3D[]}   sceneObjects
+   * @param {THREE.Scene}        scene           - The main scene
+   * @param {Object[]}           effectsManager  - Array to push new effects into
+   * @param {Object}             [opts]
+   * @param {THREE.OutlinePass}  [opts.outlinePass]  - post-proc outline pass to update
+   * @param {THREE.Object3D[]}   [opts.scaleTargets] - meshes that pulse when hovered
+   * @param {Object}             [opts.mailbox]      - custom mailbox w/ updateMailboxHover()
    */
-  constructor(camera, sceneObjects = [], opts = {}) {
+  constructor(camera, sceneObjects = [], scene, effectsManager, opts = {}) {
     // basic raycaster plumbing ------------------------
     this.camera = camera;
     this.objects = sceneObjects;
     this.enabled = true;
+    this.scene = scene; // <-- This will now work correctly
+    this.effectsManager = effectsManager; // <-- This will also work correctly
 
     this.pointer = new THREE.Vector2();
     this.raycaster = new THREE.Raycaster();
@@ -120,6 +126,17 @@ export default class RaycasterController {
 
   _handleClick() {
     if (!appState.isRaycastEnabled || this.intersects.length === 0) return;
+    // 3. CREATE THE RIPPLE EFFECT HERE
+    const intersection = this.intersects[0];
+    const clickPoint = intersection.point;
+
+    // The normal is on the face and needs to be transformed to world space
+    const surfaceNormal = intersection.face.normal.clone();
+    surfaceNormal.transformDirection(intersection.object.matrixWorld);
+
+    // Create the ripple and add it to the manager array
+    const ripple = new ClickRipple(clickPoint, surfaceNormal, this.scene);
+    this.effectsManager.push(ripple);
 
     const object = this.intersects[0].object;
 

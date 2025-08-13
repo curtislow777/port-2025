@@ -7,7 +7,7 @@ import { updateRotatingObjects } from "../objectRotation.js";
  * Sets up requestAnimationFrame loop and exposes a `start()` method.
  * Call start() once (after scene + camera are ready).
  */
-export default function createRenderLoop() {
+export default function createRenderLoop({ activeEffects = [] }) {
   let rafId = null;
 
   function loop() {
@@ -48,6 +48,18 @@ export default function createRenderLoop() {
     // Check if the tutorial exists and is active before updating
     if (appState.introTutorial?.isActive) {
       appState.introTutorial.update();
+    }
+    // ===============================================================
+    // 2. ADD THE NEW SECTION TO UPDATE CLICK EFFECTS
+    // ===============================================================
+    /* --- 8. update effects ---------------------------------------- */
+    // Iterate backwards to safely remove items while looping
+    for (let i = activeEffects.length - 1; i >= 0; i--) {
+      const effect = activeEffects[i];
+      // The update() method of the ripple returns `false` when it's done
+      if (!effect.update()) {
+        activeEffects.splice(i, 1); // Remove finished effect from the array
+      }
     }
 
     /* --- 7. render passes ----------------------------------------- */

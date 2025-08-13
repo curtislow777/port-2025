@@ -242,6 +242,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize UI and other components
   initializeUI();
 
+  const activeEffects = [];
+
   /* ──────────────────────────────────────────────
    Image overlay → toggle the ray-caster
    ────────────────────────────────────────────── */
@@ -257,6 +259,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const rayCtrl = new RaycasterController(
     appState.camera,
     appState.raycasterObjects,
+    appState.scene, // <-- Pass the scene
+    activeEffects, // <-- Pass the effects array
     {
       outlinePass: appState.outlinePass,
       scaleTargets: appState.animatedObjects.scale,
@@ -273,6 +277,6 @@ document.addEventListener("DOMContentLoaded", () => {
   loadScene();
   setupSteamEffect();
   // right after setupSteamEffect() or wherever you want the loop to begin
-  const renderLoop = createRenderLoop({ introTutorial });
+  const renderLoop = createRenderLoop({ introTutorial, activeEffects });
   renderLoop.start();
 });
