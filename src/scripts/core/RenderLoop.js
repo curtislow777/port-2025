@@ -2,6 +2,7 @@
 import appState from "../core/AppState.js";
 import clockManager from "../clock.js";
 import { updateRotatingObjects } from "../objectRotation.js";
+import * as THREE from "three";
 
 /**
  * Sets up requestAnimationFrame loop and exposes a `start()` method.
@@ -9,10 +10,13 @@ import { updateRotatingObjects } from "../objectRotation.js";
  */
 export default function createRenderLoop() {
   let rafId = null;
+  const clock = new THREE.Clock(); // <-- 1. CREATE THE CLOCK HERE (outside the loop)
 
   function loop() {
     /* --- 1. camera & controls ------------------------------------- */
     appState.cameraManager.update();
+
+    const deltaTime = clock.getDelta(); // <-- 2. GET DELTA TIME HERE (inside the loop)
 
     /* --- 2. global time ------------------------------------------- */
     const elapsed = appState.getElapsedTime();
@@ -33,6 +37,10 @@ export default function createRenderLoop() {
       appState.raycasterController.clearHover();
     }
 
+    // 3. ADD THIS TO UPDATE THE TRAIL
+    if (appState.particleTrail) {
+      appState.particleTrail.update(deltaTime);
+    }
     /* --- 5. whiteboard -------------------------------------------- */
     if (appState.whiteboard?.isActive) appState.whiteboard.update();
 

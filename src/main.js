@@ -45,6 +45,7 @@ import {
 } from "./scripts/config/constants.js";
 
 import { IntroTutorial } from "./scripts/ui/IntroTutorial.js";
+import ParticleTrail from "./scripts/effects/ParticleTrail.js"; // <-- Import the new class
 
 // Add to your main initialization (around line where you setup other components)
 let introTutorial = null;
@@ -302,6 +303,48 @@ document.addEventListener("DOMContentLoaded", () => {
       // }, 500); // Match the animation duration (500ms)
     }
   });
+
+  // ===================================================================
+  // 3D PARTICLE TRAIL EFFECT LOGIC
+  // ===================================================================
+  // 1. Instantiate the particle system and store it in the app state
+  const particleTrail = new ParticleTrail(appState.scene);
+  appState.particleTrail = particleTrail;
+
+  // 2. A throttle function to limit how often the mousemove event fires
+  function throttle(func, limit) {
+    let inThrottle;
+    return function () {
+      const args = arguments;
+      const context = this;
+      if (!inThrottle) {
+        func.apply(context, args);
+        inThrottle = true;
+        setTimeout(() => (inThrottle = false), limit);
+      }
+    };
+  }
+
+  // 3. The function that handles spawning particles on mouse move
+  const mouseMoveHandler = (event) => {
+    // Convert 2D mouse position to a 3D point in front of the camera
+    const vec = new THREE.Vector3(
+      (event.clientX / window.innerWidth) * 2 - 1,
+      -(event.clientY / window.innerHeight) * 2 + 1,
+      0.5
+    );
+    vec.unproject(appState.camera);
+    vec.sub(appState.camera.position).normalize();
+    const distance = 5; // How far from the camera the trail appears
+    const spawnPos = appState.camera.position.clone().add(vec.multiplyScalar(distance));
+
+    // Tell our particle system to spawn a particle at this new 3D position
+    particleTrail.spawnParticle(spawnPos);
+  };
+
+  // 4. Attach the throttled function to the mousemove event
+  document.body.addEventListener("mousemove", throttle(mouseMoveHandler, 20));
+
 
   // Load scene and start render loop
   loadScene();

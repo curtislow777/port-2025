@@ -38,6 +38,7 @@ class AppState {
     this.perryCupControls = null;
     this.steamMesh = null;
     this.whiteboard = null;
+    this.particleTrail = null; // <-- ADD THIS LINE
 
     /* ───────────────────────────────────
     * Collections
