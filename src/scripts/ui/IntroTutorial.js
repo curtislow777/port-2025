@@ -1,6 +1,7 @@
 // IntroTutorial.js -
 import * as THREE from "three";
 import gsap from "gsap";
+import appState from "../core/AppState.js"; // adjust path if needed
 
 export class IntroTutorial {
   constructor(options = {}) {
@@ -94,53 +95,31 @@ export class IntroTutorial {
       {
         target: "tutorial-welcome-anchor",
         message:
-          "Hello! Welcome to my interactive portfolio! This portfolio was created with three.js and is still a work-in-progress. Let me give you a quick tour.",
-        highlightObject: false,
+          "Welcome! This is my interactive 3D portfolio (built with three.js). Still a work-in-progress—here’s all you need to know.",
         placement: "top",
       },
       {
-        target: "monitor-four-raycast",
+        target: "tutorial-welcome-anchor",
         message:
-          "Click on the monitor to view my portfolio in a more traditional way.",
-        highlightObject: true,
+          "Objects you can interact with will glow when you hover them. Move your cursor around anytime to discover things.",
         placement: "top",
-      },
-      {
-        target: "about-raycast-emissive-raycast",
-        message: "Click here to learn more about me and my work!",
-        highlightObject: true,
-        placement: "right",
-      },
-      {
-        target: "erhu-seven-raycast",
-        message: "One of my hobbies include playing the erhu.",
-        highlightObject: true,
-        placement: "left",
-      },
-      {
-        target: "mailbox-pole-seven-contact-raycast",
-        message:
-          "Feel free to contact me! Click on the mailbox to send me an email.",
-        highlightObject: true,
-        placement: "bottom",
+        massPreview: true, // ← one-shot outline here
       },
       {
         domTarget: "#theme-toggle",
-        message: "You can toggle between day and night mode here.",
+        message: "Theme toggle lives here.",
         placement: "right",
         offsetCursor: true,
       },
       {
         domTarget: "#sound-toggle",
-        message: "And use this to mute or unmute the background music.",
+        message: "Sound on/off here.",
         placement: "right",
         offsetCursor: true,
       },
       {
         target: "tutorial-conclusion-anchor",
-        message:
-          "That's the end of the tour! Feel free to explore the room at your own pace.",
-        highlightObject: false,
+        message: "That’s it—hover = discover, click = interact. Explore freely.",
         placement: "top",
       },
     ];
@@ -150,16 +129,20 @@ export class IntroTutorial {
     }
   }
 
+
   start() {
     if (this.isActive) return;
     this.isActive = true;
     this.currentStep = 0;
-    this.disableCameraControls();
-    if (this.raycasterController) this.raycasterController.disable();
+
+    this.disableCameraControls(); // or leave enabled if you prefer
+
+    // keep raycaster active (no disable)
     this.ui.overlay.classList.add("active");
     gsap.to(this.ui.skipButton, { opacity: 1, duration: 0.5, delay: 0.5 });
     setTimeout(() => this.showStep(0), 500);
   }
+
 
   update() {
     if (!this.isActive) return;
@@ -171,8 +154,16 @@ export class IntroTutorial {
 
   showStep(stepIndex) {
     if (stepIndex >= this.tutorialSteps.length || stepIndex < 0) return;
+
+    // if we’re leaving a massPreview step, end it now
+    const wasPreviewing = !!this._massPreviewActive;
+
     this.currentStep = stepIndex;
     const step = this.tutorialSteps[stepIndex];
+
+    if (wasPreviewing && !step.massPreview) {
+      this._endMassPreview();
+    }
 
     this.ui.currentStepIndicator.textContent = stepIndex + 1;
     this.ui.prevButton.disabled = stepIndex === 0;
@@ -189,6 +180,11 @@ export class IntroTutorial {
       this.highlightDomElement(step.domTarget);
     }
 
+    // start the mass preview when entering that step
+    if (step.massPreview && !this._massPreviewActive) {
+      this._startMassPreview({ strength: 1.0, thickness: 1.0, pulse: true });
+    }
+
     gsap.fromTo(
       this.ui.bubble,
       { "--bubble-scale": 0.5 },
@@ -196,6 +192,7 @@ export class IntroTutorial {
     );
     gsap.to(this.ui.cursor, { opacity: 1, duration: 0.4 });
   }
+
 
   updateUIPositions(step) {
     let targetScreenPos;
@@ -331,22 +328,21 @@ export class IntroTutorial {
 
   complete() {
     this.isActive = false;
+    if (this._massPreviewActive) this._endMassPreview();
     this.removeOutlineEffect();
-    this.removeDomHighlight(); // Clean up DOM highlight on complete
+    this.removeDomHighlight();
     this.enableCameraControls();
 
+    clearTimeout(this._previewTimer);
+    this._previewTimer = null;
+
     const tl = gsap.timeline({
-      onComplete: () => {
-        this.ui.overlay.classList.remove("active");
-        if (this.raycasterController) this.raycasterController.enable();
-      },
+      onComplete: () => this.ui.overlay.classList.remove("active"),
     });
-    tl.to([this.ui.cursor, this.ui.bubble, this.ui.skipButton], {
-      opacity: 0,
-      duration: 0.5,
-    });
+    tl.to([this.ui.cursor, this.ui.bubble, this.ui.skipButton], { opacity: 0, duration: 0.5 });
     tl.to(this.ui.overlay, { opacity: 0, duration: 0.5 }, ">-0.3");
   }
+
 
   skip() {
     this.complete();
@@ -436,4 +432,218 @@ export class IntroTutorial {
     }
     outlinePass.selectedObjects = [];
   }
+
+  _flattenMeshes(objs) {
+    const meshes = [];
+    const pushMeshes = (o) => {
+      if (!o) return;
+      if (o.isMesh) meshes.push(o);
+      if (o.children?.length) o.children.forEach(pushMeshes);
+    };
+    objs.forEach(pushMeshes);
+    return meshes;
+  }
+
+  _collectAllInteractables() {
+    // Prefer your curated list
+    if (appState.raycasterObjects && appState.raycasterObjects.length) {
+      return this._flattenMeshes(appState.raycasterObjects);
+    }
+
+    // Fallback: search by name containing "raycast" (case-insensitive)
+    const result = [];
+    this.scene.traverse((o) => {
+      if (o.isMesh && typeof o.name === "string" && /raycast/i.test(o.name)) {
+        result.push(o);
+      }
+    });
+    return result;
+  }
+
+  _ensureInteractables() {
+    if (!this._allInteractables || this._allInteractables.length === 0) {
+      this._allInteractables = this._collectAllInteractables();
+    }
+  }
+  previewAllInteractables(opts = {}) {
+    const {
+      duration = 1500,  // ms
+      strength = 1.0,   // subtle preview so hover still "wins"
+      thickness = 1.0,
+      pulse = true,
+    } = opts;
+    this._ensureInteractables();
+    console.log("[TutorialDbg] interactables found:", this._allInteractables?.length,
+      this._allInteractables?.slice(0, 5).map(o => o.name));
+    if (!this._allInteractables.length) {
+      console.warn("[TutorialDbg] No interactables yet; will retry in 500ms");
+      clearTimeout(this._retryTimer);
+      this._retryTimer = setTimeout(() => this.previewAllInteractables(opts), 500);
+      return;
+    }
+    const outlinePass =
+      this.raycasterController?.outlinePass || appState.outlinePass;
+    if (!outlinePass) {
+      console.warn("[IntroTutorial] No OutlinePass found; skipping mass preview.");
+      return;
+    }
+
+    this._ensureInteractables();
+    if (!this._allInteractables.length) return;
+
+    // Save current settings
+    this._prevSelected = outlinePass.selectedObjects.slice();
+    if (!this.originalOutlineValues) {
+      this.originalOutlineValues = {
+        strength: outlinePass.edgeStrength,
+        thickness: outlinePass.edgeThickness,
+      };
+    }
+
+    // Show subtle outline on ALL interactables
+    outlinePass.selectedObjects = this._allInteractables;
+    outlinePass.edgeStrength = strength;
+    outlinePass.edgeThickness = thickness;
+    // ⬇️ add this line so your controller pauses the "clear to []" branch
+    this.raycasterController?.holdEmptyClear(duration);
+    if (pulse) {
+      if (this.pulseAnimation) this.pulseAnimation.kill();
+      this.pulseAnimation = gsap.to(outlinePass, {
+        edgeStrength: strength * 1.4,
+        edgeThickness: thickness * 1.25,
+        duration: 1.0,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
+      });
+    }
+
+    clearTimeout(this._previewTimer);
+    this._previewTimer = setTimeout(() => this._restoreOutlineAfterPreview(), duration);
+    console.log("[TutorialDbg] after assign len=",
+      outlinePass.selectedObjects.length);
+  }
+
+  _restoreOutlineAfterPreview() {
+    const outlinePass =
+      this.raycasterController?.outlinePass || appState.outlinePass;
+    if (!outlinePass) return;
+
+    if (this.pulseAnimation) {
+      this.pulseAnimation.kill();
+      this.pulseAnimation = null;
+    }
+
+    const toStrength = this.originalOutlineValues?.strength ?? 3.0;
+    const toThickness = this.originalOutlineValues?.thickness ?? 2.0;
+
+    gsap.to(outlinePass, {
+      edgeStrength: toStrength,
+      edgeThickness: toThickness,
+      duration: 0.25,
+      onComplete: () => {
+        // Hand back to normal hover (raycaster) mode
+        outlinePass.selectedObjects = [];
+      },
+    });
+  }
+
+
+  __dbgLogPass(tag) {
+    const fromCtrl = this.raycasterController?.outlinePass;
+    const fromState = appState.outlinePass;
+    const chosen = fromCtrl || fromState;
+    console.log(`[TutorialDbg] ${tag}`, {
+      hasCtrlPass: !!fromCtrl,
+      hasStatePass: !!fromState,
+      chosenIsCtrl: chosen === fromCtrl,
+      chosenIsState: chosen === fromState,
+      edgeStrength: chosen?.edgeStrength,
+      edgeThickness: chosen?.edgeThickness,
+      selectedLen: chosen?.selectedObjects?.length,
+    });
+  }
+
+  __dbgWatchSelected(ms = 1000) {
+    const pass = this.raycasterController?.outlinePass || appState.outlinePass;
+    if (!pass) return;
+
+    const start = performance.now();
+    const tick = (t) => {
+      const len = pass.selectedObjects?.length ?? -1;
+      if (t - start < ms) {
+        console.log(`[TutorialDbg] selectedObjects.len=${len} @ ${Math.round(t - start)}ms`);
+        requestAnimationFrame(tick);
+      } else {
+        console.log(`[TutorialDbg] watch end, final len=${len}`);
+      }
+    };
+    console.log("[TutorialDbg] watch begin");
+    requestAnimationFrame(tick);
+  }
+  _startMassPreview({ strength = 1.0, thickness = 1.0, pulse = true } = {}) {
+    const pass = this.raycasterController?.outlinePass || appState.outlinePass;
+    if (!pass) return;
+
+    this._ensureInteractables();
+    if (!this._allInteractables?.length) return;
+
+    // cache original
+    if (!this.originalOutlineValues) {
+      this.originalOutlineValues = {
+        strength: pass.edgeStrength,
+        thickness: pass.edgeThickness,
+      };
+    }
+
+    // apply subtle preview & freeze raycaster’s outline updates
+    pass.selectedObjects = this._allInteractables;
+    pass.edgeStrength = strength;
+    pass.edgeThickness = thickness;
+
+    this.raycasterController?.freezeOutline(this._allInteractables);
+    this._massPreviewActive = true;
+
+    if (pulse) {
+      if (this.pulseAnimation) this.pulseAnimation.kill();
+      this.pulseAnimation = gsap.to(pass, {
+        edgeStrength: strength * 1.4,
+        edgeThickness: thickness * 1.25,
+        duration: 1.0,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
+      });
+    }
+  }
+
+  _endMassPreview() {
+    const pass = this.raycasterController?.outlinePass || appState.outlinePass;
+    if (!pass || !this._massPreviewActive) return;
+
+    // stop pulse
+    if (this.pulseAnimation) {
+      this.pulseAnimation.kill();
+      this.pulseAnimation = null;
+    }
+
+    // restore outline settings & hand control back to hover
+    const toStrength = this.originalOutlineValues?.strength ?? 3.0;
+    const toThickness = this.originalOutlineValues?.thickness ?? 2.0;
+
+    this.raycasterController?.thawOutline();
+
+    gsap.to(pass, {
+      edgeStrength: toStrength,
+      edgeThickness: toThickness,
+      duration: 0.25,
+      onComplete: () => {
+        pass.selectedObjects = []; // back to hover-managed behavior
+      },
+    });
+
+    this._massPreviewActive = false;
+  }
+
+
 }

@@ -30,6 +30,10 @@ export default class RaycasterController {
     this.raycaster = new THREE.Raycaster();
     /** @type {THREE.Intersection[]} */
     this.intersects = [];
+    this._suppressEmptyClearUntil = 0;
+    // inside constructor
+    this._outlineFrozen = false;
+    this._frozenSelection = null;
 
     // optional helpers --------------------------------
     const { outlinePass = null, scaleTargets = [], mailbox = null } = opts;
@@ -41,6 +45,21 @@ export default class RaycasterController {
     window.addEventListener("click", () => this._handleClick());
   }
 
+  freezeOutline(selection = []) {
+    this._outlineFrozen = true;
+    // store a shallow copy so later mutations don’t affect the frozen set
+    this._frozenSelection = Array.isArray(selection) ? selection.slice() : [];
+    if (this.outlinePass) {
+      this.outlinePass.selectedObjects = this._frozenSelection;
+    }
+  }
+
+  thawOutline() {
+    this._outlineFrozen = false;
+    this._frozenSelection = null;
+    // don’t clear here; let normal hover logic take back control on next update()
+  }
+
   /**
    * Call every frame or on pointer-move.
    * @param {number} mouseX – NDC-space X (-1 → 1)
@@ -50,13 +69,12 @@ export default class RaycasterController {
   update(mouseX, mouseY) {
     if (!this.enabled) return [];
 
-    // 1️⃣  compute intersections ----------------------
     this.pointer.set(mouseX, mouseY);
     this.raycaster.setFromCamera(this.pointer, this.camera);
     this.intersects = this.raycaster.intersectObjects(this.objects, true);
 
-    // 2️⃣  trigger built-in hover effects -------------
     if (this.outlinePass) {
+      // your normal hover logic
       updateOutlineHover(
         this.raycaster,
         this.pointer,
@@ -64,18 +82,24 @@ export default class RaycasterController {
         this.objects,
         this.outlinePass
       );
+
+      // 🔒 keep the tutorial’s selection while frozen
+      if (this._outlineFrozen) {
+        this.outlinePass.selectedObjects = this._frozenSelection || [];
+      }
     }
 
     if (this.scaleTargets?.length) {
       updateHoverScale(this.intersects, this.scaleTargets);
     }
-
     if (this.mailbox?.updateMailboxHover) {
       this.mailbox.updateMailboxHover(this.intersects, this.outlinePass);
     }
 
     return this.intersects;
   }
+
+
 
   /* ---------- tiny convenience helpers ------------- */
 
