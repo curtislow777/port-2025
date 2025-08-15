@@ -9,7 +9,6 @@ const HUE_BASE = 0.58;      // ~blue
 const HUE_JITTER = 0.10;    // how much the hue varies per particle
 const SATURATION = 0.85;
 const LIGHTNESS = 0.60;
-// Vivid categorical palette (high separation)
 const PALETTE = [
     0x6ec5ff, // light sky blue
     0xaecbfa  // pale periwinkle
@@ -63,7 +62,6 @@ export default class ParticleTrail {
         const tex = new THREE.TextureLoader().load('/images/sparkle.png'); // public/sprites/star.png
         // If you're on r154+, use the new color space:
         tex.colorSpace = THREE.SRGBColorSpace;
-        // Optional: nicer downscaling for tiny points
         tex.minFilter = THREE.LinearMipMapLinearFilter;
         tex.magFilter = THREE.LinearFilter;
         // Optional: rotate the sprite (in radians)

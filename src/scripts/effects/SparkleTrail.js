@@ -1,4 +1,4 @@
-
+// SparkleTrail.js creates sparkles using CSS. (currently unused)
 
 var colour = "random"; // "random" can be replaced with any valid colour ie: "red"...
 var sparkles = 100;// increase of decrease for number of sparkles falling

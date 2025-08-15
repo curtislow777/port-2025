@@ -103,8 +103,11 @@ export class IntroTutorial {
         message:
           "Objects you can interact with will glow when you hover them. Move your cursor around anytime to discover things.",
         placement: "top",
-        massPreview: true, // ← one-shot outline here
-      },
+        massPreview: true,
+        outline: { strength: 3.2, thickness: 2.2, pulse: true, color: 0xffffff }, // brighter + thicker
+      }
+      ,
+
       {
         domTarget: "#theme-toggle",
         message: "Theme toggle lives here.",
@@ -182,7 +185,10 @@ export class IntroTutorial {
 
     // start the mass preview when entering that step
     if (step.massPreview && !this._massPreviewActive) {
-      this._startMassPreview({ strength: 1.0, thickness: 1.0, pulse: true });
+      this._startMassPreview({
+        outline: step.outline || { strength: 3.2, thickness: 2.2, pulse: true, color: 0xffffff }
+      });
+
     }
 
     gsap.fromTo(
@@ -416,6 +422,8 @@ export class IntroTutorial {
   }
 
   removeOutlineEffect() {
+    if (this._massPreviewActive) return; // <- don’t fight the preview
+
     if (!this.raycasterController?.outlinePass) return;
     if (this.pulseAnimation) {
       this.pulseAnimation.kill();
@@ -581,35 +589,52 @@ export class IntroTutorial {
     console.log("[TutorialDbg] watch begin");
     requestAnimationFrame(tick);
   }
-  _startMassPreview({ strength = 1.0, thickness = 1.0, pulse = true } = {}) {
+  _startMassPreview({
+    outline = { strength: 3.2, thickness: 2.2, pulse: true, color: 0xffffff },
+  } = {}) {
     const pass = this.raycasterController?.outlinePass || appState.outlinePass;
     if (!pass) return;
 
     this._ensureInteractables();
     if (!this._allInteractables?.length) return;
 
-    // cache original
+    // Cache original (including colors)
     if (!this.originalOutlineValues) {
       this.originalOutlineValues = {
         strength: pass.edgeStrength,
         thickness: pass.edgeThickness,
+        color: pass.visibleEdgeColor?.clone?.() ?? null,
+        hiddenColor: pass.hiddenEdgeColor?.clone?.() ?? null,
+        overlay: pass.overlay ?? true,
+        edgeGlow: pass.edgeGlow ?? 0.0,
+        pulsePeriod: pass.pulsePeriod ?? 0.0,
       };
     }
 
-    // apply subtle preview & freeze raycaster’s outline updates
+    // Stronger base
     pass.selectedObjects = this._allInteractables;
-    pass.edgeStrength = strength;
-    pass.edgeThickness = thickness;
+    pass.edgeStrength = outline.strength;   // e.g. 3.2
+    pass.edgeThickness = outline.thickness; // e.g. 2.2
+    if (pass.visibleEdgeColor && outline.color != null) {
+      pass.visibleEdgeColor.set(outline.color); // bright white
+    }
 
+    // Make sure the outline draws on top and blooms a bit
+    if ("overlay" in pass) pass.overlay = true;
+    if ("edgeGlow" in pass) pass.edgeGlow = 1.0;       // adds halo
+    if ("pulsePeriod" in pass) pass.pulsePeriod = 0.0; // we animate via GSAP
+
+    // Keep it on until the step changes
     this.raycasterController?.freezeOutline(this._allInteractables);
     this._massPreviewActive = true;
 
-    if (pulse) {
+    // Bigger breathing
+    if (outline.pulse) {
       if (this.pulseAnimation) this.pulseAnimation.kill();
       this.pulseAnimation = gsap.to(pass, {
-        edgeStrength: strength * 1.4,
-        edgeThickness: thickness * 1.25,
-        duration: 1.0,
+        edgeStrength: outline.strength * 2.6,   // was 1.4 → much stronger
+        edgeThickness: outline.thickness * 1.8, // was 1.25 → thicker glow
+        duration: 0.9,
         ease: "sine.inOut",
         repeat: -1,
         yoyo: true,
@@ -617,33 +642,42 @@ export class IntroTutorial {
     }
   }
 
+
+
   _endMassPreview() {
     const pass = this.raycasterController?.outlinePass || appState.outlinePass;
-    if (!pass || !this._massPreviewActive) return;
+    if (!this._massPreviewActive) return;
 
-    // stop pulse
     if (this.pulseAnimation) {
       this.pulseAnimation.kill();
       this.pulseAnimation = null;
     }
 
-    // restore outline settings & hand control back to hover
-    const toStrength = this.originalOutlineValues?.strength ?? 3.0;
-    const toThickness = this.originalOutlineValues?.thickness ?? 2.0;
-
+    // hand control back to hover
     this.raycasterController?.thawOutline();
 
-    gsap.to(pass, {
-      edgeStrength: toStrength,
-      edgeThickness: toThickness,
-      duration: 0.25,
-      onComplete: () => {
-        pass.selectedObjects = []; // back to hover-managed behavior
-      },
-    });
+    if (pass) {
+      const toStrength = this.originalOutlineValues?.strength ?? 3.0;
+      const toThickness = this.originalOutlineValues?.thickness ?? 2.0;
+
+      if (this.originalOutlineValues?.color && pass.visibleEdgeColor) {
+        pass.visibleEdgeColor.copy(this.originalOutlineValues.color);
+      }
+      if (this.originalOutlineValues?.hiddenColor && pass.hiddenEdgeColor) {
+        pass.hiddenEdgeColor.copy(this.originalOutlineValues.hiddenColor);
+      }
+
+      gsap.to(pass, {
+        edgeStrength: toStrength,
+        edgeThickness: toThickness,
+        duration: 0.25,
+        onComplete: () => { pass.selectedObjects = []; },
+      });
+    }
 
     this._massPreviewActive = false;
   }
+
 
 
 }
