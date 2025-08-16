@@ -227,8 +227,7 @@
       id="projects-modal"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="pm-heading"
-      hidden
+      aria-label="Projects"
     >
       <!-- top chrome -->
       <button class="pm-back" type="button" hidden aria-label="Back">
@@ -310,9 +309,10 @@
 
           <hr class="pp-divider" />
         </div>
-        <!-- tiny title chip (list view shows 'Projects', detail shows project title) -->
-        <span id="pm-heading" class="pm-bar__title">Projects</span>
-
+        <!-- centered title, list-only -->
+        <h2 id="pp-list-title" class="pp-section-title" data-role="list-only">
+          Projects
+        </h2>
         <!-- LIST VIEW -->
         <section
           class="pp-projects"

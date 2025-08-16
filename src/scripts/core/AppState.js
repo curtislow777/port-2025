@@ -41,9 +41,9 @@ class AppState {
     this.particleTrail = null; // <-- ADD THIS LINE
 
     /* ───────────────────────────────────
-    * Collections
-    * Group objects by behaviour so systems can loop efficiently.
-    * ─────────────────────────────────── */
+     * Collections
+     * Group objects by behaviour so systems can loop efficiently.
+     * ─────────────────────────────────── */
     this.animatedObjects = {
       spin: [],
       scale: [],
@@ -69,7 +69,7 @@ class AppState {
     this.outlinePass = null;
 
     /* ───────────────────────────────────
-     * Managers 
+     * Managers
      * e.g. for camera transitions, iFrame/monitor, mailbox, etc.
      * ─────────────────────────────────── */
     this.cameraManager = null;

@@ -7,7 +7,6 @@ export function initProjectsDetail(root) {
   const listWrap = root.querySelector("#pp-projects");
   const detailEl = root.querySelector("#pp-detail");
   const backBtn = root.querySelector(".pm-back");
-  const titleChip = root.querySelector(".pm-bar__title");
 
   const TRANSITION_DURATION = 300; // ms
 
@@ -29,7 +28,6 @@ export function initProjectsDetail(root) {
       root.classList.remove("is-detail");
       detailEl.hidden = true;
       backBtn.hidden = true;
-      titleChip.textContent = "Projects";
       detailEl.innerHTML = "";
       scrollToTop();
 
@@ -96,7 +94,6 @@ export function initProjectsDetail(root) {
       detailEl.hidden = false;
       listWrap.hidden = true;
       backBtn.hidden = false;
-      titleChip.textContent = title;
 
       root.classList.remove("is-transitioning-out");
       scrollToTop();
