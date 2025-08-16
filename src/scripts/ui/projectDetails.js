@@ -24,9 +24,8 @@ export function initProjectsDetail(root) {
     // 2) Fade the detail out
     root.classList.add("is-leaving-detail");
 
-    // 3) After the fade completes, swap state and then fade list in
+    // 3) After fade completes, swap state
     setTimeout(() => {
-      // swap DOM/state
       root.classList.remove("is-detail");
       detailEl.hidden = true;
       backBtn.hidden = true;
@@ -34,11 +33,16 @@ export function initProjectsDetail(root) {
       detailEl.innerHTML = "";
       scrollToTop();
 
-      // cleanup + trigger list fade-in on next frame
+      // 4) Release the list fade and then trigger the same child reveal
       requestAnimationFrame(() => {
         root.classList.remove("is-leaving-detail");
-        // dropping this class lets .pp-projects transition from 0 -> 1
         root.classList.remove("is-entering-list");
+
+        // 🔸 Reuse your existing modal content reveal (children fade in)
+        root.classList.add("is-opening");
+        setTimeout(() => {
+          root.classList.remove("is-opening");
+        }, 380); // a hair longer than your 360ms child animation
       });
     }, TRANSITION_DURATION);
   }
