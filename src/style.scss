@@ -1417,3 +1417,78 @@ lottie-player {
     outline: 3px solid rgba(121, 183, 255, 1);
   }
 }
+
+/* ────────────────────────────────────────────────
+   Universal modal content reveal (safe children-only)
+   ──────────────────────────────────────────────── */
+.modal.is-opening {
+  pointer-events: none;
+}
+
+/* Target your common content wrappers */
+.modal.is-opening .pm-body > *,
+.modal.is-opening .modal-body > * {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: modalContentIn 360ms ease forwards;
+}
+
+/* Gentle stagger (adjust delays to taste) */
+.modal.is-opening .pm-body > *:nth-child(1),
+.modal.is-opening .modal-body > *:nth-child(1) {
+  animation-delay: 40ms;
+}
+
+.modal.is-opening .pm-body > *:nth-child(2),
+.modal.is-opening .modal-body > *:nth-child(2) {
+  animation-delay: 90ms;
+}
+
+.modal.is-opening .pm-body > *:nth-child(3),
+.modal.is-opening .modal-body > *:nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.modal.is-opening .pm-body > *:nth-child(4),
+.modal.is-opening .modal-body > *:nth-child(4) {
+  animation-delay: 190ms;
+}
+
+.modal.is-opening .pm-body > *:nth-child(5),
+.modal.is-opening .modal-body > *:nth-child(5) {
+  animation-delay: 240ms;
+}
+
+/* Fallback for modals that don't use .pm-body/.modal-body yet */
+.modal.is-opening > :not(.modal-close-btn) {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: modalContentIn 360ms ease forwards;
+}
+.modal.is-opening > :not(.modal-close-btn):nth-child(1) {
+  animation-delay: 40ms;
+}
+.modal.is-opening > :not(.modal-close-btn):nth-child(2) {
+  animation-delay: 90ms;
+}
+.modal.is-opening > :not(.modal-close-btn):nth-child(3) {
+  animation-delay: 140ms;
+}
+
+@keyframes modalContentIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .modal.is-opening .pm-body > *,
+  .modal.is-opening .modal-body > *,
+  .modal.is-opening > :not(.modal-close-btn) {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

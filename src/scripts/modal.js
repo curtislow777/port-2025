@@ -36,12 +36,9 @@ export function initModalSystem({
     if (!modal || isAnimating) return;
     isAnimating = true;
     isModalOpen = true;
-
     onModalOpen();
 
-    // IMPORTANT: remove `hidden` so CSS no longer forces display:none
     if (modal.hasAttribute("hidden")) modal.removeAttribute("hidden");
-
     overlay.style.display = "block";
     modal.style.display = "block";
 
@@ -54,7 +51,12 @@ export function initModalSystem({
         opacity: 1,
         duration: 0.5,
         ease: "back.out(2)",
+        onStart: () => {
+          // start child reveal now that it's visible
+          modal.classList.add("is-opening");
+        },
         onComplete: () => {
+          modal.classList.remove("is-opening");
           isAnimating = false;
         },
       }
@@ -67,8 +69,10 @@ export function initModalSystem({
     if (!modal || isAnimating) return;
     isAnimating = true;
     isModalOpen = false;
-
     onModalClose();
+
+    // just in case it was left on
+    modal.classList.remove("is-opening");
 
     gsap.to(overlay, { opacity: 0, duration: 0.5 });
     gsap.to(modal, {
@@ -78,7 +82,6 @@ export function initModalSystem({
       duration: 0.5,
       ease: "back.in(2)",
       onComplete: () => {
-        // Keep both for safety: hide via inline style and re‑add `hidden`
         modal.style.display = "none";
         modal.setAttribute("hidden", "");
         overlay.style.display = "none";
