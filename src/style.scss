@@ -269,17 +269,11 @@ lottie-player {
   font-size: 0.95rem;
 }
 
-/* Body: the outer .modal already scrolls; avoid double scrollbars */
 .projects-modal .pm-body {
   overflow: visible;
   padding-top: 3.25rem;
-  /* leave room for back/close row */
   display: grid;
   gap: 1.5rem;
-}
-
-/* ───────── 2‑column INTRO (left text, right tech) ───────── */
-.projects-modal .pm-intro {
 }
 
 .projects-modal .pm-intro-grid {

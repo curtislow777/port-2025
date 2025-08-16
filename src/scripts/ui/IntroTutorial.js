@@ -645,7 +645,7 @@ export class IntroTutorial {
     // Make sure the outline draws on top and blooms a bit
     if ("overlay" in pass) pass.overlay = true;
     if ("edgeGlow" in pass) pass.edgeGlow = 1.0; // adds halo
-    if ("pulsePeriod" in pass) pass.pulsePeriod = 0.0; // we animate via GSAP
+    if ("pulsePeriod" in pass) pass.pulsePeriod = 0.0;
 
     // Keep it on until the step changes
     this.raycasterController?.freezeOutline(this._allInteractables);
@@ -673,7 +673,6 @@ export class IntroTutorial {
       this.pulseAnimation = null;
     }
 
-    // hand control back to hover
     this.raycasterController?.thawOutline();
 
     if (pass) {
