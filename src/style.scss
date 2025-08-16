@@ -708,6 +708,18 @@ lottie-player {
   }
 }
 
+.projects-modal.is-leaving-detail .pp-detail {
+  opacity: 0;
+}
+/* Fade the back button too while leaving detail (optional) */
+.projects-modal.is-leaving-detail .pm-back {
+  opacity: 0;
+}
+/* Prep the list so it can fade IN (held at 0 until we drop this class) */
+.projects-modal.is-entering-list .pp-projects {
+  opacity: 0;
+}
+
 .about-modal {
   background: var(--about-modal-bg);
   border: 10px solid var(--about-modal-border);
