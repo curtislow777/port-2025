@@ -104,9 +104,13 @@ export class IntroTutorial {
           "Objects you can interact with will glow when you hover them. Move your cursor around anytime to discover things.",
         placement: "top",
         massPreview: true,
-        outline: { strength: 3.2, thickness: 2.2, pulse: true, color: 0xffffff }, // brighter + thicker
-      }
-      ,
+        outline: {
+          strength: 2.2,
+          thickness: 1.6,
+          pulse: true,
+          color: 0xffffff,
+        }, // ↓ softer
+      },
 
       {
         domTarget: "#theme-toggle",
@@ -122,7 +126,8 @@ export class IntroTutorial {
       },
       {
         target: "tutorial-conclusion-anchor",
-        message: "That’s it—hover = discover, click = interact. Explore freely.",
+        message:
+          "That’s it—hover = discover, click = interact. Explore freely.",
         placement: "top",
       },
     ];
@@ -131,7 +136,6 @@ export class IntroTutorial {
       this.ui.totalStepsIndicator.textContent = this.tutorialSteps.length;
     }
   }
-
 
   start() {
     if (this.isActive) return;
@@ -145,7 +149,6 @@ export class IntroTutorial {
     gsap.to(this.ui.skipButton, { opacity: 1, duration: 0.5, delay: 0.5 });
     setTimeout(() => this.showStep(0), 500);
   }
-
 
   update() {
     if (!this.isActive) return;
@@ -186,9 +189,13 @@ export class IntroTutorial {
     // start the mass preview when entering that step
     if (step.massPreview && !this._massPreviewActive) {
       this._startMassPreview({
-        outline: step.outline || { strength: 3.2, thickness: 2.2, pulse: true, color: 0xffffff }
+        outline: step.outline || {
+          strength: 3.2,
+          thickness: 2.2,
+          pulse: true,
+          color: 0xffffff,
+        },
       });
-
     }
 
     gsap.fromTo(
@@ -198,7 +205,6 @@ export class IntroTutorial {
     );
     gsap.to(this.ui.cursor, { opacity: 1, duration: 0.4 });
   }
-
 
   updateUIPositions(step) {
     let targetScreenPos;
@@ -345,10 +351,12 @@ export class IntroTutorial {
     const tl = gsap.timeline({
       onComplete: () => this.ui.overlay.classList.remove("active"),
     });
-    tl.to([this.ui.cursor, this.ui.bubble, this.ui.skipButton], { opacity: 0, duration: 0.5 });
+    tl.to([this.ui.cursor, this.ui.bubble, this.ui.skipButton], {
+      opacity: 0,
+      duration: 0.5,
+    });
     tl.to(this.ui.overlay, { opacity: 0, duration: 0.5 }, ">-0.3");
   }
-
 
   skip() {
     this.complete();
@@ -475,24 +483,32 @@ export class IntroTutorial {
   }
   previewAllInteractables(opts = {}) {
     const {
-      duration = 1500,  // ms
-      strength = 1.0,   // subtle preview so hover still "wins"
+      duration = 1500, // ms
+      strength = 1.0, // subtle preview so hover still "wins"
       thickness = 1.0,
       pulse = true,
     } = opts;
     this._ensureInteractables();
-    console.log("[TutorialDbg] interactables found:", this._allInteractables?.length,
-      this._allInteractables?.slice(0, 5).map(o => o.name));
+    console.log(
+      "[TutorialDbg] interactables found:",
+      this._allInteractables?.length,
+      this._allInteractables?.slice(0, 5).map((o) => o.name)
+    );
     if (!this._allInteractables.length) {
       console.warn("[TutorialDbg] No interactables yet; will retry in 500ms");
       clearTimeout(this._retryTimer);
-      this._retryTimer = setTimeout(() => this.previewAllInteractables(opts), 500);
+      this._retryTimer = setTimeout(
+        () => this.previewAllInteractables(opts),
+        500
+      );
       return;
     }
     const outlinePass =
       this.raycasterController?.outlinePass || appState.outlinePass;
     if (!outlinePass) {
-      console.warn("[IntroTutorial] No OutlinePass found; skipping mass preview.");
+      console.warn(
+        "[IntroTutorial] No OutlinePass found; skipping mass preview."
+      );
       return;
     }
 
@@ -527,9 +543,14 @@ export class IntroTutorial {
     }
 
     clearTimeout(this._previewTimer);
-    this._previewTimer = setTimeout(() => this._restoreOutlineAfterPreview(), duration);
-    console.log("[TutorialDbg] after assign len=",
-      outlinePass.selectedObjects.length);
+    this._previewTimer = setTimeout(
+      () => this._restoreOutlineAfterPreview(),
+      duration
+    );
+    console.log(
+      "[TutorialDbg] after assign len=",
+      outlinePass.selectedObjects.length
+    );
   }
 
   _restoreOutlineAfterPreview() {
@@ -556,7 +577,6 @@ export class IntroTutorial {
     });
   }
 
-
   __dbgLogPass(tag) {
     const fromCtrl = this.raycasterController?.outlinePass;
     const fromState = appState.outlinePass;
@@ -580,7 +600,9 @@ export class IntroTutorial {
     const tick = (t) => {
       const len = pass.selectedObjects?.length ?? -1;
       if (t - start < ms) {
-        console.log(`[TutorialDbg] selectedObjects.len=${len} @ ${Math.round(t - start)}ms`);
+        console.log(
+          `[TutorialDbg] selectedObjects.len=${len} @ ${Math.round(t - start)}ms`
+        );
         requestAnimationFrame(tick);
       } else {
         console.log(`[TutorialDbg] watch end, final len=${len}`);
@@ -589,6 +611,7 @@ export class IntroTutorial {
     console.log("[TutorialDbg] watch begin");
     requestAnimationFrame(tick);
   }
+
   _startMassPreview({
     outline = { strength: 3.2, thickness: 2.2, pulse: true, color: 0xffffff },
   } = {}) {
@@ -613,7 +636,7 @@ export class IntroTutorial {
 
     // Stronger base
     pass.selectedObjects = this._allInteractables;
-    pass.edgeStrength = outline.strength;   // e.g. 3.2
+    pass.edgeStrength = outline.strength; // e.g. 3.2
     pass.edgeThickness = outline.thickness; // e.g. 2.2
     if (pass.visibleEdgeColor && outline.color != null) {
       pass.visibleEdgeColor.set(outline.color); // bright white
@@ -621,28 +644,25 @@ export class IntroTutorial {
 
     // Make sure the outline draws on top and blooms a bit
     if ("overlay" in pass) pass.overlay = true;
-    if ("edgeGlow" in pass) pass.edgeGlow = 1.0;       // adds halo
+    if ("edgeGlow" in pass) pass.edgeGlow = 1.0; // adds halo
     if ("pulsePeriod" in pass) pass.pulsePeriod = 0.0; // we animate via GSAP
 
     // Keep it on until the step changes
     this.raycasterController?.freezeOutline(this._allInteractables);
     this._massPreviewActive = true;
 
-    // Bigger breathing
     if (outline.pulse) {
       if (this.pulseAnimation) this.pulseAnimation.kill();
       this.pulseAnimation = gsap.to(pass, {
-        edgeStrength: outline.strength * 2.6,   // was 1.4 → much stronger
-        edgeThickness: outline.thickness * 1.8, // was 1.25 → thicker glow
-        duration: 0.9,
+        edgeStrength: outline.strength * 1.7,
+        edgeThickness: outline.thickness * 1.3,
+        duration: 1.0,
         ease: "sine.inOut",
         repeat: -1,
         yoyo: true,
       });
     }
   }
-
-
 
   _endMassPreview() {
     const pass = this.raycasterController?.outlinePass || appState.outlinePass;
@@ -671,13 +691,12 @@ export class IntroTutorial {
         edgeStrength: toStrength,
         edgeThickness: toThickness,
         duration: 0.25,
-        onComplete: () => { pass.selectedObjects = []; },
+        onComplete: () => {
+          pass.selectedObjects = [];
+        },
       });
     }
 
     this._massPreviewActive = false;
   }
-
-
-
 }
