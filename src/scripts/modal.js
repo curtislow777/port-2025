@@ -1,5 +1,6 @@
 // modal.js
 import gsap from "gsap";
+import { resetScroll, resetScrollAfterLayout } from "./utils/scrollUtils.js"; // <-- path as needed
 
 export function initModalSystem({
   overlaySelector = ".overlay",
@@ -22,46 +23,6 @@ export function initModalSystem({
   let isModalOpen = false;
   let isAnimating = false;
 
-  // 🔧 find the real scroll containers inside a modal
-  function getScrollContainers(modal) {
-    const candidates = modal.querySelectorAll(
-      // add your own class/attr if you want (e.g. [data-scroll-container])
-      ".pm-body, .modal-body, .modal-content, [data-scroll-container]"
-    );
-    const set = new Set();
-
-    // 1) explicit candidates
-    candidates.forEach((el) => set.add(el));
-
-    // 2) the modal itself if it scrolls
-    const mcs = getComputedStyle(modal);
-    if (
-      (mcs.overflowY === "auto" || mcs.overflowY === "scroll") &&
-      modal.scrollHeight > modal.clientHeight
-    ) {
-      set.add(modal);
-    }
-
-    // 3) fallback: any descendant that actually scrolls
-    modal.querySelectorAll("*").forEach((el) => {
-      const cs = getComputedStyle(el);
-      if (
-        (cs.overflowY === "auto" || cs.overflowY === "scroll") &&
-        el.scrollHeight > el.clientHeight
-      ) {
-        set.add(el);
-      }
-    });
-
-    return Array.from(set);
-  }
-
-  function resetScroll(modal) {
-    const targets = getScrollContainers(modal);
-    // ensure instant jump (not smooth)
-    targets.forEach((el) => el.scrollTo({ top: 0, left: 0, behavior: "auto" }));
-  }
-
   function showModal(modal) {
     if (!modal || isAnimating) return;
     isAnimating = true;
@@ -72,8 +33,7 @@ export function initModalSystem({
     overlay.style.display = "block";
     modal.style.display = "block";
 
-    // ✅ reset after layout is available
-    requestAnimationFrame(() => resetScroll(modal));
+    resetScrollAfterLayout(modal);
 
     gsap.fromTo(
       modal,
@@ -111,7 +71,6 @@ export function initModalSystem({
       duration: 0.5,
       ease: "back.in(2)",
       onComplete: () => {
-        // ✅ reset on close too (covers overlay-click closes)
         resetScroll(modal);
 
         modal.style.display = "none";

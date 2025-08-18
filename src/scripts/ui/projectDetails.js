@@ -1,5 +1,6 @@
 // projectDetails.js
 import gsap from "gsap";
+import { resetScroll, resetScrollAfterLayout } from "../utils/scrollUtils.js";
 
 // Safe JavaScript transitions - no transforms on containers
 export function initProjectsDetail(root) {
@@ -10,45 +11,6 @@ export function initProjectsDetail(root) {
   const backBtn = root.querySelector(".pm-back");
 
   const TRANSITION_DURATION = 300; // ms
-
-  // --- SAME SCROLL RESET LOGIC AS modal.js ------------------------
-
-  function getScrollContainers(modal) {
-    const candidates = modal.querySelectorAll(
-      ".pm-body, .modal-body, .modal-content, [data-scroll-container]"
-    );
-    const set = new Set();
-
-    // 1) explicit candidates
-    candidates.forEach((el) => set.add(el));
-
-    // 2) the modal itself if it scrolls
-    const mcs = getComputedStyle(modal);
-    if (
-      (mcs.overflowY === "auto" || mcs.overflowY === "scroll") &&
-      modal.scrollHeight > modal.clientHeight
-    ) {
-      set.add(modal);
-    }
-
-    // 3) fallback: any descendant that actually scrolls
-    modal.querySelectorAll("*").forEach((el) => {
-      const cs = getComputedStyle(el);
-      if (
-        (cs.overflowY === "auto" || cs.overflowY === "scroll") &&
-        el.scrollHeight > el.clientHeight
-      ) {
-        set.add(el);
-      }
-    });
-
-    return Array.from(set);
-  }
-
-  function resetScroll(modal) {
-    const targets = getScrollContainers(modal);
-    targets.forEach((el) => el.scrollTo({ top: 0, left: 0, behavior: "auto" }));
-  }
 
   // --- FLOWS ------------------------------------------------------
 
@@ -67,7 +29,7 @@ export function initProjectsDetail(root) {
 
       // reset scroll like modal.js (works because .modal is the scroller)
       // do it after layout is valid
-      requestAnimationFrame(() => resetScroll(root));
+      resetScrollAfterLayout(root);
 
       // release list fade + child reveal
       requestAnimationFrame(() => {
@@ -131,7 +93,7 @@ export function initProjectsDetail(root) {
       root.classList.remove("is-transitioning-out");
 
       // 🔑 same fix as modal.js: reset after elements are visible/layouted
-      requestAnimationFrame(() => resetScroll(root));
+      resetScrollAfterLayout(root);
     }, TRANSITION_DURATION);
   }
 
