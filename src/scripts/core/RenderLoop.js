@@ -3,6 +3,35 @@ import appState from "../core/AppState.js";
 import clockManager from "../clock.js";
 import { updateRotatingObjects } from "../objectRotation.js";
 import * as THREE from "three";
+function cursorUVOnPlane(plane, camera, ndcX, ndcY) {
+  const origin = camera.position.clone();
+  const dir = new THREE.Vector3(ndcX, ndcY, 0.5)
+    .unproject(camera)
+    .sub(origin)
+    .normalize();
+  const ray = new THREE.Ray(origin, dir);
+
+  const planePos = new THREE.Vector3().setFromMatrixPosition(plane.matrixWorld);
+  const planeQuat = new THREE.Quaternion().setFromRotationMatrix(
+    plane.matrixWorld
+  );
+  const planeNormal = new THREE.Vector3(0, 0, 1)
+    .applyQuaternion(planeQuat)
+    .normalize();
+  const worldPlane = new THREE.Plane().setFromNormalAndCoplanarPoint(
+    planeNormal,
+    planePos
+  );
+
+  const hit = new THREE.Vector3();
+  if (!ray.intersectPlane(worldPlane, hit)) return null;
+
+  const inv = new THREE.Matrix4().copy(plane.matrixWorld).invert();
+  const local = hit.applyMatrix4(inv); // PlaneGeometry(1,1) => x,y in [-0.5..0.5]
+
+  // ❌ no clamp here
+  return { x: local.x + 0.5, y: local.y + 0.5 };
+}
 
 /**
  * Sets up requestAnimationFrame loop and exposes a `start()` method.
@@ -31,6 +60,19 @@ export default function createRenderLoop() {
         appState.pointer.x,
         appState.pointer.y
       );
+      // Always look at the cursor, even off the plane
+      if (appState.tvEyes && appState.tvEyesPlane) {
+        const uv = cursorUVOnPlane(
+          appState.tvEyesPlane,
+          appState.camera,
+          appState.pointer.x, // NDC X (-1..1)
+          appState.pointer.y // NDC Y (-1..1)
+        );
+        if (uv) {
+          // TVEyesChannel flips Y internally; pass v as-is
+          appState.tvEyes.setTargetUV({ x: uv.x, y: 1 - uv.y });
+        }
+      }
       appState.setCurrentIntersects(hits);
     } else {
       appState.clearIntersects();
@@ -57,7 +99,7 @@ export default function createRenderLoop() {
     if (appState.introTutorial?.isActive) {
       appState.introTutorial.update();
     }
-
+    if (appState.tvEyes) appState.tvEyes.update();
     /* --- 7. render passes ----------------------------------------- */
     appState.innerWeb.render();
     appState.composer.render();

@@ -46,6 +46,7 @@ import {
 
 import { IntroTutorial } from "./scripts/ui/IntroTutorial.js";
 import ParticleTrail from "./scripts/effects/ParticleTrail.js"; // <-- Import the new class
+import TVEyesChannel from "./scripts/utils/TVEyesChannel.js"; // from the snippet I gave
 
 // Add to your main initialization (around line where you setup other components)
 let introTutorial = null;
@@ -65,6 +66,7 @@ function loadScene() {
   appState.gltfLoader.load("/models/room-port-v1.glb", (glb) => {
     processScene(glb.scene);
     appState.scene.add(glb.scene);
+
     initializeTutorial();
 
     playIntroAnimation();
@@ -235,6 +237,41 @@ function setupEventListeners() {
  * MAIN INITIALIZATION
  * ===================================================================
  */
+function createTVEyesPlane() {
+  const eyes = new TVEyesChannel({ width: 960, height: 540 });
+  appState.tvEyes = eyes;
+
+  const plane = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({
+      map: eyes.texture,
+      transparent: true,
+      depthTest: false, // sit “on top” of stuff
+      toneMapped: false, // CanvasTexture already in sRGB
+    })
+  );
+  plane.name = "TV_EYES_PLANE";
+  plane.material.map.flipY = false;
+  plane.material.map.colorSpace = THREE.SRGBColorSpace;
+
+  // ---------- placement options ----------
+  // A) Quick: spawn in front of camera, facing camera (edit distance/scale)
+  const distance = 3; // meters in front of camera
+
+  const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(
+    appState.camera.quaternion
+  );
+  plane.position.set(2.7754769325256348, 3.801779270172119, -5.308991432189941);
+
+  plane.scale.set(4.8, 2.65, 1);
+
+  plane.renderOrder = 999; // ensure it draws over background
+  appState.scene.add(plane);
+  appState.tvEyesPlane = plane;
+
+  // include it in raycasts
+  appState.raycasterObjects.push(plane);
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   // Initialize core components using the new Initializer
@@ -242,6 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize UI and other components
   initializeUI();
+  createTVEyesPlane();
 
   /* ──────────────────────────────────────────────
    Image overlay → toggle the ray-caster
@@ -266,6 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   appState.setRaycasterController(rayCtrl);
+  appState.tvEyes.setPupilSize(0.4);
 
   setupLoadingScreen();
   setupEventListeners();

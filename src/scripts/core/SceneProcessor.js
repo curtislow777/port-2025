@@ -17,7 +17,9 @@ export function processScene(sceneRoot) {
       appState.mailbox.processMailboxObject(child);
       if (child.name.includes("raycast")) appState.addRaycasterObject(child);
     }
-
+    if (child.name.includes("duck")) {
+      console.log("Found duck mesh:", child.position);
+    }
     // material tweaks
     if (child.material?.map) child.material.map.minFilter = THREE.LinearFilter;
 

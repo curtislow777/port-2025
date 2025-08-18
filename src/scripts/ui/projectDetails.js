@@ -27,7 +27,6 @@ export function initProjectsDetail(root) {
       backBtn.hidden = true;
       detailEl.innerHTML = "";
 
-      // reset scroll like modal.js (works because .modal is the scroller)
       // do it after layout is valid
       resetScrollAfterLayout(root);
 

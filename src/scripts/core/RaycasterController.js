@@ -99,8 +99,6 @@ export default class RaycasterController {
     return this.intersects;
   }
 
-
-
   /* ---------- tiny convenience helpers ------------- */
 
   /** Replace the set of objects the raycaster tests */
