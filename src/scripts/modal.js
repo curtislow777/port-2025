@@ -1,15 +1,6 @@
 // modal.js
 import gsap from "gsap";
 
-/**
- * initModalSystem
- * - Keeps your existing overlay & GSAP open/close animations
- * - Adds integrated "Projects" modal logic:
- *   • List view (filters + cards)
- *   • Detail view (title chip, big image, stacked sections)
- *   • Back button (inside modal, top-left)
- *   • Close resets to list view every time
- */
 export function initModalSystem({
   overlaySelector = ".overlay",
   modalSelectors = {
@@ -18,7 +9,6 @@ export function initModalSystem({
     contact: ".contact-modal",
     erhu: ".erhu-modal",
   },
-  // include projects close button too
   closeButtonSelector = ".modal-close-btn, .pm-close",
   onModalOpen = () => {},
   onModalClose = () => {},
@@ -32,6 +22,46 @@ export function initModalSystem({
   let isModalOpen = false;
   let isAnimating = false;
 
+  // 🔧 find the real scroll containers inside a modal
+  function getScrollContainers(modal) {
+    const candidates = modal.querySelectorAll(
+      // add your own class/attr if you want (e.g. [data-scroll-container])
+      ".pm-body, .modal-body, .modal-content, [data-scroll-container]"
+    );
+    const set = new Set();
+
+    // 1) explicit candidates
+    candidates.forEach((el) => set.add(el));
+
+    // 2) the modal itself if it scrolls
+    const mcs = getComputedStyle(modal);
+    if (
+      (mcs.overflowY === "auto" || mcs.overflowY === "scroll") &&
+      modal.scrollHeight > modal.clientHeight
+    ) {
+      set.add(modal);
+    }
+
+    // 3) fallback: any descendant that actually scrolls
+    modal.querySelectorAll("*").forEach((el) => {
+      const cs = getComputedStyle(el);
+      if (
+        (cs.overflowY === "auto" || cs.overflowY === "scroll") &&
+        el.scrollHeight > el.clientHeight
+      ) {
+        set.add(el);
+      }
+    });
+
+    return Array.from(set);
+  }
+
+  function resetScroll(modal) {
+    const targets = getScrollContainers(modal);
+    // ensure instant jump (not smooth)
+    targets.forEach((el) => el.scrollTo({ top: 0, left: 0, behavior: "auto" }));
+  }
+
   function showModal(modal) {
     if (!modal || isAnimating) return;
     isAnimating = true;
@@ -42,6 +72,9 @@ export function initModalSystem({
     overlay.style.display = "block";
     modal.style.display = "block";
 
+    // ✅ reset after layout is available
+    requestAnimationFrame(() => resetScroll(modal));
+
     gsap.fromTo(
       modal,
       { scaleY: 0, scaleX: 1, opacity: 0 },
@@ -51,10 +84,7 @@ export function initModalSystem({
         opacity: 1,
         duration: 0.5,
         ease: "back.out(2)",
-        onStart: () => {
-          // start child reveal now that it's visible
-          modal.classList.add("is-opening");
-        },
+        onStart: () => modal.classList.add("is-opening"),
         onComplete: () => {
           modal.classList.remove("is-opening");
           isAnimating = false;
@@ -71,7 +101,6 @@ export function initModalSystem({
     isModalOpen = false;
     onModalClose();
 
-    // just in case it was left on
     modal.classList.remove("is-opening");
 
     gsap.to(overlay, { opacity: 0, duration: 0.5 });
@@ -82,6 +111,9 @@ export function initModalSystem({
       duration: 0.5,
       ease: "back.in(2)",
       onComplete: () => {
+        // ✅ reset on close too (covers overlay-click closes)
+        resetScroll(modal);
+
         modal.style.display = "none";
         modal.setAttribute("hidden", "");
         overlay.style.display = "none";

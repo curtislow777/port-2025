@@ -269,8 +269,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setupLoadingScreen();
   setupEventListeners();
+
   // ===================================================================
-  // CSS RIPPLE EFFECT LOGIC - ADD THIS SECTION
+  // CSS RIPPLE EFFECT
   // ===================================================================
   document.body.addEventListener("click", (event) => {
     // Check if the click happened directly on the Three.js canvas.
@@ -288,7 +289,7 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         ripple.remove();
       }, 600);
-      // To this:
+
       // const sparkle = document.createElement("div");
       // sparkle.className = "sparkle"; // Use the new class name
 
@@ -305,7 +306,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ===================================================================
-  // 3D PARTICLE TRAIL EFFECT LOGIC
+  // 3D PARTICLE TRAIL EFFECT
   // ===================================================================
   // 1. Instantiate the particle system and store it in the app state
   const particleTrail = new ParticleTrail(appState.scene);
@@ -336,7 +337,9 @@ document.addEventListener("DOMContentLoaded", () => {
     vec.unproject(appState.camera);
     vec.sub(appState.camera.position).normalize();
     const distance = 5; // How far from the camera the trail appears
-    const spawnPos = appState.camera.position.clone().add(vec.multiplyScalar(distance));
+    const spawnPos = appState.camera.position
+      .clone()
+      .add(vec.multiplyScalar(distance));
 
     // Tell our particle system to spawn a particle at this new 3D position
     particleTrail.spawnParticle(spawnPos);
@@ -344,7 +347,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 4. Attach the throttled function to the mousemove event
   document.body.addEventListener("mousemove", throttle(mouseMoveHandler, 20));
-
 
   // Load scene and start render loop
   loadScene();
