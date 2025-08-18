@@ -137,14 +137,22 @@ export class IntroTutorial {
     }
   }
 
+  // IntroTutorial.js
   start() {
     if (this.isActive) return;
+
+    // 🔧 Skip tutorial completely in debug mode
+    if (appState.isInDebugMode && appState.isInDebugMode()) {
+      console.log("[IntroTutorial] Skipped (debug mode)");
+      this.skip();
+      return;
+    }
+
     this.isActive = true;
     this.currentStep = 0;
 
-    this.disableCameraControls(); // or leave enabled if you prefer
+    this.disableCameraControls();
 
-    // keep raycaster active (no disable)
     this.ui.overlay.classList.add("active");
     gsap.to(this.ui.skipButton, { opacity: 1, duration: 0.5, delay: 0.5 });
     setTimeout(() => this.showStep(0), 500);
