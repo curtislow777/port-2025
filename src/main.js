@@ -91,7 +91,6 @@ function initializeTutorial() {
   appState.introTutorial = introTutorial;
 }
 
-// Optional: Add a way to restart tutorial
 function restartTutorial() {
   if (introTutorial) {
     introTutorial.start();
@@ -245,7 +244,6 @@ function createTVEyesPlane() {
     new THREE.PlaneGeometry(1, 1),
     new THREE.MeshBasicMaterial({
       map: eyes.texture,
-      transparent: true,
       depthTest: false, // sit “on top” of stuff
       toneMapped: false, // CanvasTexture already in sRGB
     })
@@ -254,10 +252,6 @@ function createTVEyesPlane() {
   plane.material.map.flipY = false;
   plane.material.map.colorSpace = THREE.SRGBColorSpace;
 
-  // ---------- placement options ----------
-  // A) Quick: spawn in front of camera, facing camera (edit distance/scale)
-  const distance = 3; // meters in front of camera
-
   const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(
     appState.camera.quaternion
   );
@@ -265,12 +259,9 @@ function createTVEyesPlane() {
 
   plane.scale.set(4.8, 2.65, 1);
 
-  plane.renderOrder = 999; // ensure it draws over background
+  plane.renderOrder = 1;
   appState.scene.add(plane);
   appState.tvEyesPlane = plane;
-
-  // include it in raycasts
-  appState.raycasterObjects.push(plane);
 }
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -104,7 +104,7 @@ export default class TVEyesChannel {
   _bg(ctx) {
     // subtle blue gradient + faint scanlines
     const g = ctx.createLinearGradient(0, 0, 0, this.h);
-    g.addColorStop(0, "#0A1933");
+    g.addColorStop(0, "#0e244bff");
     g.addColorStop(1, "#081220");
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, this.w, this.h);
