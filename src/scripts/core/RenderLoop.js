@@ -39,14 +39,18 @@ function cursorUVOnPlane(plane, camera, ndcX, ndcY) {
  */
 export default function createRenderLoop() {
   let rafId = null;
-  const clock = new THREE.Clock(); // <-- 1. CREATE THE CLOCK HERE (outside the loop)
+  const clock = appState.clock || (appState.clock = new THREE.Clock());
 
   function loop() {
     /* --- 1. camera & controls ------------------------------------- */
     appState.cameraManager.update();
 
-    const deltaTime = clock.getDelta(); // <-- 2. GET DELTA TIME HERE (inside the loop)
+    const dt = clock.getDelta(); // now clock exists
 
+    // advance any animation mixers
+    if (appState.mixers) {
+      for (const m of appState.mixers) m.update(dt);
+    }
     /* --- 2. global time ------------------------------------------- */
     const elapsed = appState.getElapsedTime();
 
@@ -81,7 +85,7 @@ export default function createRenderLoop() {
 
     // 3. ADD THIS TO UPDATE THE TRAIL
     if (appState.particleTrail) {
-      appState.particleTrail.update(deltaTime);
+      +appState.particleTrail.update(dt);
     }
     /* --- 5. whiteboard -------------------------------------------- */
     if (appState.whiteboard?.isActive) appState.whiteboard.update();
@@ -100,6 +104,9 @@ export default function createRenderLoop() {
       appState.introTutorial.update();
     }
     if (appState.tvEyes) appState.tvEyes.update();
+
+    // inside your render loop tick:
+
     /* --- 7. render passes ----------------------------------------- */
     appState.innerWeb.render();
     appState.composer.render();

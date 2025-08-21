@@ -67,6 +67,7 @@ class AppState {
     this.gltfLoader = null;
     this.composer = null;
     this.outlinePass = null;
+    this.mixers = []; // holds AnimationMixers
 
     /* ───────────────────────────────────
      * Managers
@@ -102,6 +103,9 @@ class AppState {
    */
   isInDebugMode() {
     return this.isDebugMode;
+  }
+  addMixer(m) {
+    if (m) this.mixers.push(m);
   }
 
   /* ===== Ray-casting helpers ======================================= */

@@ -72,6 +72,85 @@ function loadScene() {
     playIntroAnimation();
   });
 }
+// ─────────────────────────────────────────────────────────────
+// Load Peashooter model (with single looping action)
+// ─────────────────────────────────────────────────────────────
+function loadPeashooter() {
+  // Pick ONE of the two lines below depending on where your file lives:
+  // A) If the GLB is in /public/models/peashooter.glb
+  let url = "/models/peashooter.glb";
+  // B) If the GLB is inside src relative to THIS file, use module URL instead:
+  // let url = new URL("./models/peashooter.glb", import.meta.url).href;
+
+  appState.gltfLoader.load(
+    url,
+    (gltf) => {
+      const root = gltf.scene;
+      root.name = "Peashooter";
+
+      // Ensure visible & not culled
+      root.visible = true;
+      root.traverse((o) => {
+        if (o.isSkinnedMesh) {
+          o.material = new THREE.MeshBasicMaterial({
+            color: 0x7fd1ff,
+            skinning: true, // ← REQUIRED for bone animation to affect vertices
+            map: o.material?.map || null,
+          });
+          o.frustumCulled = false;
+        } else if (o.isMesh) {
+          o.material = new THREE.MeshBasicMaterial({ color: 0x7fd1ff });
+          o.frustumCulled = false;
+        }
+      });
+
+      // Center + auto-scale to ~1.5 m largest dimension
+      const box = new THREE.Box3().setFromObject(root);
+      const size = new THREE.Vector3();
+      const center = new THREE.Vector3();
+      box.getSize(size);
+      box.getCenter(center);
+      root.position.sub(center); // center at origin
+
+      const maxDim = Math.max(size.x, size.y, size.z) || 1;
+      const target = 1.5;
+      const scale = target / maxDim;
+      root.scale.multiplyScalar(scale);
+
+      // Put it 2 m in front of the camera so you can’t miss it
+      const cam = appState.camera;
+      const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(cam.quaternion);
+      root.position.copy(cam.position).add(dir.multiplyScalar(2));
+
+      appState.scene.add(root);
+      appState.peashooter = root;
+
+      // Visual debug: bounding box + axes
+      const helperBox = new THREE.Box3Helper(
+        new THREE.Box3().setFromObject(root)
+      );
+      appState.scene.add(helperBox);
+      appState.scene.add(new THREE.AxesHelper(0.5));
+      console.log(gltf.animations);
+
+      // Play first animation on loop
+      const mixer = new THREE.AnimationMixer(root);
+      const clip = gltf.animations[0]; // "ArmatureAction"
+      const action = mixer.clipAction(clip);
+      action.setLoop(THREE.LoopRepeat);
+      action.clampWhenFinished = false;
+      action.enabled = true;
+      action.play();
+
+      // store mixer so your render loop can tick it
+      appState.addMixer(mixer);
+    },
+    undefined,
+    (err) => {
+      console.error("Failed to load peashooter.glb", err);
+    }
+  );
+}
 
 // New function to initialize the tutorial system
 function initializeTutorial() {
@@ -380,6 +459,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Load scene and start render loop
   loadScene();
+  loadPeashooter(); // <— add this line
+
   setupSteamEffect();
   // right after setupSteamEffect() or wherever you want the loop to begin
   const renderLoop = createRenderLoop({ introTutorial });
